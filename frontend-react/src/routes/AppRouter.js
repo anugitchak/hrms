@@ -55,6 +55,8 @@ import SuperAdminSettings from "../pages/superadmin/system/SettingsPage";
 import SuperAdminEmployees from "../pages/superadmin/employees/EmployeesPage";
 import SuperAdminEmployeeAttendance from "../pages/superadmin/employees/EmployeeAttendancePage";
 import SuperAdminDepartments from "../pages/superadmin/organization/DepartmentsPage";
+import SuperAdminCountries from "../pages/superadmin/organization/CountriesPage";
+import SuperAdminSubCompanies from "../pages/superadmin/organization/SubCompaniesPage";
 import SuperAdminAttendance from "../pages/superadmin/attendance/AttendancePage";
 import SuperAdminLeaves from "../pages/superadmin/attendance/LeavesPage";
 import SuperAdminRecruitment from "../pages/superadmin/employees/RecruitmentPage";
@@ -625,6 +627,26 @@ const AppRouter = () => (
             <ProtectedRoute roles={[1]}>
               <SuperAdminLayout>
                 <SuperAdminDepartments />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/countries"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <SuperAdminCountries />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/sub-companies"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <SuperAdminSubCompanies />
               </SuperAdminLayout>
             </ProtectedRoute>
           }

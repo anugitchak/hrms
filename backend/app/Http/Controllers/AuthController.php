@@ -78,7 +78,9 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
+            'country_id' => 'nullable|exists:countries,id',
+            'sub_company_id' => 'nullable|exists:sub_companies,id',
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -105,6 +107,37 @@ class AuthController extends Controller
 
         if (!$user->is_active) {
             return response()->json(['message' => 'Your account is deactivated. Please contact support.'], 403);
+        }
+
+        // Check country and sub-company for non-SuperAdmin users
+        if ($user->role_id != 1) { // Not SuperAdmin
+            $employee = Employee::where('user_id', $user->id)->first();
+            
+            if ($employee) {
+                // Only validate if employee has country and sub-company assigned
+                if ($employee->country_id && $employee->sub_company_id) {
+                    // Validate country match
+                    if ($request->country_id && $employee->country_id != $request->country_id) {
+                        return response()->json([
+                            'message' => 'Invalid country selection for your account'
+                        ], 403);
+                    }
+                    
+                    // Validate sub-company match
+                    if ($request->sub_company_id && $employee->sub_company_id != $request->sub_company_id) {
+                        return response()->json([
+                            'message' => 'Invalid sub-company selection for your account'
+                        ], 403);
+                    }
+                    
+                    // Ensure both country and sub-company are provided in login request
+                    if (!$request->country_id || !$request->sub_company_id) {
+                        return response()->json([
+                            'message' => 'Please select your country and sub-company'
+                        ], 403);
+                    }
+                }
+            }
         }
 
         // Create API token

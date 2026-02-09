@@ -44,6 +44,8 @@ const routeRoleMap = {
   "/superadmin/employees": [1],
   "/superadmin/departments": [1],
   "/superadmin/designations": [1],
+  "/superadmin/countries": [1],
+  "/superadmin/sub-companies": [1],
   "/superadmin/attendance": [1],
   "/superadmin/leaves": [1],
   "/superadmin/salaries": [1],

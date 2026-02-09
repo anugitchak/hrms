@@ -11,6 +11,8 @@ const SuperAdminSidebar = () => {
         { key: "employees", label: "Employees", to: "/superadmin/employees" },
         { key: "departments", label: "Departments", to: "/superadmin/departments" },
         { key: "designations", label: "Designations", to: "/superadmin/designations" },
+        { key: "countries", label: "Countries", to: "/superadmin/countries" },
+        { key: "sub-companies", label: "Sub-Companies", to: "/superadmin/sub-companies" },
         { key: "attendance", label: "Attendance", to: "/superadmin/attendance" },
         { key: "leaves", label: "Leaves (Approvals)", to: "/superadmin/leaves" },
         { key: "holidays", label: "Holiday Calendar", to: "/superadmin/holidays" },

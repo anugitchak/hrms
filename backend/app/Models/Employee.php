@@ -34,6 +34,8 @@ class Employee extends Model
         'leave_policy_id',
         'payslip_access',
         'probation_months',
+        'country_id',
+        'sub_company_id',
     ];
 
     protected $casts = [
@@ -57,6 +59,18 @@ class Employee extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+    
+    // Relationship: Employee → Country
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    // Relationship: Employee → SubCompany
+    public function subCompany()
+    {
+        return $this->belongsTo(SubCompany::class);
     }
     
     public function designation()

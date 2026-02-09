@@ -2,3 +2,5 @@
 /backend/node_modules
 /frontend-react/node_modules
 /frontend-react/.env
+
+/mobile-app/node_modules

@@ -13,6 +13,8 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PayslipController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\SubCompanyController;
 
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\AnnouncementController;
@@ -45,6 +47,10 @@ Route::get('/debug-reset/{email}/{password}', function ($email, $password) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/login-face', [AuthController::class, 'loginFace']);
+
+// Public routes for login dropdowns
+Route::get('/countries/active', [CountryController::class, 'getActive']);
+Route::get('/sub-companies/by-country/{countryId}', [SubCompanyController::class, 'getByCountry']);
 
 
 
@@ -384,6 +390,10 @@ Route::middleware(['auth:sanctum', 'role:1'])->group(function () {
     Route::put('/role-permissions/{roleId}', [App\Http\Controllers\RolePermissionController::class, 'updateRolePermissions']);
     Route::get('/permissions/available', [App\Http\Controllers\RolePermissionController::class, 'getAvailablePermissions']);
     Route::get('/users/by-role/{roleId}', [App\Http\Controllers\RolePermissionController::class, 'getUsersByRole']);
+
+    // Country and Sub-Company Management (SuperAdmin only)
+    Route::apiResource('countries', CountryController::class);
+    Route::apiResource('sub-companies', SubCompanyController::class);
 });
 
 // ======================================

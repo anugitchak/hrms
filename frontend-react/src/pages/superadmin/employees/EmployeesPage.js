@@ -22,6 +22,8 @@ const EmployeesPage = () => {
     const [employees, setEmployees] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [designations, setDesignations] = useState([]);
+    const [countries, setCountries] = useState([]);
+    const [subCompanies, setSubCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -48,6 +50,8 @@ const EmployeesPage = () => {
         email: "",
         department_id: "",
         designation_name: "",
+        country_id: "",
+        sub_company_id: "",
         date_of_joining: "",
         dob: "",
         aadhar_number: "",
@@ -83,10 +87,21 @@ const EmployeesPage = () => {
         fetchEmployees();
         fetchDepartments();
         fetchDesignations();
+        fetchCountries();
         if (canViewSalary || canManageSalary) {
             fetchPayrollPolicy();
         }
     }, []);
+
+    // Fetch sub-companies when country changes
+    useEffect(() => {
+        if (formData.country_id) {
+            fetchSubCompanies(formData.country_id);
+        } else {
+            setSubCompanies([]);
+            setFormData(prev => ({ ...prev, sub_company_id: "" }));
+        }
+    }, [formData.country_id]);
 
     const fetchPayrollPolicy = async () => {
         try {
@@ -155,6 +170,29 @@ const EmployeesPage = () => {
         }
     };
 
+    const fetchCountries = async () => {
+        try {
+            const response = await api.get("/countries/active");
+            setCountries(response.data);
+        } catch (err) {
+            console.error("Failed to fetch countries", err);
+        }
+    };
+
+    const fetchSubCompanies = async (countryId) => {
+        if (!countryId) {
+            setSubCompanies([]);
+            return;
+        }
+        try {
+            const response = await api.get(`/sub-companies/by-country/${countryId}`);
+            setSubCompanies(response.data);
+        } catch (err) {
+            console.error("Failed to fetch sub-companies", err);
+            setSubCompanies([]);
+        }
+    };
+
     // Filtering & Sorting Logic
     const filteredEmployees = employees.filter(emp => {
         const matchesSearch =
@@ -207,6 +245,8 @@ const EmployeesPage = () => {
             password: "",
             department_id: "",
             designation_name: "",
+            country_id: "",
+            sub_company_id: "",
             date_of_joining: "",
             dob: "",
             aadhar_number: "",
@@ -233,6 +273,7 @@ const EmployeesPage = () => {
             pan_file: null
         });
         setFormErrors({});
+        setEnrollFace(false);
         setIsAddModalOpen(true);
     };
 
@@ -243,6 +284,8 @@ const EmployeesPage = () => {
             email: emp.user?.email || "",
             department_id: emp.department_id || "",
             designation_name: emp.designation?.name || "",
+            country_id: emp.country_id || "",
+            sub_company_id: emp.sub_company_id || "",
             date_of_joining: emp.date_of_joining || "",
             dob: emp.dob || "",
             aadhar_number: emp.aadhar_number || "",
@@ -266,6 +309,10 @@ const EmployeesPage = () => {
             esic_opt_out: Boolean(emp.esic_opt_out),
             ptax_opt_out: Boolean(emp.ptax_opt_out)
         });
+        // Fetch sub-companies for the employee's country
+        if (emp.country_id) {
+            fetchSubCompanies(emp.country_id);
+        }
         setFormErrors({});
         setIsEditModalOpen(true);
     };
@@ -364,12 +411,15 @@ const EmployeesPage = () => {
     const [faceDescriptor, setFaceDescriptor] = useState(null);
     const [faceImage, setFaceImage] = useState(null);
     const [pendingEmployeeData, setPendingEmployeeData] = useState(null);
+    const [enrollFace, setEnrollFace] = useState(false);
 
     // Form Submission
     const validateForm = () => {
         const errors = {};
         if (!formData.name) errors.name = "Name is required";
         if (!formData.email) errors.email = "Email is required";
+        if (!formData.country_id) errors.country_id = "Country is required";
+        if (!formData.sub_company_id) errors.sub_company_id = "Sub-company is required";
         // if (!formData.password && isAddModalOpen) errors.password = "Password is required"; // Auto-generated now
         // Department is optional in some logic, but usually required
         // if (!formData.department_id) errors.department_id = "Department is required";
@@ -403,9 +453,56 @@ const EmployeesPage = () => {
             return;
         }
 
-        // Store form data and open face enrollment
-        setPendingEmployeeData(formData);
-        setShowFaceEnrollment(true);
+        // Check if face enrollment is requested
+        if (enrollFace) {
+            // Store form data and open face enrollment
+            setPendingEmployeeData(formData);
+            setShowFaceEnrollment(true);
+        } else {
+            // Submit without face enrollment
+            await submitEmployeeWithoutFace();
+        }
+    };
+
+    const submitEmployeeWithoutFace = async () => {
+        setIsSubmitting(true);
+        try {
+            const data = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (formData[key] !== null && formData[key] !== undefined) {
+                    if (key === 'pf_opt_out' || key === 'esic_opt_out' || key === 'ptax_opt_out') {
+                        data.append(key, formData[key] ? '1' : '0');
+                    } else {
+                        data.append(key, formData[key]);
+                    }
+                }
+            });
+
+            const response = await api.post(apiEndpoint, data, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+            fetchEmployees();
+            closeModals();
+
+            // Show password modal if plain_password or user.temp_password is returned
+            if (response.data.plain_password || response.data.user?.temp_password) {
+                setCreatedPassword(response.data.plain_password || response.data.user?.temp_password);
+                setIsPasswordModalOpen(true);
+            }
+        } catch (err) {
+            console.error("Failed to create employee", err);
+            if (err.response && err.response.status === 422 && err.response.data.errors) {
+                const apiErrors = {};
+                Object.keys(err.response.data.errors).forEach(key => {
+                    apiErrors[key] = err.response.data.errors[key][0];
+                });
+                setFormErrors(apiErrors);
+            } else {
+                setFormErrors({ api: err.response?.data?.message || "Failed to create employee" });
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleFaceEnrolled = async (descriptor, imageBlob) => {
@@ -728,6 +825,37 @@ const EmployeesPage = () => {
                                     {formErrors.department_id && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.department_id}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
+                                    <label htmlFor="add_country" className="text-sm font-medium text-gray-700 dark:text-gray-300">Country *</label>
+                                    <select 
+                                        id="add_country" 
+                                        name="country_id" 
+                                        autoComplete="off" 
+                                        value={formData.country_id || ""} 
+                                        onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })} 
+                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                                    >
+                                        <option value="">Select Country</option>
+                                        {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    </select>
+                                    {formErrors.country_id && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.country_id}</p>}
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="add_sub_company" className="text-sm font-medium text-gray-700 dark:text-gray-300">Sub-Company *</label>
+                                    <select 
+                                        id="add_sub_company" 
+                                        name="sub_company_id" 
+                                        autoComplete="off" 
+                                        value={formData.sub_company_id || ""} 
+                                        onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })} 
+                                        disabled={!formData.country_id || subCompanies.length === 0}
+                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                                    >
+                                        <option value="">Select Sub-Company</option>
+                                        {subCompanies.map(sc => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
+                                    </select>
+                                    {formErrors.sub_company_id && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.sub_company_id}</p>}
+                                </div>
+                                <div className="flex flex-col gap-1">
                                     <label htmlFor="add_joining_category" className="text-sm font-medium text-gray-700 dark:text-gray-300">Joining Category *</label>
                                     <select id="add_joining_category" name="joining_category" autoComplete="off" value={formData.joining_category || ""} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
                                         <option value="New Joinee">New Joinee</option>
@@ -1027,6 +1155,20 @@ const EmployeesPage = () => {
                                     <label htmlFor="add_profile_photo" className="text-sm font-medium text-gray-700 dark:text-gray-300">Profile Photo</label>
                                     <input id="add_profile_photo" name="profile_photo" type="file" onChange={(e) => setFormData({ ...formData, profile_photo: e.target.files[0] })} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" accept="image/*" />
                                 </div>
+
+                                <div className="col-span-1 md:col-span-2 flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                    <input 
+                                        type="checkbox" 
+                                        id="add_enroll_face" 
+                                        checked={enrollFace} 
+                                        onChange={(e) => setEnrollFace(e.target.checked)} 
+                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    />
+                                    <label htmlFor="add_enroll_face" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                                        Enroll Face Recognition (optional)
+                                    </label>
+                                </div>
+
                                 <div className="col-span-1 md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                                     <button type="button" onClick={closeModals} className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">Cancel</button>
                                     <button type="submit" disabled={isSubmitting} className={`px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}>
@@ -1071,6 +1213,37 @@ const EmployeesPage = () => {
                                         {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                                     </select>
                                     {formErrors.department_id && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.department_id}</p>}
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="edit_country" className="text-sm font-medium text-gray-700 dark:text-gray-300">Country *</label>
+                                    <select 
+                                        id="edit_country" 
+                                        name="country_id" 
+                                        autoComplete="off" 
+                                        value={formData.country_id || ""} 
+                                        onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })} 
+                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                                    >
+                                        <option value="">Select Country</option>
+                                        {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    </select>
+                                    {formErrors.country_id && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.country_id}</p>}
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="edit_sub_company" className="text-sm font-medium text-gray-700 dark:text-gray-300">Sub-Company *</label>
+                                    <select 
+                                        id="edit_sub_company" 
+                                        name="sub_company_id" 
+                                        autoComplete="off" 
+                                        value={formData.sub_company_id || ""} 
+                                        onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })} 
+                                        disabled={!formData.country_id || subCompanies.length === 0}
+                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                                    >
+                                        <option value="">Select Sub-Company</option>
+                                        {subCompanies.map(sc => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
+                                    </select>
+                                    {formErrors.sub_company_id && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.sub_company_id}</p>}
                                 </div>
                                 {/* Removed Duplicate Joining Category */}
                                 <div className="flex flex-col gap-1">

@@ -110,11 +110,35 @@ const PayslipsPage = () => {
         setSelectedPayslip(payslip);
     };
 
-    const handleDownload = async (id) => {
-        // Placeholder for download logic
-        // Ideally: window.open(api.defaults.baseURL + `/payslips/${id}/download`, '_blank');
-        // Since we don't have a confirmed download route, we'll alert or print.
-        alert("Download functionality coming soon. Please use the Print option in View.");
+    const handleDownloadPDF = async (payslip) => {
+        try {
+            const response = await api.get('/my-payslips/download', {
+                params: {
+                    year: payslip.year,
+                    start_month: payslip.month,
+                    end_month: payslip.month
+                },
+                responseType: 'blob',
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Payslip_${getMonthName(payslip.month)}_${payslip.year}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Download failed", err);
+            if (err.response && err.response.status === 403) {
+                alert("You do not have permission to download payslips.");
+            } else if (err.response && err.response.status === 404) {
+                alert("No payslip found for the selected period.");
+            } else {
+                alert("Failed to download PDF. Please try again.");
+            }
+        }
     };
 
     if (isLoading) {
@@ -178,10 +202,9 @@ const PayslipsPage = () => {
                                                 <Button variant="secondary" className="px-3 py-1.5 text-xs" onClick={() => handleView(payslip)}>
                                                     View
                                                 </Button>
-                                                {/* Optional Download Button */}
-                                                {/* <Button variant="primary" className="px-3 py-1.5 text-xs" onClick={() => handleDownload(payslip.id)}>
-                                                    Download
-                                                </Button> */}
+                                                <Button variant="primary" className="px-3 py-1.5 text-xs" onClick={() => handleDownloadPDF(payslip)}>
+                                                    Download PDF
+                                                </Button>
                                             </div>
                                         </td>
                                     </tr>
@@ -261,7 +284,7 @@ const PayslipsPage = () => {
 
                         <div className="pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
                             <Button variant="secondary" onClick={() => setSelectedPayslip(null)}>Close</Button>
-                            <Button variant="primary" onClick={() => window.print()}>Print / Download PDF</Button>
+                            <Button variant="primary" onClick={() => handleDownloadPDF(selectedPayslip)}>Print / Download PDF</Button>
                         </div>
                     </div>
                 )}
