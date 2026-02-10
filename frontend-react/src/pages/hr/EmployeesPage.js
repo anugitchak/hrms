@@ -951,6 +951,14 @@ const EmployeesPage = () => {
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.department?.name}</dd>
                                         </div>
                                         <div>
+                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Country</dt>
+                                            <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.country?.name || "N/A"}</dd>
+                                        </div>
+                                        <div>
+                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Sub-Company</dt>
+                                            <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.sub_company?.name || "N/A"}</dd>
+                                        </div>
+                                        <div>
                                             <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Joining Category</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.joining_category || "N/A"}</dd>
                                         </div>

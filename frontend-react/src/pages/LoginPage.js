@@ -22,8 +22,6 @@ const LoginPage = () => {
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
-    country_id: "",
-    sub_company_id: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -39,8 +37,6 @@ const LoginPage = () => {
   const [faceAuthLoading, setFaceAuthLoading] = useState(false);
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [isQuickCheckInFlow, setIsQuickCheckInFlow] = useState(false);
-  const [countries, setCountries] = useState([]);
-  const [subCompanies, setSubCompanies] = useState([]);
 
   // Update clock every second
   useEffect(() => {
@@ -101,40 +97,6 @@ const LoginPage = () => {
       return () => clearInterval(checkInterval);
     }
   }, [modelsLoaded]);
-
-  // Fetch countries on component mount
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await api.get('/countries/active');
-        setCountries(response.data);
-      } catch (err) {
-        console.error('Error fetching countries:', err);
-      }
-    };
-
-    fetchCountries();
-  }, []);
-
-  // Fetch sub-companies when country changes
-  useEffect(() => {
-    const fetchSubCompanies = async () => {
-      if (formValues.country_id) {
-        try {
-          const response = await api.get(`/sub-companies/by-country/${formValues.country_id}`);
-          setSubCompanies(response.data);
-        } catch (err) {
-          console.error('Error fetching sub-companies:', err);
-          setSubCompanies([]);
-        }
-      } else {
-        setSubCompanies([]);
-        setFormValues(prev => ({ ...prev, sub_company_id: "" }));
-      }
-    };
-
-    fetchSubCompanies();
-  }, [formValues.country_id]);
 
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
@@ -612,98 +574,6 @@ const LoginPage = () => {
                   e.target.style.backgroundColor = "rgba(255,255,255,0.65)";
                 }}
               />
-            </div>
-
-            {/* Country Selection */}
-            <div>
-              <label htmlFor="country" style={{ display: "block", fontSize: "14px", fontWeight: 600, marginBottom: "8px", color: "#374151" }}>Country</label>
-              <select
-                id="country"
-                name="country_id"
-                value={formValues.country_id}
-                onChange={handleChange}
-                disabled={isLoading}
-                required
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  fontSize: "15px",
-                  borderRadius: "10px",
-                  border: "1.25px solid rgba(255,255,255,0.4)",
-                  backgroundColor: "rgba(255,255,255,0.65)",
-                  boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-                  transition: "all 0.25s ease",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  color: "#0f172a",
-                  cursor: "pointer",
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = "rgba(59,130,246,0.8)";
-                  e.target.style.boxShadow = "0 10px 28px rgba(59,130,246,0.2), 0 0 0 3px rgba(59,130,246,0.18)";
-                  e.target.style.backgroundColor = "rgba(255,255,255,0.82)";
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = "rgba(255,255,255,0.4)";
-                  e.target.style.boxShadow = "0 6px 18px rgba(0,0,0,0.08)";
-                  e.target.style.backgroundColor = "rgba(255,255,255,0.65)";
-                }}
-              >
-                <option value="">Select Country</option>
-                {countries.map((country) => (
-                  <option key={country.id} value={country.id}>
-                    {country.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Sub-Company Selection */}
-            <div>
-              <label htmlFor="sub_company" style={{ display: "block", fontSize: "14px", fontWeight: 600, marginBottom: "8px", color: "#374151" }}>Sub-Company</label>
-              <select
-                id="sub_company"
-                name="sub_company_id"
-                value={formValues.sub_company_id}
-                onChange={handleChange}
-                disabled={isLoading || !formValues.country_id}
-                required
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  fontSize: "15px",
-                  borderRadius: "10px",
-                  border: "1.25px solid rgba(255,255,255,0.4)",
-                  backgroundColor: formValues.country_id ? "rgba(255,255,255,0.65)" : "rgba(229,231,235,0.5)",
-                  boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-                  transition: "all 0.25s ease",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  color: "#0f172a",
-                  cursor: formValues.country_id ? "pointer" : "not-allowed",
-                }}
-                onFocus={(e) => {
-                  if (formValues.country_id) {
-                    e.target.style.borderColor = "rgba(59,130,246,0.8)";
-                    e.target.style.boxShadow = "0 10px 28px rgba(59,130,246,0.2), 0 0 0 3px rgba(59,130,246,0.18)";
-                    e.target.style.backgroundColor = "rgba(255,255,255,0.82)";
-                  }
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = "rgba(255,255,255,0.4)";
-                  e.target.style.boxShadow = "0 6px 18px rgba(0,0,0,0.08)";
-                  e.target.style.backgroundColor = formValues.country_id ? "rgba(255,255,255,0.65)" : "rgba(229,231,235,0.5)";
-                }}
-              >
-                <option value="">
-                  {formValues.country_id ? "Select Sub-Company" : "Select Country First"}
-                </option>
-                {subCompanies.map((subCompany) => (
-                  <option key={subCompany.id} value={subCompany.id}>
-                    {subCompany.name}
-                  </option>
-                ))}
-              </select>
             </div>
 
             <div>

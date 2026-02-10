@@ -1642,6 +1642,14 @@ const EmployeesPage = () => {
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.department?.name}</p>
                                     </div>
                                     <div>
+                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Country</label>
+                                        <p className="text-gray-900 dark:text-white">{selectedEmployee.country?.name || "N/A"}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Sub-Company</label>
+                                        <p className="text-gray-900 dark:text-white">{selectedEmployee.sub_company?.name || "N/A"}</p>
+                                    </div>
+                                    <div>
                                         <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Joining Category</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.joining_category || "N/A"}</p>
                                     </div>

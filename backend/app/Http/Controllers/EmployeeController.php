@@ -93,7 +93,9 @@ class EmployeeController extends Controller
         $query = Employee::with([
             'department',
             'designation',
-            'user:id,name,email,is_active'
+            'user:id,name,email,is_active',
+            'country',
+            'subCompany'
         ]);
 
         // Check permission for salary visibility
@@ -142,6 +144,8 @@ class EmployeeController extends Controller
             'aadhar_file' => 'nullable|mimes:pdf,jpg,jpeg,png|max:2048',
             'pan_file' => 'nullable|mimes:pdf,jpg,jpeg,png|max:2048',
             'probation_months' => 'nullable|integer|min:0',
+            'country_id' => 'required|exists:countries,id',
+            'sub_company_id' => 'required|exists:sub_companies,id',
         ]);
 
         // Handle File Upload
@@ -241,6 +245,8 @@ class EmployeeController extends Controller
             'joining_category' => $request->joining_category,
             'payslip_access' => $request->boolean('payslip_access'), // Save Logic
             'probation_months' => $request->probation_months,
+            'country_id' => $request->country_id,
+            'sub_company_id' => $request->sub_company_id,
         ]);
 
         // Handle Aadhar Upload
@@ -369,6 +375,8 @@ class EmployeeController extends Controller
             'status' => ['sometimes', 'in:Active,Inactive'],
             'profile_photo' => ['sometimes', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'probation_months' => ['sometimes', 'nullable', 'integer', 'min:0'],
+            'country_id' => ['sometimes', 'nullable', 'exists:countries,id'],
+            'sub_company_id' => ['sometimes', 'nullable', 'exists:sub_companies,id'],
         ];
 
         // Conditional Validation for Email and Employee Code
