@@ -23,7 +23,6 @@ const SuperAdminSidebar = () => {
         { key: "payroll-settings", label: "Payroll Settings", to: "/superadmin/payroll-settings" },
         { key: "documents", label: "Documents", to: "/superadmin/documents" },
 
-        { key: "performance-reviews", label: "Performance Reviews", to: "/superadmin/performance-reviews" },
         { key: "announcements", label: "Announcements", to: "/superadmin/announcements" },
         { key: "settings", label: "System Settings", to: "/superadmin/settings" },
         //{ key: "system-controls", label: "System Controls", to: "/superadmin/system-controls" },

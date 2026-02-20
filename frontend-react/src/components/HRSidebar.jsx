@@ -21,7 +21,6 @@ const HRSidebar = () => {
         { key: "holidays", label: "Holidays", to: "/hr/holidays" },
         { key: "policies", label: "Leave Policies", to: "/hr/leave-policies" },
 
-        { key: "reviews", label: "Performance Reviews", to: "/hr/reviews" },
         { key: "documents", label: "Documents", to: "/hr/documents" },
         { key: "announcements", label: "Announcements", to: "/hr/announcements" },
     ];

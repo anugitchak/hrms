@@ -28,7 +28,6 @@ const Sidebar = () => {
     { key: "payslips", label: "Payslips", to: "/payslips", roles: [1, 2, 4] },
     { key: "documents", label: "Documents", to: "/documents", roles: [1, 2, 3] },
     { key: "recruitment", label: "Recruitment", to: "/recruitment", roles: [1, 2, 3] },
-    { key: "performance", label: "Performance Reviews", to: "/performance-reviews", roles: [1, 2] },
     { key: "announcements", label: "Announcements", to: "/announcements", roles: [1, 4] },
     { key: "settings", label: "Settings", to: "/settings", roles: [1] },
   ];

@@ -24,7 +24,6 @@ const AdminSidebar = () => {
         { key: "holidays", label: "Holidays", to: "/admin/holidays" },
         { key: "policies", label: "Leave Policies", to: "/admin/leave-policies" },
 
-        { key: "reviews", label: "Performance Reviews", to: "/admin/reviews" },
         { key: "documents", label: "Documents", to: "/admin/documents" },
         { key: "announcements", label: "Announcements", to: "/admin/announcements" },
         // Explicitly EXCLUDING System Settings and User Management
@@ -52,10 +51,6 @@ const AdminSidebar = () => {
     // I will add Documents if it exists in SuperAdmin to be safe, or just stick to HR parity.)
     // HR Sidebar source above: Dashboard, Employees, Designations, Attendance, Leaves, Holidays, Policies, Recruitment, Announcements, Salaries, Payslips, Reports.
     // Documents is NOT in HR Sidebar source. So I will omit it to be "same like hr".
-
-    if (hasPermission("view_reports")) {
-        menuItems.push({ key: "reports", label: "Reports", to: "/admin/reports" });
-    }
 
     const handleLogout = () => {
         logout();
