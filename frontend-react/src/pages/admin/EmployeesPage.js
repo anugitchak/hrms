@@ -593,6 +593,7 @@ const AdminEmployeesPage = () => {
                                     <th onClick={() => handleSort("department")} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer">Department</th>
                                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Contact</th>
                                     <th onClick={() => handleSort("date_of_joining")} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer">Joined</th>
+                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-center">Reputation</th>
                                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
                                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Face Enrollment</th>
                                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">Actions</th>
@@ -614,6 +615,14 @@ const AdminEmployeesPage = () => {
                                                 <div className="text-xs text-gray-500 dark:text-gray-400">{emp.phone}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{formatDate(emp.date_of_joining)}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                <div className="flex items-center justify-center gap-1.5">
+                                                    <span className="text-sm font-bold text-amber-600 dark:text-amber-400">{emp.reputation_score || 0}</span>
+                                                    <svg className="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${emp.user?.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                                                     {emp.user?.is_active ? "Active" : "Inactive"}
@@ -685,11 +694,11 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_country" className="text-sm font-medium text-gray-700 dark:text-gray-300">Country *</label>
-                                <select 
-                                    id="add_country" 
-                                    name="country_id" 
-                                    value={formData.country_id || ""} 
-                                    onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })} 
+                                <select
+                                    id="add_country"
+                                    name="country_id"
+                                    value={formData.country_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })}
                                     className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Select Country</option>
@@ -699,11 +708,11 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_sub_company" className="text-sm font-medium text-gray-700 dark:text-gray-300">Sub-Company *</label>
-                                <select 
-                                    id="add_sub_company" 
-                                    name="sub_company_id" 
-                                    value={formData.sub_company_id || ""} 
-                                    onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })} 
+                                <select
+                                    id="add_sub_company"
+                                    name="sub_company_id"
+                                    value={formData.sub_company_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })}
                                     disabled={!formData.country_id || subCompanies.length === 0}
                                     className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                                 >
@@ -797,11 +806,11 @@ const AdminEmployeesPage = () => {
                             </div>
 
                             <div className="col-span-1 md:col-span-2 flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                <input 
-                                    type="checkbox" 
-                                    id="add_enroll_face" 
-                                    checked={enrollFace} 
-                                    onChange={(e) => setEnrollFace(e.target.checked)} 
+                                <input
+                                    type="checkbox"
+                                    id="add_enroll_face"
+                                    checked={enrollFace}
+                                    onChange={(e) => setEnrollFace(e.target.checked)}
                                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                 />
                                 <label htmlFor="add_enroll_face" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
@@ -844,11 +853,11 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_country" className="text-sm font-medium text-gray-700 dark:text-gray-300">Country *</label>
-                                <select 
-                                    id="edit_country" 
-                                    name="country_id" 
-                                    value={formData.country_id || ""} 
-                                    onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })} 
+                                <select
+                                    id="edit_country"
+                                    name="country_id"
+                                    value={formData.country_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })}
                                     className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Select Country</option>
@@ -858,11 +867,11 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_sub_company" className="text-sm font-medium text-gray-700 dark:text-gray-300">Sub-Company *</label>
-                                <select 
-                                    id="edit_sub_company" 
-                                    name="sub_company_id" 
-                                    value={formData.sub_company_id || ""} 
-                                    onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })} 
+                                <select
+                                    id="edit_sub_company"
+                                    name="sub_company_id"
+                                    value={formData.sub_company_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })}
                                     disabled={!formData.country_id || subCompanies.length === 0}
                                     className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                                 >

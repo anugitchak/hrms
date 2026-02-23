@@ -148,6 +148,16 @@ const ProfilePage = () => {
                                 <label className="text-sm text-gray-500 dark:text-gray-400 block mb-1">Designation</label>
                                 <div className="font-medium text-gray-800 dark:text-gray-200">{profile?.employee?.designation?.name || "N/A"}</div>
                             </div>
+                            <div className="grid grid-cols-2 gap-4 mt-2">
+                                <div>
+                                    <label className="text-sm text-gray-500 dark:text-gray-400 block mb-1">Country</label>
+                                    <div className="font-medium text-gray-800 dark:text-gray-200">{profile?.employee?.country?.name || "N/A"}</div>
+                                </div>
+                                <div>
+                                    <label className="text-sm text-gray-500 dark:text-gray-400 block mb-1">Sub Company</label>
+                                    <div className="font-medium text-gray-800 dark:text-gray-200">{profile?.employee?.sub_company?.name || "N/A"}</div>
+                                </div>
+                            </div>
                             <div>
                                 <label className="text-sm text-gray-500 dark:text-gray-400 block mb-1">Date of Joining</label>
                                 <div className="font-medium text-gray-800 dark:text-gray-200">{formatDate(profile?.employee?.date_of_joining)}</div>

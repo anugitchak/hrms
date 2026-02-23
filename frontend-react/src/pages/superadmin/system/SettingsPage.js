@@ -55,6 +55,12 @@ const PermissionCard = ({ permission, enabled, onChange, disabled }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                 );
+            case 'Tasks':
+                return (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                );
             default:
                 return (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,14 +77,15 @@ const PermissionCard = ({ permission, enabled, onChange, disabled }) => {
             case 'Employees': return 'text-green-500 bg-green-100 dark:bg-green-900/30';
             case 'Payroll': return 'text-purple-500 bg-purple-100 dark:bg-purple-900/30';
             case 'Organization': return 'text-indigo-500 bg-indigo-100 dark:bg-indigo-900/30';
+            case 'Tasks': return 'text-cyan-500 bg-cyan-100 dark:bg-cyan-900/30';
             default: return 'text-gray-500 bg-gray-100 dark:bg-gray-700';
         }
     };
 
     return (
         <div className={`p-4 rounded-xl border transition-all duration-200 ${enabled
-                ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
-                : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700'
+            ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
+            : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700'
             }`}>
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -117,8 +124,8 @@ const RoleTab = ({ role, isActive, onClick }) => {
         <button
             onClick={onClick}
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200 ${isActive
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
                 }`}
         >
             {getRoleIcon(role.id)}
@@ -136,8 +143,8 @@ const Toast = ({ message, type, onClose }) => {
 
     return (
         <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg animate-slide-in ${type === 'success'
-                ? 'bg-green-500 text-white'
-                : 'bg-red-500 text-white'
+            ? 'bg-green-500 text-white'
+            : 'bg-red-500 text-white'
             }`}>
             {type === 'success' ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -361,8 +368,8 @@ const SettingsPage = () => {
                         onClick={handleSave}
                         disabled={saving || !hasChanges}
                         className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 ${saving || !hasChanges
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
-                                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40'
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40'
                             }`}
                     >
                         {saving ? (

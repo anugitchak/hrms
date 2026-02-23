@@ -41,6 +41,10 @@ const HRSidebar = () => {
         menuItems.push({ key: "reports", label: "Reports", to: "/hr/reports" });
     }
 
+    if (hasPermission("can_assign_tasks")) {
+        menuItems.push({ key: "tasks", label: "Tasks / Productivity", to: "/hr/tasks" });
+    }
+
     const handleLogout = () => {
         logout();
         navigate("/login", { replace: true });

@@ -11,6 +11,7 @@ const EmployeeSidebar = () => {
 
   const menuItems = [
     { key: "dashboard", label: "Dashboard", to: "/employee/dashboard" },
+    { key: "tasks", label: "My Tasks", to: "/employee/tasks" },
     ...(isManager ? [{ key: "my-team", label: "My Team", to: "/employee/my-team" }] : []),
     { key: "profile", label: "My Profile", to: "/employee/profile" },
     { key: "attendance", label: "Attendance", to: "/employee/attendance" },

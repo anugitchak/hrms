@@ -36,6 +36,7 @@ class Employee extends Model
         'probation_months',
         'country_id',
         'sub_company_id',
+        'reputation_score',
     ];
 
     protected $casts = [
@@ -50,9 +51,9 @@ class Employee extends Model
 
     // Relationship: Employee → User
     public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
 
     // Relationship: Employee → Department
@@ -60,7 +61,7 @@ class Employee extends Model
     {
         return $this->belongsTo(Department::class);
     }
-    
+
     // Relationship: Employee → Country
     public function country()
     {
@@ -72,12 +73,12 @@ class Employee extends Model
     {
         return $this->belongsTo(SubCompany::class);
     }
-    
+
     public function designation()
     {
         return $this->belongsTo(Designation::class);
     }
-   
+
     public function salaries()
     {
         return $this->hasMany(Salary::class, 'employee_id');
@@ -106,6 +107,11 @@ class Employee extends Model
     public function payslips()
     {
         return $this->hasMany(Payslip::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
     }
 
     // Hierarchy: Reports To (Manager)

@@ -23,7 +23,6 @@ const AdminSidebar = () => {
         { key: "leaves", label: "Leaves", to: "/admin/leaves" },
         { key: "holidays", label: "Holidays", to: "/admin/holidays" },
         { key: "policies", label: "Leave Policies", to: "/admin/leave-policies" },
-
         { key: "documents", label: "Documents", to: "/admin/documents" },
         { key: "announcements", label: "Announcements", to: "/admin/announcements" },
         // Explicitly EXCLUDING System Settings and User Management
@@ -41,6 +40,10 @@ const AdminSidebar = () => {
 
     if (user?.role_id === 2 || hasPermission("can_manage_payslips")) {
         menuItems.push({ key: "payslips", label: "Payslips", to: "/admin/payslips" });
+    }
+
+    if (user?.role_id === 1 || user?.can_assign_tasks) {
+        menuItems.push({ key: "tasks", label: "Tasks / Productivity", to: "/admin/tasks" });
     }
 
     // Documents (was in old Admin list, keeping for parity if HR has it, but HR list didn't show it explicitly above. 

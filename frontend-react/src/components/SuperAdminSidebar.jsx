@@ -17,6 +17,7 @@ const SuperAdminSidebar = () => {
         { key: "leaves", label: "Leaves (Approvals)", to: "/superadmin/leaves" },
         { key: "holidays", label: "Holiday Calendar", to: "/superadmin/holidays" },
         { key: "leave-policies", label: "Leave Policies", to: "/superadmin/leave-policies" },
+        { key: "tasks", label: "Tasks / Productivity", to: "/superadmin/tasks" },
 
         { key: "salaries", label: "Salaries", to: "/superadmin/salaries" },
         { key: "payslips", label: "Payslips", to: "/superadmin/payslips" },
@@ -25,11 +26,8 @@ const SuperAdminSidebar = () => {
 
         { key: "announcements", label: "Announcements", to: "/superadmin/announcements" },
         { key: "settings", label: "System Settings", to: "/superadmin/settings" },
-        //{ key: "system-controls", label: "System Controls", to: "/superadmin/system-controls" },
-
-
         { key: "users", label: "User Management", to: "/superadmin/users" },
-        //{ key: "reports", label: "Reports / Analytics", to: "/superadmin/reports" },
+        { key: "reports", label: "Workforce Intelligence", to: "/superadmin/reports" },
     ];
 
     const handleLogout = () => {
