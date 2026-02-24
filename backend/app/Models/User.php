@@ -38,6 +38,7 @@ class User extends Authenticatable
         'can_manage_payslips',
         'can_manage_payroll_settings',
         'can_force_checkout',
+        'can_assign_tasks',
     ];
 
     /**
@@ -77,6 +78,7 @@ class User extends Authenticatable
         'can_manage_payslips' => 'boolean',
         'can_manage_payroll_settings' => 'boolean',
         'can_force_checkout' => 'boolean',
+        'can_assign_tasks' => 'boolean',
     ];
 
     // Relationships (optional)
@@ -93,6 +95,11 @@ class User extends Authenticatable
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function createdTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_by');
     }
 
     // Accessor: Check if user is a manager (has direct reports)

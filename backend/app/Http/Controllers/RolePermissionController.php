@@ -33,7 +33,8 @@ class RolePermissionController extends Controller
                 'can_manage_leaves',
                 'can_view_leaves',
                 'can_manage_departments',
-                'can_manage_payslips'
+                'can_manage_payslips',
+                'can_assign_tasks'
             ])
             ->get();
 
@@ -83,6 +84,7 @@ class RolePermissionController extends Controller
                 'can_manage_payslips' => false,
                 'can_manage_payroll_settings' => false,
                 'can_force_checkout' => false,
+                'can_assign_tasks' => false,
             ];
         }
 
@@ -100,6 +102,7 @@ class RolePermissionController extends Controller
             'can_manage_payslips' => $users->every(fn($u) => $u->can_manage_payslips),
             'can_manage_payroll_settings' => $users->every(fn($u) => $u->can_manage_payroll_settings),
             'can_force_checkout' => $users->every(fn($u) => $u->can_force_checkout),
+            'can_assign_tasks' => $users->every(fn($u) => $u->can_assign_tasks),
         ];
     }
 
@@ -126,6 +129,7 @@ class RolePermissionController extends Controller
             'can_manage_payslips' => 'boolean',
             'can_manage_payroll_settings' => 'boolean',
             'can_force_checkout' => 'boolean',
+            'can_assign_tasks' => 'boolean',
         ]);
 
         // Update all users of this role
@@ -216,6 +220,12 @@ class RolePermissionController extends Controller
                 'name' => 'Force Checkout',
                 'description' => 'Allow admin/HR to forcefully checkout employees',
                 'category' => 'Attendance'
+            ],
+            [
+                'key' => 'can_assign_tasks',
+                'name' => 'Manage Tasks',
+                'description' => 'Assign, verify and manage employee tasks',
+                'category' => 'Tasks'
             ],
         ]);
     }

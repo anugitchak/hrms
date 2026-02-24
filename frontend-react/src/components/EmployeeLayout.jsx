@@ -1,6 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import EmployeeSidebar from "./EmployeeSidebar";
+import NotificationBell from "./NotificationBell"; // NEW
+import ThemeToggle from "./ThemeToggle"; // NEW
 import { useEffect } from "react";
 
 const EmployeeLayout = ({ children }) => {
@@ -32,65 +34,35 @@ const EmployeeLayout = ({ children }) => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        backgroundColor: "#f9fafb",
-      }}
-    >
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       {/* Sidebar */}
       <EmployeeSidebar />
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header
-          style={{
-            height: "64px",
-            backgroundColor: "white",
-            borderBottom: "1px solid #e5e7eb",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 1.5rem",
-            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-          }}
-        >
+        <header className="h-16 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-6 bg-white dark:bg-gray-900 transition-colors duration-200 shadow-sm">
           <div>
-            <span style={{ fontSize: "16px", color: "#6b7280" }}>Welcome, </span>
-            <span style={{ fontSize: "16px", fontWeight: "600", color: "#1f2937" }}>
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Welcome, </span>
+            <span className="text-base font-bold text-gray-900 dark:text-white">
               {user?.name || "Employee"}
             </span>
           </div>
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: "0.5rem 1rem",
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#dc2626",
-              backgroundColor: "transparent",
-              border: "1px solid #dc2626",
-              borderRadius: "6px",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#dc2626";
-              e.target.style.color = "white";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "transparent";
-              e.target.style.color = "#dc2626";
-            }}
-          >
-            Logout
-          </button>
+
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <NotificationBell />
+            <button
+              onClick={handleLogout}
+              className="px-4 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900/30 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-all active:scale-95"
+            >
+              Logout
+            </button>
+          </div>
         </header>
 
         {/* Page Content */}
-        <main style={{ flex: 1, overflowY: "auto", backgroundColor: "#f9fafb" }}>
+        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
           {children}
         </main>
       </div>

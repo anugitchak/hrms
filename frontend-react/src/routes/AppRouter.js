@@ -91,6 +91,10 @@ const EmployeeProfile = lazy(() => import("../pages/employees/ProfilePage"));
 const EmployeeAnnouncements = lazy(() => import("../pages/employees/AnnouncementsPage"));
 const EmployeeEmailSettings = lazy(() => import("../pages/employees/EmailSettingsPage"));
 const EmployeeHolidayCalendar = lazy(() => import("../pages/employees/HolidayCalendarPage"));
+const EmployeeTasks = lazy(() => import("../pages/employees/MyTasksPage"));
+const AdminTasks = lazy(() => import("../pages/admin/TasksPage"));
+const AdminMeetings = lazy(() => import("../pages/admin/MeetingsPage"));
+const EmployeeMeetings = lazy(() => import("../pages/employees/MyMeetingsPage"));
 
 // ...
 
@@ -270,6 +274,26 @@ const AppRouter = () => (
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/employee/tasks"
+          element={
+            <ProtectedRoute roles={[4]}>
+              <EmployeeLayout>
+                <EmployeeTasks />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/meetings"
+          element={
+            <ProtectedRoute roles={[4]}>
+              <EmployeeLayout>
+                <EmployeeMeetings />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
 
         {/* ADMIN PORTAL (Role 2) */}
         <Route
@@ -409,6 +433,26 @@ const AppRouter = () => (
             <ProtectedRoute roles={[2]}>
               <AdminLayout>
                 <SuperAdminPerformanceReviews />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/tasks"
+          element={
+            <ProtectedRoute roles={[2]}>
+              <AdminLayout>
+                <AdminTasks />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/meetings"
+          element={
+            <ProtectedRoute roles={[2]}>
+              <AdminLayout>
+                <AdminMeetings />
               </AdminLayout>
             </ProtectedRoute>
           }
@@ -694,6 +738,26 @@ const AppRouter = () => (
           }
         />
         <Route
+          path="/hr/tasks"
+          element={
+            <ProtectedRoute roles={[3]}>
+              <HRLayout>
+                <AdminTasks />
+              </HRLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/hr/meetings"
+          element={
+            <ProtectedRoute roles={[3]}>
+              <HRLayout>
+                <AdminMeetings />
+              </HRLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/superadmin/leaves"
           element={
             <ProtectedRoute roles={[1]}>
@@ -771,6 +835,26 @@ const AppRouter = () => (
             <ProtectedRoute roles={[1]}>
               <SuperAdminLayout>
                 <SuperAdminPerformanceReviews />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/tasks"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <AdminTasks />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/meetings"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <AdminMeetings />
               </SuperAdminLayout>
             </ProtectedRoute>
           }

@@ -29,6 +29,7 @@ class PermissionController extends Controller
             'can_manage_payslips' => 'boolean',
             'can_manage_payroll_settings' => 'boolean',
             'can_force_checkout' => 'boolean',
+            'can_assign_tasks' => 'boolean',
         ]);
 
         $user->update($validated);

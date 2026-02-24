@@ -21,7 +21,7 @@ class UserController extends Controller
         $user = $request->user();
 
         // Load relationships - avoid loading designation if it doesn't exist
-        $user->load(['employee.department', 'employee.manager.user', 'role']);
+        $user->load(['employee.department', 'employee.country', 'employee.subCompany', 'employee.manager.user', 'role']);
 
         // Format response
         $permissions = [];
@@ -37,7 +37,8 @@ class UserController extends Controller
             'can_manage_departments',
             'can_manage_payslips',
             'can_manage_payroll_settings',
-            'can_force_checkout'
+            'can_force_checkout',
+            'can_assign_tasks'
         ];
 
         foreach ($permissionFields as $field) {
@@ -66,11 +67,17 @@ class UserController extends Controller
             'can_manage_payslips' => (bool) $user->can_manage_payslips,
             'can_manage_payroll_settings' => (bool) $user->can_manage_payroll_settings,
             'can_force_checkout' => (bool) $user->can_force_checkout,
+            'can_assign_tasks' => (bool) $user->can_assign_tasks,
             'face_descriptor' => $user->face_descriptor, // Include for face enrollment check
             'employee' => $user->employee ? [
+                'id' => $user->employee->id,
                 'employee_code' => $user->employee->employee_code,
+                'designation_id' => $user->employee->designation_id,
+                'department_id' => $user->employee->department_id,
                 'designation' => $user->employee->designation ?? null,
                 'department' => $user->employee->department ?? null,
+                'country' => $user->employee->country ?? null,
+                'sub_company' => $user->employee->subCompany ?? null,
                 'phone' => $user->employee->phone,
                 'address' => $user->employee->address,
                 'date_of_joining' => $user->employee->date_of_joining,
@@ -181,7 +188,6 @@ class UserController extends Controller
 
         if (isset($validated['temp_password'])) {
             $validated['password'] = Hash::make($validated['temp_password']);
-            $validated['temp_password'] = $validated['temp_password'];
         }
 
         $user->update($validated);

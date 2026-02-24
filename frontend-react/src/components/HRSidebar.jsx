@@ -23,6 +23,7 @@ const HRSidebar = () => {
 
         { key: "documents", label: "Documents", to: "/hr/documents" },
         { key: "announcements", label: "Announcements", to: "/hr/announcements" },
+        { key: "meetings", label: "Meetings", to: "/hr/meetings" },
     ];
 
     // Permission-based Additions
@@ -39,6 +40,10 @@ const HRSidebar = () => {
 
     if (hasPermission("view_reports")) {
         menuItems.push({ key: "reports", label: "Reports", to: "/hr/reports" });
+    }
+
+    if (hasPermission("can_assign_tasks")) {
+        menuItems.push({ key: "tasks", label: "Tasks / Productivity", to: "/hr/tasks" });
     }
 
     const handleLogout = () => {

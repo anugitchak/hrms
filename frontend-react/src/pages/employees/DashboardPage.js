@@ -32,9 +32,11 @@ const DashboardHeader = ({ profile }) => {
                     <span>Designation: <strong>{profile?.employee?.designation?.name || "N/A"}</strong></span>
                 </div>
             </div>
-            <div className="text-right bg-white/10 px-5 py-3 rounded-xl backdrop-blur-sm">
-                <div className="text-sm opacity-80 mb-1">Today is</div>
-                <div className="text-lg font-semibold">{today}</div>
+            <div className="flex gap-4">
+                <div className="text-right bg-white/10 px-5 py-3 rounded-xl backdrop-blur-sm border border-white/10">
+                    <div className="text-sm opacity-80 mb-1">Today is</div>
+                    <div className="text-lg font-semibold">{today}</div>
+                </div>
             </div>
         </div>
     );
@@ -104,9 +106,43 @@ const AttendanceActionCard = ({ attendance, onCheckIn, onCheckOut, loading }) =>
     );
 };
 
-const RecentActivitySection = ({ leaves, announcements, payslips, navigate }) => (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Leaves */}
+const RecentActivitySection = ({ leaves, announcements, payslips, tasks, navigate }) => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Active Tasks */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200 lg:col-span-2">
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Tasks</h3>
+                <button onClick={() => navigate("/employee/tasks")} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium text-sm transition-colors">Go to Tasks</button>
+            </div>
+            {tasks.filter(t => t.status !== 'completed').length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {tasks.filter(t => t.status !== 'completed').slice(0, 4).map(task => (
+                        <div key={task.id} className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all group">
+                            <div className="flex-1 mr-4">
+                                <div className="font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">{task.title}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
+                                    <span className={`px-1.5 py-0.5 rounded text-[10px] uppercase font-bold ${task.priority === 'urgent' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
+                                        }`}>
+                                        {task.priority}
+                                    </span>
+                                    <span>Due: {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'N/A'}</span>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-xs text-amber-600 font-bold">+{task.points}</div>
+                                <div className="text-[10px] text-gray-400 uppercase">Points</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center text-gray-400 py-8 flex flex-col items-center gap-2">
+                    <span className="text-3xl">✨</span>
+                    <span>No active tasks! You're all caught up.</span>
+                </div>
+            )}
+        </div>
+
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
             <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Leave Summary</h3>
@@ -195,7 +231,8 @@ const DashboardPage = () => {
         attendance: null,
         announcements: [],
         leaves: [],
-        payslips: []
+        payslips: [],
+        tasks: []
     });
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -241,6 +278,15 @@ const DashboardPage = () => {
                 }
             }
 
+            // Fetch Tasks
+            let tasksData = [];
+            try {
+                const tasksRes = await api.get("/tasks");
+                tasksData = tasksRes.data;
+            } catch (error) {
+                console.warn("Failed to fetch tasks:", error);
+            }
+
             // Fetch Attendance (Get All and find today, or assume API returns today)
             // Using /my-attendance which returns list. finding today.
             const attendanceRes = await api.get("/my-attendance");
@@ -257,7 +303,8 @@ const DashboardPage = () => {
                 attendance: todayAttendance, // Object or null
                 announcements: Array.isArray(announcementsData) ? announcementsData.slice(0, 3) : [],
                 leaves: Array.isArray(leavesData) ? leavesData.slice(0, 5) : [],
-                payslips: Array.isArray(payslipsData) ? payslipsData.slice(0, 3) : []
+                payslips: Array.isArray(payslipsData) ? payslipsData.slice(0, 3) : [],
+                tasks: Array.isArray(tasksData) ? tasksData : []
             });
             setError(null);
         } catch (err) {
@@ -549,6 +596,7 @@ const DashboardPage = () => {
                 leaves={data.leaves}
                 announcements={data.announcements}
                 payslips={data.payslips}
+                tasks={data.tasks}
                 navigate={navigate}
             />
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MeetingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\SubCompanyController;
+use App\Http\Controllers\TaskController;
 
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\AnnouncementController;
@@ -163,6 +165,28 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/my-attendance/overtime/start', [AttendanceController::class, 'startOvertime']);
         Route::post('/my-attendance/overtime/end', [AttendanceController::class, 'endOvertime']);
     });
+
+    // Task Management
+    Route::get('/tasks', [TaskController::class, 'index']);
+    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::get('/tasks/{id}', [TaskController::class, 'show']);
+    Route::put('/tasks/{id}', [TaskController::class, 'update']);
+    Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+    Route::post('/tasks/{id}/claim', [TaskController::class, 'claim']);
+    Route::post('/tasks/{id}/accept', [TaskController::class, 'accept']);
+    Route::post('/tasks/{id}/start', [TaskController::class, 'start']);
+    Route::post('/tasks/{id}/submit', [TaskController::class, 'submit']);
+    Route::post('/tasks/{id}/approve', [TaskController::class, 'approve']);
+    Route::post('/tasks/{id}/reject', [TaskController::class, 'reject']); // NEW
+    Route::get('/tasks-analytics', [TaskController::class, 'analytics']);
+
+    // Meetings
+    Route::get('/meetings', [MeetingController::class, 'index']);
+    Route::post('/meetings', [MeetingController::class, 'store']);
+    Route::get('/meetings/{id}', [MeetingController::class, 'show']);
+    Route::put('/meetings/{id}', [MeetingController::class, 'update']);
+    Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
+    Route::post('/meetings/{id}/respond', [MeetingController::class, 'respond']);
 
     // Salaries
     // ======================================
@@ -313,6 +337,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Performance Reviews
     Route::apiResource('performance-reviews', PerformanceReviewController::class);
 
+
     // ======================================
 // SETTINGS API
 // ======================================
@@ -347,6 +372,7 @@ Route::middleware(['auth:sanctum'])->prefix('superadmin')->group(function () {
 
     // Employee Management (Unified -> See /employees)
     // Attendance Management (Unified -> See /attendance)
+
 
     // Department Management
     Route::get('/departments', [App\Http\Controllers\SuperAdminDepartmentController::class, 'index']);

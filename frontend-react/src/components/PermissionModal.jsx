@@ -14,6 +14,7 @@ const PermissionModal = ({ user, onClose, onUpdate }) => {
         can_view_leaves: user.can_view_leaves || false,
         can_manage_departments: user.can_manage_departments || false,
         can_manage_payslips: user.can_manage_payslips || false,
+        can_assign_tasks: user.can_assign_tasks || false,
     });
     const [saving, setSaving] = useState(false);
 
@@ -64,6 +65,12 @@ const PermissionModal = ({ user, onClose, onUpdate }) => {
             items: [
                 { key: "can_view_leaves", label: "View Leaves" },
                 { key: "can_manage_leaves", label: "Manage Leaves (Approve/Reject)" }
+            ]
+        },
+        {
+            title: "Task Management",
+            items: [
+                { key: "can_assign_tasks", label: "Manage Tasks (Assign/Verify)" }
             ]
         },
         {
