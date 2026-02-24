@@ -93,6 +93,8 @@ const EmployeeEmailSettings = lazy(() => import("../pages/employees/EmailSetting
 const EmployeeHolidayCalendar = lazy(() => import("../pages/employees/HolidayCalendarPage"));
 const EmployeeTasks = lazy(() => import("../pages/employees/MyTasksPage"));
 const AdminTasks = lazy(() => import("../pages/admin/TasksPage"));
+const AdminMeetings = lazy(() => import("../pages/admin/MeetingsPage"));
+const EmployeeMeetings = lazy(() => import("../pages/employees/MyMeetingsPage"));
 
 // ...
 
@@ -282,6 +284,16 @@ const AppRouter = () => (
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/employee/meetings"
+          element={
+            <ProtectedRoute roles={[4]}>
+              <EmployeeLayout>
+                <EmployeeMeetings />
+              </EmployeeLayout>
+            </ProtectedRoute>
+          }
+        />
 
         {/* ADMIN PORTAL (Role 2) */}
         <Route
@@ -431,6 +443,16 @@ const AppRouter = () => (
             <ProtectedRoute roles={[2]}>
               <AdminLayout>
                 <AdminTasks />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/meetings"
+          element={
+            <ProtectedRoute roles={[2]}>
+              <AdminLayout>
+                <AdminMeetings />
               </AdminLayout>
             </ProtectedRoute>
           }
@@ -726,6 +748,16 @@ const AppRouter = () => (
           }
         />
         <Route
+          path="/hr/meetings"
+          element={
+            <ProtectedRoute roles={[3]}>
+              <HRLayout>
+                <AdminMeetings />
+              </HRLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/superadmin/leaves"
           element={
             <ProtectedRoute roles={[1]}>
@@ -813,6 +845,16 @@ const AppRouter = () => (
             <ProtectedRoute roles={[1]}>
               <SuperAdminLayout>
                 <AdminTasks />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/meetings"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <AdminMeetings />
               </SuperAdminLayout>
             </ProtectedRoute>
           }

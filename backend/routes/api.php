@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MeetingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -178,6 +179,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tasks/{id}/approve', [TaskController::class, 'approve']);
     Route::post('/tasks/{id}/reject', [TaskController::class, 'reject']); // NEW
     Route::get('/tasks-analytics', [TaskController::class, 'analytics']);
+
+    // Meetings
+    Route::get('/meetings', [MeetingController::class, 'index']);
+    Route::post('/meetings', [MeetingController::class, 'store']);
+    Route::get('/meetings/{id}', [MeetingController::class, 'show']);
+    Route::put('/meetings/{id}', [MeetingController::class, 'update']);
+    Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
+    Route::post('/meetings/{id}/respond', [MeetingController::class, 'respond']);
 
     // Salaries
     // ======================================

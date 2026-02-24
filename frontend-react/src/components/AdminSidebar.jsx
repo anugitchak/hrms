@@ -25,6 +25,7 @@ const AdminSidebar = () => {
         { key: "policies", label: "Leave Policies", to: "/admin/leave-policies" },
         { key: "documents", label: "Documents", to: "/admin/documents" },
         { key: "announcements", label: "Announcements", to: "/admin/announcements" },
+        { key: "meetings", label: "Meetings", to: "/admin/meetings" },
         // Explicitly EXCLUDING System Settings and User Management
     ];
 

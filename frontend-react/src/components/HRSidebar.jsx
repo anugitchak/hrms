@@ -23,6 +23,7 @@ const HRSidebar = () => {
 
         { key: "documents", label: "Documents", to: "/hr/documents" },
         { key: "announcements", label: "Announcements", to: "/hr/announcements" },
+        { key: "meetings", label: "Meetings", to: "/hr/meetings" },
     ];
 
     // Permission-based Additions

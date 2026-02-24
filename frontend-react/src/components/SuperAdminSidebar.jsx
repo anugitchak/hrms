@@ -25,6 +25,7 @@ const SuperAdminSidebar = () => {
         { key: "documents", label: "Documents", to: "/superadmin/documents" },
 
         { key: "announcements", label: "Announcements", to: "/superadmin/announcements" },
+        { key: "meetings", label: "Meetings", to: "/superadmin/meetings" },
         { key: "settings", label: "System Settings", to: "/superadmin/settings" },
         { key: "users", label: "User Management", to: "/superadmin/users" },
         { key: "reports", label: "Workforce Intelligence", to: "/superadmin/reports" },

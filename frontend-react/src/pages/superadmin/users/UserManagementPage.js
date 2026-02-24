@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Search, Edit2, Trash2, Eye, UserX, X, CheckCircle, AlertCircle, Shield } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Eye, UserX, X, CheckCircle, AlertCircle } from "lucide-react";
 import api from "../../../api/axios";
-import PermissionModal from "../../../components/PermissionModal";
 
 const UserManagementPage = () => {
     // State
@@ -9,7 +8,6 @@ const UserManagementPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     // Filter State
     const [searchTerm, setSearchTerm] = useState("");
@@ -316,18 +314,6 @@ const UserManagementPage = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div className="flex justify-end gap-2">
-                                                {(user.role_id === 2 || user.role_id === 3) && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedUser(user);
-                                                            setIsPermissionModalOpen(true);
-                                                        }}
-                                                        className="p-1 text-purple-400 hover:text-purple-600 dark:hover:text-purple-300 transition-colors"
-                                                        title="Manage Permissions"
-                                                    >
-                                                        <Shield size={18} />
-                                                    </button>
-                                                )}
                                                 <button
                                                     onClick={() => handleEdit(user)}
                                                     className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -460,19 +446,6 @@ const UserManagementPage = () => {
                         </form>
                     </div>
                 </div>
-            )}
-            {/* Permission Modal */}
-            {isPermissionModalOpen && selectedUser && (
-                <PermissionModal
-                    user={selectedUser}
-                    onClose={() => {
-                        setIsPermissionModalOpen(false);
-                        setSelectedUser(null);
-                    }}
-                    onUpdate={(updatedUser) => {
-                        setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
-                    }}
-                />
             )}
 
             {/* Success Modal */}
