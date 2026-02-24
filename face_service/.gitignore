@@ -1,0 +1,4 @@
+# ONNX models are auto-downloaded on first run
+models/*.onnx
+__pycache__/
+*.pyc
