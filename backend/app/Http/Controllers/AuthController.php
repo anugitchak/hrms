@@ -274,7 +274,6 @@ class AuthController extends Controller
 
         // Also keep legacy face_descriptor on users table for backward compatibility
         $user->update([
-            'face_data' => $user->face_data, // preserve existing
             'face_descriptor' => json_encode($descriptors[0])
         ]);
 
@@ -308,14 +307,15 @@ class AuthController extends Controller
         }
 
         // Build the stored_descriptors payload for the Python service
-        // Collect embeddings from face_embeddings table (new system)
+        // ONLY use face_embeddings table (SFace descriptors from new system)
+        // Legacy face-api.js descriptors in users/employees tables are NOT compatible
+        // with SFace and must NOT be mixed. Users must re-enroll.
         $embeddingRows = FaceEmbedding::all();
-        $usersData = [];
-        $userIdMap = []; // track by user_id
+        $userIdMap = [];
 
         foreach ($embeddingRows as $row) {
             $descriptor = json_decode($row->descriptor, true);
-            if (!$descriptor || count($descriptor) !== 128)
+            if (!$descriptor || count($descriptor) < 64)
                 continue;
 
             if (!isset($userIdMap[$row->user_id])) {
@@ -324,56 +324,18 @@ class AuthController extends Controller
             $userIdMap[$row->user_id][] = $descriptor;
         }
 
-        // Also include legacy descriptors from users table (backward compatibility)
-        $legacyUsers = User::whereNotNull('face_descriptor')
-            ->where('face_descriptor', '!=', '')
-            ->where('face_descriptor', '!=', 'null')
-            ->get();
-
-        foreach ($legacyUsers as $u) {
-            $desc = json_decode($u->face_descriptor, true);
-            if (!$desc || count($desc) !== 128)
-                continue;
-
-            if (!isset($userIdMap[$u->id])) {
-                $userIdMap[$u->id] = [];
-            }
-            // Only add if not already present from new table
-            if (!isset($userIdMap[$u->id]) || empty($userIdMap[$u->id])) {
-                $userIdMap[$u->id][] = $desc;
-            }
-        }
-
-        // Also include legacy descriptors from employees table
-        $legacyEmployees = Employee::whereNotNull('face_descriptor')
-            ->where('face_descriptor', '!=', '')
-            ->where('face_descriptor', '!=', 'null')
-            ->with('user')
-            ->get();
-
-        foreach ($legacyEmployees as $emp) {
-            if (!$emp->user)
-                continue;
-            $desc = json_decode($emp->face_descriptor, true);
-            if (!$desc || count($desc) !== 128)
-                continue;
-
-            $uid = $emp->user->id;
-            if (!isset($userIdMap[$uid]) || empty($userIdMap[$uid])) {
-                $userIdMap[$uid][] = $desc;
-            }
-        }
-
         // Format for Python service
+        $usersData = [];
         foreach ($userIdMap as $uid => $descriptors) {
             $usersData[] = ['user_id' => $uid, 'descriptors' => $descriptors];
         }
 
         if (empty($usersData)) {
             return response()->json([
-                'message' => 'No enrolled faces found in the system. Please enroll first.'
+                'message' => 'No enrolled faces found. Please re-enroll your face — the face recognition system has been upgraded and requires a fresh enrollment.'
             ], 404);
         }
+
 
         // Call Python face recognition service
         try {
@@ -449,6 +411,17 @@ class AuthController extends Controller
 
         $userData = $matchedUser->toArray();
         $userData['permissions'] = $permissions;
+
+        // Enrich with employee country/sub_company (mirrors regular login)
+        if ($matchedUser->role_id != 1) {
+            $employee = Employee::with(['country', 'subCompany'])->where('user_id', $matchedUser->id)->first();
+            if ($employee) {
+                $userData['country'] = $employee->country;
+                $userData['sub_company'] = $employee->subCompany;
+                $userData['country_id'] = $employee->country_id;
+                $userData['sub_company_id'] = $employee->sub_company_id;
+            }
+        }
 
         Log::info("Face login successful: user_id={$matchedUser->id}, confidence={$result['confidence']}%");
 
