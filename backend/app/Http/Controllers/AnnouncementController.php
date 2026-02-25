@@ -30,8 +30,8 @@ class AnnouncementController extends Controller
 
             if ($user->role_id == 4) {
                 $query->whereJsonContains('target_audience', 'Employee')
-                      ->where('status', 'Active');
-                
+                    ->where('status', 'Active');
+
                 // Filter by Joining Date (Safely)
                 if ($user->employee && $user->employee->date_of_joining) {
                     $query->whereDate('created_at', '>=', $user->employee->date_of_joining);
@@ -39,10 +39,10 @@ class AnnouncementController extends Controller
             }
             // Filter by Role for HR (Role 3) - Optional, can see HR + Employee?
             elseif ($user->role_id == 3) {
-                 $query->where(function($q) {
-                     $q->whereJsonContains('target_audience', 'HR')
-                       ->orWhereJsonContains('target_audience', 'Employee');
-                 });
+                $query->where(function ($q) {
+                    $q->whereJsonContains('target_audience', 'HR')
+                        ->orWhereJsonContains('target_audience', 'Employee');
+                });
             }
 
             // Optional: Backend filtering
@@ -53,9 +53,9 @@ class AnnouncementController extends Controller
                 $query->where('status', $request->status);
             }
             if ($request->has('search') && $request->search) {
-                $query->where(function($q) use ($request) {
+                $query->where(function ($q) use ($request) {
                     $q->where('title', 'like', "%{$request->search}%")
-                      ->orWhere('message', 'like', "%{$request->search}%");
+                        ->orWhere('message', 'like', "%{$request->search}%");
                 });
             }
 
@@ -81,23 +81,23 @@ class AnnouncementController extends Controller
         }
 
         $request->validate([
-            'title'           => 'required|string|max:255',
-            'message'         => 'required|string',
-            'category'        => 'required|string',
+            'title' => 'required|string|max:255',
+            'message' => 'required|string',
+            'category' => 'required|string',
             'target_audience' => 'required|array',
-            'status'          => 'required|in:Active,Inactive',
-            'attachment_url'  => 'nullable|string'
+            'status' => 'required|in:Active,Inactive',
+            'attachment_url' => 'nullable|string'
         ]);
 
         $announcement = Announcement::create([
-            'title'           => $request->title,
-            'message'         => $request->message,
-            'category'        => $request->category,
+            'title' => $request->title,
+            'message' => $request->message,
+            'category' => $request->category,
             'target_audience' => $request->target_audience, // Casted to array in model
-            'status'          => $request->status,
-            'attachment_url'  => $request->attachment_url,
-            'created_by'      => $user->id,
-            'views_count'     => 0,
+            'status' => $request->status,
+            'attachment_url' => $request->attachment_url,
+            'created_by' => $user->id,
+            'views_count' => 0,
         ]);
 
         // Send Notifications if Active
@@ -107,7 +107,7 @@ class AnnouncementController extends Controller
 
         return response()->json([
             'message' => 'Announcement created successfully!',
-            'data'    => $announcement
+            'data' => $announcement
         ], 201);
     }
 
@@ -149,12 +149,17 @@ class AnnouncementController extends Controller
         }
 
         $announcement->update($request->only([
-            'title', 'message', 'category', 'target_audience', 'status', 'attachment_url'
+            'title',
+            'message',
+            'category',
+            'target_audience',
+            'status',
+            'attachment_url'
         ]));
 
         return response()->json([
             'message' => 'Announcement updated successfully!',
-            'data'    => $announcement
+            'data' => $announcement
         ]);
     }
 
@@ -196,9 +201,9 @@ class AnnouncementController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('announcements', 'public');
-            $url = asset('storage/' . $path);
-            return response()->json(['url' => $url]);
+            $file = $request->file('file');
+            $base64 = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
+            return response()->json(['url' => $base64]);
         }
 
         return response()->json(['message' => 'File upload failed'], 400);
@@ -226,10 +231,14 @@ class AnnouncementController extends Controller
         $audience = $announcement->target_audience; // Array of strings: ["Employee", "HR"]
 
         // Map strings to Role IDs
-        if (in_array('SuperAdmin', $audience)) $targetRoles[] = 1;
-        if (in_array('Admin', $audience))      $targetRoles[] = 2;
-        if (in_array('HR', $audience))         $targetRoles[] = 3;
-        if (in_array('Employee', $audience))   $targetRoles[] = 4;
+        if (in_array('SuperAdmin', $audience))
+            $targetRoles[] = 1;
+        if (in_array('Admin', $audience))
+            $targetRoles[] = 2;
+        if (in_array('HR', $audience))
+            $targetRoles[] = 3;
+        if (in_array('Employee', $audience))
+            $targetRoles[] = 4;
 
         if (!empty($targetRoles)) {
             $this->notificationService->sendToRoles(
