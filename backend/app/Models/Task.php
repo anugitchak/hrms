@@ -15,6 +15,7 @@ class Task extends Model
         'assigned_to',
         'assigned_by',
         'due_date',
+        'due_time',
         'status',
         'priority',
         'designation_id',
@@ -26,7 +27,9 @@ class Task extends Model
         'proof_attachment',
         'submission_notes',
         'admin_feedback',
-        'completed_at'
+        'completed_at',
+        'hold_reason',
+        'held_at',
     ];
 
     protected $casts = [

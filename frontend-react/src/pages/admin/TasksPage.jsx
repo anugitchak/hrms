@@ -16,6 +16,7 @@ const TasksPage = () => {
         description: "",
         assigned_to: "",
         due_date: "",
+        due_time: "",
         priority: "medium",
         department_id: "",
         designation_id: "",
@@ -27,6 +28,21 @@ const TasksPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editTaskId, setEditTaskId] = useState(null);
     const [adminFeedback, setAdminFeedback] = useState("");
+
+    // ── Filter state ──────────────────────────────────────────────────────────
+    const [filterEmployee, setFilterEmployee] = useState("");
+    const [filterStatus, setFilterStatus] = useState("");
+    const [filterDeadline, setFilterDeadline] = useState("");
+    const [filterPriority, setFilterPriority] = useState("");
+
+    const clearFilters = () => {
+        setFilterEmployee("");
+        setFilterStatus("");
+        setFilterDeadline("");
+        setFilterPriority("");
+    };
+
+    const hasActiveFilters = filterEmployee || filterStatus || filterDeadline || filterPriority;
 
     useEffect(() => {
         fetchTasks();
@@ -112,6 +128,7 @@ const TasksPage = () => {
             description: "",
             assigned_to: "",
             due_date: "",
+            due_time: "",
             priority: "medium",
             department_id: "",
             designation_id: "",
@@ -129,6 +146,7 @@ const TasksPage = () => {
             description: task.description || "",
             assigned_to: task.assigned_to || "",
             due_date: task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : "",
+            due_time: task.due_time || "",
             priority: task.priority || "medium",
             department_id: task.department_id || "",
             designation_id: task.designation_id || "",
@@ -200,7 +218,23 @@ const TasksPage = () => {
     };
 
     const pendingReviewTasks = tasks.filter(t => t.status === 'pending_review');
-    const allOtherTasks = tasks.filter(t => t.status !== 'pending_review');
+
+    // ── Apply filters to all-other-tasks ──────────────────────────────────────
+    const allOtherTasks = tasks.filter(t => t.status !== 'pending_review').filter(t => {
+        const name = t.assignee?.user?.name?.toLowerCase() || '';
+        if (filterEmployee && !name.includes(filterEmployee.toLowerCase())) return false;
+        if (filterStatus && t.status !== filterStatus) return false;
+        if (filterPriority && t.priority !== filterPriority) return false;
+        if (filterDeadline) {
+            if (!t.due_date) return false;
+            const taskDay = new Date(t.due_date).toISOString().split('T')[0];
+            if (taskDay !== filterDeadline) return false;
+        }
+        return true;
+    });
+
+    const filteredCount = allOtherTasks.length;
+    const totalCount = tasks.filter(t => t.status !== 'pending_review').length;
 
     const filteredEmployees = employees.filter(emp => {
         const matchesDept = !formData.department_id || Number(emp.department_id) === Number(formData.department_id);
@@ -225,6 +259,85 @@ const TasksPage = () => {
             </div>
 
             <div className="flex-1 overflow-auto p-6 space-y-8">
+
+                {/* ── Filter Bar ── */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
+                    <div className="flex flex-wrap gap-3 items-end">
+                        {/* Employee name search */}
+                        <div className="flex flex-col gap-1 min-w-[180px] flex-1">
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Employee Name</label>
+                            <input
+                                type="text"
+                                placeholder="Search employee…"
+                                value={filterEmployee}
+                                onChange={e => setFilterEmployee(e.target.value)}
+                                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+                        </div>
+
+                        {/* Status */}
+                        <div className="flex flex-col gap-1 min-w-[150px]">
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</label>
+                            <select
+                                value={filterStatus}
+                                onChange={e => setFilterStatus(e.target.value)}
+                                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+                            >
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="accepted">Accepted</option>
+                                <option value="claimed">Claimed</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="on_hold">On Hold</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+
+                        {/* Necessity / Priority */}
+                        <div className="flex flex-col gap-1 min-w-[150px]">
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Necessity</label>
+                            <select
+                                value={filterPriority}
+                                onChange={e => setFilterPriority(e.target.value)}
+                                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+                            >
+                                <option value="">All Levels</option>
+                                <option value="low">Low (Routine)</option>
+                                <option value="medium">Medium (Standard)</option>
+                                <option value="high">High (Important)</option>
+                                <option value="urgent">Urgent (Immediate)</option>
+                            </select>
+                        </div>
+
+                        {/* Deadline Date */}
+                        <div className="flex flex-col gap-1">
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Deadline</label>
+                            <input
+                                type="date"
+                                value={filterDeadline}
+                                onChange={e => setFilterDeadline(e.target.value)}
+                                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+                        </div>
+
+                        {/* Clear button */}
+                        {hasActiveFilters && (
+                            <button
+                                onClick={clearFilters}
+                                className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-900/30 rounded-lg transition-colors self-end"
+                            >
+                                ✕ Clear Filters
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Result count */}
+                    <div className="mt-3 text-xs text-gray-400 font-medium">
+                        Showing <span className="font-bold text-gray-700 dark:text-gray-200">{filteredCount}</span> of <span className="font-bold">{totalCount}</span> tasks
+                        {hasActiveFilters && <span className="ml-1 text-blue-500">(filtered)</span>}
+                    </div>
+                </div>
                 {/* Pending Verification Table */}
                 {pendingReviewTasks.length > 0 && (
                     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
@@ -348,8 +461,18 @@ const TasksPage = () => {
                                                 ) : null)}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-500">
-                                            {task.due_date ? formatDate(task.due_date) : '-'}
+                                        <td className="px-6 py-4">
+                                            {task.due_date ? (
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">{formatDate(task.due_date)}</span>
+                                                    {task.due_time && (
+                                                        <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-0.5 mt-0.5">
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                            {task.due_time}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ) : '-'}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-2">
@@ -419,6 +542,15 @@ const TasksPage = () => {
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Due Date</label>
                                     <input type="date" value={formData.due_date} onChange={e => setFormData({ ...formData, due_date: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Deadline Time</label>
+                                    <input
+                                        type="time"
+                                        value={formData.due_time}
+                                        onChange={e => setFormData({ ...formData, due_time: e.target.value })}
+                                        className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Assignment Type</label>

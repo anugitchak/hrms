@@ -336,6 +336,77 @@ class TaskController extends Controller
 
         return response()->json($task->load(['assignee.user', 'creator', 'department', 'designation']), 200);
     }
+    public function hold(Request $request, $id)
+    {
+        $task = Task::findOrFail($id);
+        $user = Auth::user();
+
+        // Only the assigned employee can hold their own task
+        if (!$user->employee || $task->assigned_to !== $user->employee->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if (!in_array($task->status, ['in_progress', 'accepted'])) {
+            return response()->json(['message' => 'Only active tasks can be put on hold'], 400);
+        }
+
+        $request->validate([
+            'hold_reason' => 'required|string|max:500',
+        ]);
+
+        $task->status = 'on_hold';
+        $task->hold_reason = $request->hold_reason;
+        $task->held_at = now();
+        $task->save();
+
+        // Notify creator
+        if ($task->assigned_by) {
+            $this->notificationService->sendToUser(
+                $task->assigned_by,
+                "Task Put On Hold",
+                "{$user->name} has put the task \"{$task->title}\" on hold. Reason: {$task->hold_reason}",
+                "task",
+                "/admin/tasks"
+            );
+        }
+
+        return response()->json($task->load(['assignee.user', 'creator', 'department', 'designation']), 200);
+    }
+
+    public function resume(Request $request, $id)
+    {
+        $task = Task::findOrFail($id);
+        $user = Auth::user();
+
+        if (!$user->employee || $task->assigned_to !== $user->employee->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if ($task->status !== 'on_hold') {
+            return response()->json(['message' => 'Task is not on hold'], 400);
+        }
+
+        $task->status = 'in_progress';
+        $task->hold_reason = null;
+        $task->held_at = null;
+        // Restore started_at so time tracking continues from now
+        $task->started_at = now();
+        $task->save();
+
+        // Notify creator
+        if ($task->assigned_by) {
+            $this->notificationService->sendToUser(
+                $task->assigned_by,
+                "Task Resumed",
+                "{$user->name} has resumed the task \"{$task->title}\".",
+                "task",
+                "/admin/tasks"
+            );
+        }
+
+        return response()->json($task->load(['assignee.user', 'creator', 'department', 'designation']), 200);
+    }
+
     public function analytics()
     {
         $categoryBreakdown = Task::where('status', 'completed')
@@ -344,10 +415,85 @@ class TaskController extends Controller
             ->groupBy('department_id')
             ->get();
 
+        $statusBreakdown = [
+            ['status' => 'Completed', 'count' => Task::where('status', 'completed')->count()],
+            ['status' => 'Pending', 'count' => Task::where('status', 'pending')->count()],
+            ['status' => 'In Progress', 'count' => Task::where('status', 'in_progress')->count()],
+            ['status' => 'Pending Review', 'count' => Task::where('status', 'pending_review')->count()],
+            ['status' => 'Rejected', 'count' => Task::where('status', 'rejected')->count()],
+        ];
+
+        $totalTasks = Task::count();
+        $totalCompleted = Task::where('status', 'completed')->count();
+        $avgCompletionRate = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100) : 0;
+
         return response()->json([
             'categories' => $categoryBreakdown,
-            'total_completed' => Task::where('status', 'completed')->count(),
-            'total_pending' => Task::where('status', 'pending')->count()
+            'status_breakdown' => $statusBreakdown,
+            'total_completed' => $totalCompleted,
+            'total_pending' => Task::where('status', 'pending')->count(),
+            'avg_completion_rate' => $avgCompletionRate,
+        ], 200);
+    }
+
+    public function employeePerformance()
+    {
+        $employees = Employee::with(['user', 'department'])
+            ->whereHas('user', fn($q) => $q->where('is_active', true))
+            ->get()
+            ->map(function ($emp) {
+                $tasks = Task::where('assigned_to', $emp->id)->get();
+                $completed = $tasks->where('status', 'completed')->count();
+                $pending = $tasks->where('status', 'pending')->count();
+                $inProgress = $tasks->filter(fn($t) => in_array($t->status, ['in_progress', 'accepted', 'claimed']))->count();
+                $rejected = $tasks->where('status', 'rejected')->count();
+                $review = $tasks->where('status', 'pending_review')->count();
+                $total = $tasks->count();
+
+                // Avg time spent (minutes -> hours) for completed tasks
+                $avgTimeHrs = 0;
+                $completedWithTime = $tasks->where('status', 'completed')->filter(fn($t) => $t->time_spent_minutes > 0);
+                if ($completedWithTime->count() > 0) {
+                    $avgTimeHrs = round($completedWithTime->avg('time_spent_minutes') / 60, 1);
+                }
+
+                return [
+                    'id' => $emp->id,
+                    'name' => $emp->user?->name ?? 'Unknown',
+                    'department' => $emp->department?->name ?? 'N/A',
+                    'completed' => $completed,
+                    'pending' => $pending,
+                    'in_progress' => $inProgress,
+                    'rejected' => $rejected,
+                    'pending_review' => $review,
+                    'total' => $total,
+                    'completion_rate' => $total > 0 ? round(($completed / $total) * 100) : 0,
+                    'avg_time_hrs' => $avgTimeHrs,
+                ];
+            })
+            ->sortByDesc('completion_rate')
+            ->values();
+
+        // Monthly trend for last 6 months
+        $monthlyTrend = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $count = Task::where('status', 'completed')
+                ->whereYear('completed_at', $month->year)
+                ->whereMonth('completed_at', $month->month)
+                ->count();
+            $monthlyTrend[] = [
+                'month' => $month->format('M Y'),
+                'completed' => $count,
+            ];
+        }
+
+        // Department-wise monthly trend
+        $deptTrend = [];
+
+        return response()->json([
+            'employees' => $employees,
+            'monthly_trend' => $monthlyTrend,
         ], 200);
     }
 }
