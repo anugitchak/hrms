@@ -178,7 +178,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tasks/{id}/submit', [TaskController::class, 'submit']);
     Route::post('/tasks/{id}/approve', [TaskController::class, 'approve']);
     Route::post('/tasks/{id}/reject', [TaskController::class, 'reject']); // NEW
+    Route::post('/tasks/{id}/hold', [TaskController::class, 'hold']);
+    Route::post('/tasks/{id}/resume', [TaskController::class, 'resume']);
     Route::get('/tasks-analytics', [TaskController::class, 'analytics']);
+    Route::get('/employee-performance', [TaskController::class, 'employeePerformance']);
 
     // Meetings
     Route::get('/meetings', [MeetingController::class, 'index']);

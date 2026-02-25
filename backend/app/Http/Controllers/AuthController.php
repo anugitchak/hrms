@@ -5,18 +5,24 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
+use App\Models\FaceEmbedding;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use App\Services\NotificationService;
 
 class AuthController extends Controller
 {
     protected $notifications;
 
+    // URL of the Python face recognition microservice
+    const FACE_SERVICE_URL = 'http://127.0.0.1:8001';
+
     public function __construct(NotificationService $notifications)
     {
         $this->notifications = $notifications;
     }
+
     // ==============================
     // User Registration (Admin / Super Admin)
     // ==============================
@@ -26,7 +32,6 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:4',
-            // 'role_id'     => 'required|exists:roles,id', // <-- REMOVED: Public users cannot choose role
             'department_id' => 'nullable|exists:departments,id',
         ]);
 
@@ -34,7 +39,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role_id' => 4, // <-- ALWAYS FORCE EMPLOYEE (Role 4)
+            'role_id' => 4,
             'department_id' => $validated['department_id'] ?? null,
             'is_active' => true,
         ]);
@@ -56,12 +61,11 @@ class AuthController extends Controller
             'password' => 'required|string|min:4',
         ]);
 
-        // HR creates employee user → role_id = 3 (Employee)
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role_id' => 3, // Employee
+            'role_id' => 3,
             'is_active' => true,
         ]);
 
@@ -91,10 +95,8 @@ class AuthController extends Controller
             return response()->json(['message' => 'Your account is deactivated. Please contact support.'], 403);
         }
 
-        // Create API token
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // FORCE PASSWORD CHANGE FOR EMPLOYEE IF TEMP PASSWORD EXISTS
         if ($user->role_id == 4 && $user->temp_password !== null) {
             return response()->json([
                 'message' => 'Password change required',
@@ -104,7 +106,6 @@ class AuthController extends Controller
             ], 200);
         }
 
-        // Construct permissions array from boolean columns
         $permissions = [];
         $permissionFields = [
             'can_manage_employees',
@@ -127,14 +128,11 @@ class AuthController extends Controller
             }
         }
 
-        // Use toArray to safe return
         $userData = $user->toArray();
         $userData['permissions'] = $permissions;
 
-        // Fetch employee's country and sub-company if they have an employee record
-        if ($user->role_id != 1) { // Not SuperAdmin
+        if ($user->role_id != 1) {
             $employee = Employee::with(['country', 'subCompany'])->where('user_id', $user->id)->first();
-            
             if ($employee) {
                 $userData['country'] = $employee->country;
                 $userData['sub_company'] = $employee->subCompany;
@@ -163,14 +161,13 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        // Check if old password matches current password OR temp_password
         if (!Hash::check($validated['old_password'], $user->password) && $validated['old_password'] !== $user->temp_password) {
             return response()->json(['message' => 'Invalid old password'], 400);
         }
 
         $user->update([
             'password' => Hash::make($validated['new_password']),
-            'temp_password' => null, // Clear temp password
+            'temp_password' => null,
         ]);
 
         return response()->json(['message' => 'Password changed successfully']);
@@ -184,140 +181,237 @@ class AuthController extends Controller
         return response()->json($request->user()->fresh()->load(['employee.department', 'employee.designation', 'role']));
     }
 
+    // ==============================
+    // Enroll Face (via Python service)
+    // ==============================
     public function enrollFace(Request $request)
     {
         $request->validate([
             'email' => 'nullable|email|exists:users,email',
-            'face_image' => 'required|image|max:5120',
-            'face_descriptor' => 'required|string',
+            'face_image' => 'required|image|max:10240',
+            'device_type' => 'nullable|string|in:web,mobile,tablet',
+            'label' => 'nullable|string|max:50',
         ]);
 
-        // If email is provided (public enrollment), use email lookup
-        // Otherwise use authenticated user (employee first check-in)
+        // Resolve user
         if ($request->has('email')) {
             $user = User::where('email', $request->email)->first();
             if (!$user)
                 return response()->json(['message' => 'User not found'], 404);
         } else {
-            // Use authenticated user
             $user = $request->user();
             if (!$user)
-                return response()->json(['message' => 'User not authenticated'], 401);
+                return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        $facePath = $request->file('face_image')->store('faces', 'public');
+        // Check if Python face service is reachable
+        try {
+            $healthCheck = Http::timeout(3)->get(self::FACE_SERVICE_URL . '/health');
+            if (!$healthCheck->successful()) {
+                throw new \Exception('Face service returned non-200');
+            }
+        } catch (\Exception $e) {
+            Log::error('Face service health check failed: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Face recognition service is not available. Please ensure the Python face service is running on port 8001.',
+                'hint' => 'Run: uvicorn main:app --host 127.0.0.1 --port 8001 (in the face_service directory)'
+            ], 503);
+        }
 
-        // Store both image path and face descriptor
+        // Send image to Python service for descriptor extraction
+        try {
+            $response = Http::timeout(30)->attach(
+                'image',
+                file_get_contents($request->file('face_image')->getPathname()),
+                'face.jpg'
+            )->post(self::FACE_SERVICE_URL . '/enroll');
+
+            if (!$response->successful()) {
+                $error = $response->json();
+                return response()->json([
+                    'message' => $error['detail']['message'] ?? 'Face extraction failed',
+                    'error' => $error['detail']['error'] ?? 'unknown',
+                ], 422);
+            }
+
+            $result = $response->json();
+            $descriptors = $result['descriptors'] ?? [];
+
+            if (empty($descriptors)) {
+                return response()->json(['message' => 'No face detected in the image'], 422);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Face enrollment Python call failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to communicate with face recognition service'], 500);
+        }
+
+        // Store the extracted descriptor(s) in the face_embeddings table
+        $deviceType = $request->input('device_type', 'web');
+        $label = $request->input('label', null);
+
+        // Store each descriptor (usually just one, but may be multiple from one image)
+        $stored = 0;
+        foreach ($descriptors as $descriptor) {
+            FaceEmbedding::create([
+                'user_id' => $user->id,
+                'descriptor' => json_encode($descriptor),
+                'device_type' => $deviceType,
+                'label' => $label,
+            ]);
+            $stored++;
+
+            // Limit to 10 stored embeddings per user to prevent DB bloat
+            // Remove oldest if exceeded
+            $count = FaceEmbedding::where('user_id', $user->id)->count();
+            if ($count > 10) {
+                FaceEmbedding::where('user_id', $user->id)
+                    ->orderBy('created_at', 'asc')
+                    ->first()
+                    ->delete();
+            }
+        }
+
+        // Also keep legacy face_descriptor on users table for backward compatibility
         $user->update([
-            'face_data' => $facePath,
-            'face_descriptor' => $request->face_descriptor
+            'face_data' => $user->face_data, // preserve existing
+            'face_descriptor' => json_encode($descriptors[0])
         ]);
 
         return response()->json([
-            'message' => 'Face enrolled successfully',
+            'message' => "Face enrolled successfully ({$stored} descriptor(s) stored)",
+            'embeddings_count' => FaceEmbedding::where('user_id', $user->id)->count(),
             'user' => $user->fresh()->load(['employee', 'role'])
         ], 200);
     }
 
+    // ==============================
+    // Login with Face (via Python service)
+    // ==============================
     public function loginFace(Request $request)
     {
         $request->validate([
-            'face_image' => 'required|image|max:5120',
-            'face_descriptor' => 'required|string',
+            'face_image' => 'required|image|max:10240',
         ]);
 
-        $tempFacePath = $request->file('face_image')->store('temp_faces', 'public');
-        $inputDescriptor = json_decode($request->face_descriptor, true);
+        // Check Python service health
+        try {
+            $healthCheck = Http::timeout(3)->get(self::FACE_SERVICE_URL . '/health');
+            if (!$healthCheck->successful()) {
+                throw new \Exception('Not healthy');
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Face recognition service is offline. Please use email/password login.',
+                'hint' => 'Run: uvicorn main:app --host 127.0.0.1 --port 8001 (in face_service directory)'
+            ], 503);
+        }
 
-        // Find matching face by comparing descriptors
-        // Check BOTH users table and employees table (face data may be in either)
-        $matchedUser = null;
-        $bestDistance = PHP_FLOAT_MAX;
-        $secondBestDistance = PHP_FLOAT_MAX;
+        // Build the stored_descriptors payload for the Python service
+        // Collect embeddings from face_embeddings table (new system)
+        $embeddingRows = FaceEmbedding::all();
+        $usersData = [];
+        $userIdMap = []; // track by user_id
 
-        // Balanced threshold for accuracy and usability (was 0.6, now 0.55)
-        // Lower threshold = stricter matching = fewer false positives
-        $threshold = 0.55;
+        foreach ($embeddingRows as $row) {
+            $descriptor = json_decode($row->descriptor, true);
+            if (!$descriptor || count($descriptor) !== 128)
+                continue;
 
-        // Minimum margin required between best and second-best match
-        // This prevents ambiguous matches where two users have similar distances
-        $minimumMargin = 0.06;
+            if (!isset($userIdMap[$row->user_id])) {
+                $userIdMap[$row->user_id] = [];
+            }
+            $userIdMap[$row->user_id][] = $descriptor;
+        }
 
-        // First check users table
-        $users = User::whereNotNull('face_descriptor')
+        // Also include legacy descriptors from users table (backward compatibility)
+        $legacyUsers = User::whereNotNull('face_descriptor')
             ->where('face_descriptor', '!=', '')
             ->where('face_descriptor', '!=', 'null')
             ->get();
 
-        foreach ($users as $user) {
-            $storedDescriptor = json_decode($user->face_descriptor, true);
-            if (!$storedDescriptor || count($storedDescriptor) !== count($inputDescriptor)) {
+        foreach ($legacyUsers as $u) {
+            $desc = json_decode($u->face_descriptor, true);
+            if (!$desc || count($desc) !== 128)
                 continue;
+
+            if (!isset($userIdMap[$u->id])) {
+                $userIdMap[$u->id] = [];
             }
-
-            $distance = $this->calculateEuclideanDistance($inputDescriptor, $storedDescriptor);
-
-            if ($distance < $bestDistance) {
-                $secondBestDistance = $bestDistance;
-                $bestDistance = $distance;
-                $matchedUser = $user;
-            } elseif ($distance < $secondBestDistance) {
-                $secondBestDistance = $distance;
+            // Only add if not already present from new table
+            if (!isset($userIdMap[$u->id]) || empty($userIdMap[$u->id])) {
+                $userIdMap[$u->id][] = $desc;
             }
         }
 
-        // Also check employees table (face data may be stored here)
-        $employees = Employee::whereNotNull('face_descriptor')
+        // Also include legacy descriptors from employees table
+        $legacyEmployees = Employee::whereNotNull('face_descriptor')
             ->where('face_descriptor', '!=', '')
             ->where('face_descriptor', '!=', 'null')
             ->with('user')
             ->get();
 
-        foreach ($employees as $employee) {
-            if (!$employee->user)
-                continue; // Skip if no associated user
-
-            $storedDescriptor = json_decode($employee->face_descriptor, true);
-            if (!$storedDescriptor || count($storedDescriptor) !== count($inputDescriptor)) {
+        foreach ($legacyEmployees as $emp) {
+            if (!$emp->user)
                 continue;
-            }
+            $desc = json_decode($emp->face_descriptor, true);
+            if (!$desc || count($desc) !== 128)
+                continue;
 
-            $distance = $this->calculateEuclideanDistance($inputDescriptor, $storedDescriptor);
-
-            if ($distance < $bestDistance) {
-                $secondBestDistance = $bestDistance;
-                $bestDistance = $distance;
-                $matchedUser = $employee->user; // Return the associated user
-            } elseif ($distance < $secondBestDistance) {
-                $secondBestDistance = $distance;
+            $uid = $emp->user->id;
+            if (!isset($userIdMap[$uid]) || empty($userIdMap[$uid])) {
+                $userIdMap[$uid][] = $desc;
             }
         }
 
-        \Storage::disk('public')->delete($tempFacePath);
+        // Format for Python service
+        foreach ($userIdMap as $uid => $descriptors) {
+            $usersData[] = ['user_id' => $uid, 'descriptors' => $descriptors];
+        }
 
-        // Check if best match is below threshold
-        if ($bestDistance >= $threshold) {
+        if (empty($usersData)) {
             return response()->json([
-                'message' => 'Face not recognized. Please ensure good lighting, face the camera directly, or use email/password login.',
-                'confidence' => 'no_match'
+                'message' => 'No enrolled faces found in the system. Please enroll first.'
+            ], 404);
+        }
+
+        // Call Python face recognition service
+        try {
+            $response = Http::timeout(30)->attach(
+                'image',
+                file_get_contents($request->file('face_image')->getPathname()),
+                'face.jpg'
+            )->post(self::FACE_SERVICE_URL . '/recognize', [
+                        'stored_descriptors' => json_encode($usersData)
+                    ]);
+
+            if (!$response->successful()) {
+                $error = $response->json();
+                return response()->json([
+                    'message' => $error['detail']['message'] ?? 'Face recognition failed',
+                    'error' => $error['detail']['error'] ?? 'unknown',
+                ], $response->status());
+            }
+
+            $result = $response->json();
+
+        } catch (\Exception $e) {
+            Log::error('Face recognition Python call failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to communicate with face recognition service'], 500);
+        }
+
+        if (!($result['matched'] ?? false)) {
+            return response()->json([
+                'message' => $result['message'] ?? 'Face not recognized. Please try again or use email/password login.',
+                'confidence' => 0,
+                'reason' => $result['reason'] ?? 'no_match',
             ], 401);
         }
 
-        // Check if there's sufficient margin between best and second-best match
-        // This prevents false positives when two users look similar
-        $margin = $secondBestDistance - $bestDistance;
-        if ($secondBestDistance < PHP_FLOAT_MAX && $margin < $minimumMargin) {
-            \Log::warning('Face authentication rejected due to low confidence margin', [
-                'best_distance' => $bestDistance,
-                'second_best_distance' => $secondBestDistance,
-                'margin' => $margin,
-                'user_id' => $matchedUser->id ?? null
-            ]);
-
-            return response()->json([
-                'message' => 'Face recognition confidence too low. Please try again with better lighting and face the camera directly.',
-                'confidence' => 'low_margin'
-            ], 401);
+        // Find the matched user
+        $matchedUser = User::find($result['user_id']);
+        if (!$matchedUser) {
+            return response()->json(['message' => 'Recognized face but user account not found'], 404);
         }
 
         if (!$matchedUser->is_active) {
@@ -335,7 +429,20 @@ class AuthController extends Controller
         }
 
         $permissions = [];
-        foreach (['can_manage_employees', 'can_view_employees', 'can_manage_salaries', 'can_view_salaries', 'can_manage_attendance', 'can_view_attendance', 'can_manage_leaves', 'can_view_leaves', 'can_manage_departments', 'can_manage_payslips', 'can_manage_payroll_settings', 'can_force_checkout'] as $field) {
+        foreach ([
+            'can_manage_employees',
+            'can_view_employees',
+            'can_manage_salaries',
+            'can_view_salaries',
+            'can_manage_attendance',
+            'can_view_attendance',
+            'can_manage_leaves',
+            'can_view_leaves',
+            'can_manage_departments',
+            'can_manage_payslips',
+            'can_manage_payroll_settings',
+            'can_force_checkout'
+        ] as $field) {
             if ($matchedUser->$field)
                 $permissions[] = $field;
         }
@@ -343,28 +450,14 @@ class AuthController extends Controller
         $userData = $matchedUser->toArray();
         $userData['permissions'] = $permissions;
 
-        // Calculate and include confidence score for frontend feedback
-        $confidenceScore = max(0, min(100, round((1 - $bestDistance / $threshold) * 100)));
+        Log::info("Face login successful: user_id={$matchedUser->id}, confidence={$result['confidence']}%");
 
         return response()->json([
             'message' => 'Face login successful',
             'force_password_change' => false,
             'token' => $token,
             'user' => $userData,
-            'confidence' => $confidenceScore
+            'confidence' => $result['confidence'],
         ], 200);
-    }
-
-    /**
-     * Calculate Euclidean distance between two face descriptors
-     */
-    private function calculateEuclideanDistance($descriptor1, $descriptor2)
-    {
-        $sum = 0;
-        for ($i = 0; $i < count($descriptor1); $i++) {
-            $diff = $descriptor1[$i] - $descriptor2[$i];
-            $sum += $diff * $diff;
-        }
-        return sqrt($sum);
     }
 }

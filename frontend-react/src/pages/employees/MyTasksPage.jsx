@@ -13,18 +13,24 @@ import {
     FileText,
     ArrowRight,
     Search,
-    Filter
+    Filter,
+    PauseCircle,
 } from "lucide-react";
 
 const MyTasksPage = () => {
     const { user } = useAuth();
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("my-tasks"); // 'my-tasks', 'pool'
+    const [activeTab, setActiveTab] = useState("my-tasks");
     const [isActionLoading, setIsActionLoading] = useState(null);
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [submissionData, setSubmissionData] = useState({ notes: "", file: null });
+
+    // ── Hold modal state ──────────────────────────────────────────────────────
+    const [showHoldModal, setShowHoldModal] = useState(false);
+    const [holdTask, setHoldTask] = useState(null);
+    const [holdReason, setHoldReason] = useState("");
 
     useEffect(() => {
         fetchTasks();
@@ -82,6 +88,45 @@ const MyTasksPage = () => {
         }
     };
 
+    // ── Hold handlers ─────────────────────────────────────────────────────────
+    const openHoldModal = (task) => {
+        setHoldTask(task);
+        setHoldReason("");
+        setShowHoldModal(true);
+    };
+
+    const handleHoldSubmit = async (e) => {
+        e.preventDefault();
+        if (!holdTask) return;
+        setIsActionLoading(holdTask.id);
+        try {
+            await api.post(`/tasks/${holdTask.id}/hold`, { hold_reason: holdReason });
+            setShowHoldModal(false);
+            setHoldReason("");
+            setHoldTask(null);
+            fetchTasks();
+        } catch (error) {
+            console.error("Failed to hold task", error);
+            alert(error.response?.data?.message || "Failed to put task on hold.");
+        } finally {
+            setIsActionLoading(null);
+        }
+    };
+
+    const handleResume = async (taskId) => {
+        setIsActionLoading(taskId);
+        try {
+            await api.post(`/tasks/${taskId}/resume`);
+            fetchTasks();
+        } catch (error) {
+            console.error("Failed to resume task", error);
+            alert(error.response?.data?.message || "Failed to resume task.");
+        } finally {
+            setIsActionLoading(null);
+        }
+    };
+
+    // ── Submit handlers ───────────────────────────────────────────────────────
     const openSubmitModal = (task) => {
         setSelectedTask(task);
         setShowSubmitModal(true);
@@ -114,12 +159,14 @@ const MyTasksPage = () => {
         }
     };
 
+    // ── Status badge ──────────────────────────────────────────────────────────
     const getStatusBadge = (status) => {
         switch (status) {
             case 'pending': return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-200"><Clock className="w-3 h-3" /> Assigned</span>;
             case 'claimed': return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100"><Inbox className="w-3 h-3" /> Claimed</span>;
             case 'accepted': return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-cyan-50 text-cyan-700 border border-cyan-100"><CheckCircle className="w-3 h-3" /> Accepted</span>;
             case 'in_progress': return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100"><PlayCircle className="w-3 h-3" /> Active</span>;
+            case 'on_hold': return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100"><PauseCircle className="w-3 h-3" /> On Hold</span>;
             case 'pending_review': return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100"><AlertCircle className="w-3 h-3" /> In Review</span>;
             case 'rejected': return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-100"><AlertCircle className="w-3 h-3" /> Revision Required</span>;
             case 'completed': return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100"><CheckCircle className="w-3 h-3" /> Completed</span>;
@@ -136,7 +183,7 @@ const MyTasksPage = () => {
 
     return (
         <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
-            {/* Standard Header */}
+            {/* Header */}
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">My Productivity</h1>
             <p className="mb-6 text-gray-600 dark:text-gray-400">
                 Track assignments, claim pool tasks and manage your workspace.
@@ -169,7 +216,7 @@ const MyTasksPage = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredTasks.length > 0 ? filteredTasks.map((task) => (
-                            <div key={task.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between">
+                            <div key={task.id} className={`bg-white dark:bg-gray-800 rounded-xl border p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between ${task.status === 'on_hold' ? 'border-amber-200 dark:border-amber-700/50 bg-amber-50/30 dark:bg-amber-900/5' : 'border-gray-200 dark:border-gray-700'}`}>
                                 <div>
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex flex-wrap gap-2">
@@ -188,10 +235,22 @@ const MyTasksPage = () => {
                                         </div>
                                     </div>
                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight mb-2">{task.title}</h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 line-clamp-3 font-medium leading-relaxed">{task.description}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3 font-medium leading-relaxed">{task.description}</p>
+
+                                    {/* Hold reason banner */}
+                                    {task.status === 'on_hold' && task.hold_reason && (
+                                        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-lg">
+                                            <h4 className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                                                <PauseCircle className="w-3 h-3" /> Hold Reason
+                                            </h4>
+                                            <p className="text-xs text-amber-800 dark:text-amber-300 font-medium italic">
+                                                "{task.hold_reason}"
+                                            </p>
+                                        </div>
+                                    )}
 
                                     {task.status === 'rejected' && task.admin_feedback && (
-                                        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg">
+                                        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg">
                                             <h4 className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest mb-1 flex items-center gap-1">
                                                 <AlertCircle className="w-3 h-3" /> Reviewer Feedback
                                             </h4>
@@ -211,6 +270,11 @@ const MyTasksPage = () => {
                                         <div className="flex flex-col items-end gap-1">
                                             <span className="text-gray-400 font-bold uppercase tracking-tighter">Deadline</span>
                                             <span className="font-bold text-gray-700 dark:text-gray-300">{task.due_date ? formatDate(task.due_date) : 'Flexible'}</span>
+                                            {task.due_time && (
+                                                <span className="text-[10px] text-blue-500 font-semibold flex items-center gap-0.5">
+                                                    <Clock className="w-2.5 h-2.5" /> {task.due_time}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
@@ -252,14 +316,40 @@ const MyTasksPage = () => {
                                                         <PlayCircle className="w-4 h-4" /> Restart & Fix Issues
                                                     </button>
                                                 )}
+
+                                                {/* ── in_progress: Hold + Complete ── */}
                                                 {task.status === 'in_progress' && (
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => openHoldModal(task)}
+                                                            disabled={isActionLoading === task.id}
+                                                            className="flex-1 py-2 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5 border border-amber-200 dark:border-amber-800/40"
+                                                        >
+                                                            <PauseCircle className="w-4 h-4" /> Hold
+                                                        </button>
+                                                        <button
+                                                            onClick={() => openSubmitModal(task)}
+                                                            className="flex-[2] py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                                                        >
+                                                            <ArrowRight className="w-4 h-4" /> Complete & Submit
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {/* ── on_hold: Resume ── */}
+                                                {task.status === 'on_hold' && (
                                                     <button
-                                                        onClick={() => openSubmitModal(task)}
-                                                        className="w-full py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                                                        onClick={() => handleResume(task.id)}
+                                                        disabled={isActionLoading === task.id}
+                                                        className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm"
                                                     >
-                                                        <ArrowRight className="w-4 h-4" /> Complete & Submit
+                                                        {isActionLoading === task.id
+                                                            ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                            : <><PlayCircle className="w-4 h-4" /> Start Again</>
+                                                        }
                                                     </button>
                                                 )}
+
                                                 {task.status === 'pending_review' && (
                                                     <div className="flex items-center justify-center gap-2 p-2 bg-amber-50 dark:bg-amber-900/10 text-amber-600 dark:text-amber-400 rounded-lg border border-amber-100 dark:border-amber-900/30 text-xs font-bold uppercase tracking-tight italic">
                                                         <Clock className="w-4 h-4" /> Awaiting Verification
@@ -281,11 +371,73 @@ const MyTasksPage = () => {
                 )}
             </div>
 
-            {/* Submission Modal */}
+            {/* ═══════════════════════════════════════════════════════════
+                HOLD MODAL
+            ═══════════════════════════════════════════════════════════ */}
+            {showHoldModal && holdTask && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md">
+                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <PauseCircle className="w-5 h-5 text-amber-500" />
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Put Task On Hold</h2>
+                            </div>
+                            <button onClick={() => setShowHoldModal(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
+                        </div>
+
+                        <form onSubmit={handleHoldSubmit} className="p-6 space-y-5">
+                            {/* Task name */}
+                            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border dark:border-gray-600">
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">Task</p>
+                                <p className="text-sm font-bold text-gray-800 dark:text-gray-100">{holdTask.title}</p>
+                            </div>
+
+                            {/* Reason textarea */}
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
+                                    Reason for Hold <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    required
+                                    rows={4}
+                                    value={holdReason}
+                                    onChange={(e) => setHoldReason(e.target.value)}
+                                    placeholder="Explain why you're pausing this task (e.g., waiting for the design assets to be ready, blocked by another task, etc.)..."
+                                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-amber-400 transition-all resize-none font-medium"
+                                />
+                                <p className="text-[10px] text-gray-400 mt-1">{holdReason.length}/500 characters</p>
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowHoldModal(false)}
+                                    className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isActionLoading === holdTask.id || !holdReason.trim()}
+                                    className="flex-[2] py-2.5 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    {isActionLoading === holdTask.id
+                                        ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        : <><PauseCircle className="w-4 h-4" /> Confirm Hold</>
+                                    }
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* ═══════════════════════════════════════════════════════════
+                SUBMIT MODAL
+            ═══════════════════════════════════════════════════════════ */}
             {showSubmitModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-6 transition-all">
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-xl flex flex-col max-h-[90vh]">
-                        {/* Modal Header */}
                         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">Submit Evidence</h2>
                             <button onClick={() => setShowSubmitModal(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>

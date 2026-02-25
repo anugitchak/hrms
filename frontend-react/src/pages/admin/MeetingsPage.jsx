@@ -11,6 +11,8 @@ const MeetingsPage = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -65,14 +67,19 @@ const MeetingsPage = () => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await api.post("/meetings", formData);
-            alert("Meeting scheduled successfully!");
+            if (isEditing && editingId) {
+                await api.put(`/meetings/${editingId}`, formData);
+                alert("Meeting updated successfully!");
+            } else {
+                await api.post("/meetings", formData);
+                alert("Meeting scheduled successfully!");
+            }
             setIsModalOpen(false);
             resetForm();
             fetchMeetings();
         } catch (err) {
-            console.error("Failed to schedule meeting", err);
-            alert(err.response?.data?.message || "Failed to schedule meeting");
+            console.error("Failed to save meeting", err);
+            alert(err.response?.data?.message || "Failed to save meeting");
         } finally {
             setIsSubmitting(false);
         }
@@ -89,6 +96,29 @@ const MeetingsPage = () => {
             designation_id: "",
             participants: []
         });
+        setIsEditing(false);
+        setEditingId(null);
+    };
+
+    const handleEdit = (meeting) => {
+        // Convert start_time to datetime-local format (YYYY-MM-DDTHH:mm)
+        const dt = new Date(meeting.start_time);
+        const pad = (n) => String(n).padStart(2, '0');
+        const localDT = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+
+        setFormData({
+            title: meeting.title || "",
+            description: meeting.description || "",
+            start_time: localDT,
+            location: meeting.location || "",
+            meeting_link: meeting.meeting_link || "",
+            department_id: meeting.department_id ? String(meeting.department_id) : "",
+            designation_id: meeting.designation_id ? String(meeting.designation_id) : "",
+            participants: meeting.participants?.map(p => p.id) || []
+        });
+        setIsEditing(true);
+        setEditingId(meeting.id);
+        setIsModalOpen(true);
     };
 
     const handleDelete = async (id) => {
@@ -134,13 +164,28 @@ const MeetingsPage = () => {
     });
 
     // Google Calendar Link Generator (1 hour duration)
+    // Uses the LOCAL datetime string to avoid UTC offset shifting
     const generateGCalLink = (meeting) => {
-        const startDate = new Date(meeting.start_time);
-        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 hour
-        const start = startDate.toISOString().replace(/-|:|\.\d\d\d/g, "");
-        const end = endDate.toISOString().replace(/-|:|\.\d\d\d/g, "");
-        const details = encodeURIComponent(meeting.description || "");
-        const location = encodeURIComponent(meeting.location || meeting.meeting_link || "");
+        // meeting.start_time comes as "2026-02-25T17:00:00" (local/server time)
+        // Strip separators directly from the string to avoid JS Date UTC conversion
+        const raw = meeting.start_time?.replace('T', '').replace(/-|:/g, '').slice(0, 15) + '00'; // YYYYMMDDTHHmmSS format
+        const startStr = meeting.start_time?.replace('T', '').replace(/-|:|\..*/g, ''); // YYYYMMDDHHmmSS
+
+        // Build start in YYYYMMDDTHHMMSS format
+        const cleanStart = meeting.start_time
+            ? meeting.start_time.replace(/-/g, '').replace('T', 'T').replace(/:/g, '').split('.')[0]
+            : '';
+
+        // Add 1 hour manually by parsing date parts from the string
+        const dt = new Date(meeting.start_time);
+        const endDt = new Date(dt.getTime() + 60 * 60 * 1000);
+        const pad = (n) => String(n).padStart(2, '0');
+        const fmt = (d) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+
+        const start = fmt(dt);
+        const end = fmt(endDt);
+        const details = encodeURIComponent(meeting.description || '');
+        const location = encodeURIComponent(meeting.location || meeting.meeting_link || '');
         return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(meeting.title)}&dates=${start}/${end}&details=${details}&location=${location}`;
     };
 
@@ -154,7 +199,7 @@ const MeetingsPage = () => {
                     <p className="text-sm text-gray-500">Organize and manage corporate sessions.</p>
                 </div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => { resetForm(); setIsModalOpen(true); }}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-sm transition-all"
                 >
                     <Plus className="w-5 h-5" /> Schedule Meeting
@@ -173,7 +218,10 @@ const MeetingsPage = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">{meeting.title}</h3>
                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => handleDelete(meeting.id)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                                    <button onClick={() => handleEdit(meeting)} className="p-1.5 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg" title="Edit Meeting">
+                                        <Edit2 className="w-4 h-4" />
+                                    </button>
+                                    <button onClick={() => handleDelete(meeting.id)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg" title="Delete Meeting">
                                         <Trash2 className="w-4 h-4" />
                                     </button>
                                 </div>
@@ -235,8 +283,10 @@ const MeetingsPage = () => {
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[95vh] flex flex-col animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b dark:border-gray-700 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">Schedule New Meeting</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors"><X className="w-6 h-6" /></button>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">
+                                {isEditing ? 'Edit Meeting' : 'Schedule New Meeting'}
+                            </h2>
+                            <button onClick={() => { setIsModalOpen(false); resetForm(); }} className="text-gray-400 hover:text-gray-600 transition-colors"><X className="w-6 h-6" /></button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5">
@@ -308,9 +358,9 @@ const MeetingsPage = () => {
                             </div>
 
                             <div className="flex gap-4 pt-4 border-t dark:border-gray-700 mt-6">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-gray-500 uppercase tracking-widest border rounded-xl hover:bg-gray-50 transition-colors">Discard</button>
+                                <button type="button" onClick={() => { setIsModalOpen(false); resetForm(); }} className="flex-1 py-3 text-sm font-bold text-gray-500 uppercase tracking-widest border rounded-xl hover:bg-gray-50 transition-colors">Discard</button>
                                 <button disabled={isSubmitting} type="submit" className="flex-[2] py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm uppercase tracking-widest shadow-lg shadow-blue-200 dark:shadow-none disabled:opacity-50 transition-all">
-                                    {isSubmitting ? "Syncing..." : "Publish Meeting"}
+                                    {isSubmitting ? (isEditing ? 'Updating...' : 'Syncing...') : (isEditing ? 'Update Meeting' : 'Publish Meeting')}
                                 </button>
                             </div>
                         </form>

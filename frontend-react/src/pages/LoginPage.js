@@ -35,7 +35,6 @@ const LoginPage = () => {
   const [faceAuthMode, setFaceAuthMode] = useState('login'); // 'login' or 'enroll'
   const [stream, setStream] = useState(null);
   const [faceAuthLoading, setFaceAuthLoading] = useState(false);
-  const [modelsLoaded, setModelsLoaded] = useState(false);
   const [isQuickCheckInFlow, setIsQuickCheckInFlow] = useState(false);
 
   // Update clock every second
@@ -64,39 +63,8 @@ const LoginPage = () => {
     }
   }, [stream, showFaceAuth]);
 
-  // Load face-api models
-  useEffect(() => {
-    const loadModels = async () => {
-      if (window.faceapi && !modelsLoaded) {
-        try {
-          const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/model';
-          await Promise.all([
-            window.faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-            window.faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-            window.faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-          ]);
-          setModelsLoaded(true);
-          console.log('Face recognition models loaded');
-        } catch (err) {
-          console.error('Error loading face-api models:', err);
-        }
-      }
-    };
-
-    // Wait for script to load
-    if (window.faceapi) {
-      loadModels();
-    } else {
-      const checkInterval = setInterval(() => {
-        if (window.faceapi) {
-          clearInterval(checkInterval);
-          loadModels();
-        }
-      }, 100);
-
-      return () => clearInterval(checkInterval);
-    }
-  }, [modelsLoaded]);
+  // Note: face-api.js no longer used. Face recognition is handled server-side
+  // by the Python dlib microservice via AuthController.
 
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
@@ -308,65 +276,64 @@ const LoginPage = () => {
     }
   };
 
+  /**
+   * captureFaceAuth - v2 (Python dlib service)
+   * Captures raw image from camera and sends to backend.
+   * No more face-api.js descriptor extraction on the client.
+   * The Python microservice handles all face processing server-side.
+   */
   const captureFaceAuth = async () => {
-    if (!stream || !modelsLoaded) {
-      setError('Face recognition system is still loading. Please wait...');
+    if (!stream) {
+      setError('Camera is not ready. Please allow camera access and try again.');
+      return;
+    }
+
+    const video = document.getElementById('faceAuthVideo');
+    if (!video || video.readyState < 2) {
+      setError('Video is still loading. Please wait a second and try again.');
       return;
     }
 
     setFaceAuthLoading(true);
+    setError('');
+
     try {
-      const video = document.getElementById('faceAuthVideo');
-
-      // Detect face and extract descriptor
-      const detection = await window.faceapi
-        .detectSingleFace(video, new window.faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-
-      if (!detection) {
-        setError('No face detected. Please position your face in the center.');
-        setFaceAuthLoading(false);
-        return;
-      }
-
-      // Get face descriptor (128-dimensional vector)
-      const descriptor = Array.from(detection.descriptor);
-
-      // Also capture image for visual verification (optional)
+      // Capture a snapshot of the video frame
       const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0);
 
-      // Convert canvas to blob
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+      // Convert to JPEG blob — the Python service handles face detection
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+
+      if (!blob) {
+        throw new Error('Failed to capture image from camera');
+      }
 
       if (faceAuthMode === 'enroll') {
-        // Enrollment: Need email to associate face data
+        // Enrollment mode
         if (!formValues.email) {
-          setError("Please enter your email first to enroll face authentication.");
+          setError('Please enter your email first before enrolling face authentication.');
           closeFaceAuth();
           return;
         }
 
-        // Upload face descriptor for enrollment
         const formData = new FormData();
         formData.append('email', formValues.email);
-        formData.append('face_descriptor', JSON.stringify(descriptor));
         formData.append('face_image', blob, 'face.jpg');
 
         const { data } = await api.post('/auth/enroll-face', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
 
-        setSuccessMessage("✓ Face enrolled successfully! You can now login using face authentication.");
+        setSuccessMessage('✓ Face enrolled! You can now log in using face authentication.');
         closeFaceAuth();
+
       } else {
-        // Login: Use face descriptor to authenticate
+        // Login mode — send raw image to backend
         const formData = new FormData();
-        formData.append('face_descriptor', JSON.stringify(descriptor));
         formData.append('face_image', blob, 'face.jpg');
 
         const { data } = await api.post('/auth/login-face', formData, {
@@ -374,38 +341,35 @@ const LoginPage = () => {
         });
 
         if (!data?.token) {
-          setError("Face not recognized. Please try again or use email/password.");
+          setError('Face not recognized. Please try again or use email/password login.');
           closeFaceAuth();
           return;
         }
 
-        localStorage.setItem("token", data.token);
+        localStorage.setItem('token', data.token);
 
         if (data.force_password_change) {
-          if (data.user_id) localStorage.setItem("temp_user_id", data.user_id);
-          navigate("/change-password", { replace: true });
+          if (data.user_id) localStorage.setItem('temp_user_id', data.user_id);
+          navigate('/change-password', { replace: true });
           closeFaceAuth();
           return;
         }
 
         if (data.user) login(data.token, data.user);
-        setSuccessMessage("Face authentication successful!");
+        setSuccessMessage(`Face authentication successful! (${data.confidence ?? ''}% confidence)`);
         closeFaceAuth();
 
-        // If this is quick check-in flow, proceed with location and check-in
         if (isQuickCheckInFlow) {
           await completeQuickCheckIn(data.token, data.user);
         } else {
-          // Normal face login - just redirect
           setTimeout(() => {
-            navigate("/", { replace: true });
+            navigate('/', { replace: true });
           }, 1000);
         }
       }
     } catch (err) {
-      const message = err?.response?.data?.message || "Face authentication failed. Please try again.";
+      const message = err?.response?.data?.message || 'Face authentication failed. Please try again.';
       setError(message);
-      closeFaceAuth();
       setIsQuickCheckInFlow(false);
     } finally {
       setFaceAuthLoading(false);
@@ -987,7 +951,7 @@ const LoginPage = () => {
             >
               <button
                 onClick={captureFaceAuth}
-                disabled={faceAuthLoading}
+                disabled={faceAuthLoading || !stream}
                 style={{
                   width: "100%",
                   padding: "14px 24px",
