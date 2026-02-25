@@ -151,13 +151,15 @@ class EmployeeController extends Controller
         // Handle File Upload
         $profilePhotoPath = null;
         if ($request->hasFile('profile_photo')) {
-            $profilePhotoPath = $request->file('profile_photo')->store('employees', 'public');
+            $file = $request->file('profile_photo');
+            $profilePhotoPath = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
         }
 
         // Handle Face Data Upload
         $faceDataPath = null;
         if ($request->hasFile('face_image')) {
-            $faceDataPath = $request->file('face_image')->store('faces', 'public');
+            $file = $request->file('face_image');
+            $faceDataPath = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
         }
 
         // Handle Designation (Hybrid: Select or Create)
@@ -251,26 +253,28 @@ class EmployeeController extends Controller
 
         // Handle Aadhar Upload
         if ($request->hasFile('aadhar_file')) {
-            $path = $request->file('aadhar_file')->store('employee_documents', 'public');
+            $file = $request->file('aadhar_file');
+            $base64 = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
             \App\Models\EmployeeDocument::create([
                 'employee_id' => $employee->id,
                 'document_type' => 'Aadhar',
                 'document_title' => 'Aadhar Card',
-                'file_path' => $path,
-                'file_size' => round($request->file('aadhar_file')->getSize() / 1024, 2),
+                'file_path' => $base64,
+                'file_size' => round($file->getSize() / 1024, 2),
                 'uploaded_by' => auth()->id(),
             ]);
         }
 
         // Handle PAN Upload
         if ($request->hasFile('pan_file')) {
-            $path = $request->file('pan_file')->store('employee_documents', 'public');
+            $file = $request->file('pan_file');
+            $base64 = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
             \App\Models\EmployeeDocument::create([
                 'employee_id' => $employee->id,
                 'document_type' => 'PAN',
                 'document_title' => 'PAN Card',
-                'file_path' => $path,
-                'file_size' => round($request->file('pan_file')->getSize() / 1024, 2),
+                'file_path' => $base64,
+                'file_size' => round($file->getSize() / 1024, 2),
                 'uploaded_by' => auth()->id(),
             ]);
         }
@@ -387,14 +391,10 @@ class EmployeeController extends Controller
 
         $validated = $request->validate($rules);
 
-        // Handle File Upload
         $profilePhotoPath = $employee->profile_photo;
         if ($request->hasFile('profile_photo')) {
-            // Delete old photo if exists
-            if ($employee->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($employee->profile_photo)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->profile_photo);
-            }
-            $profilePhotoPath = $request->file('profile_photo')->store('profile_photos', 'public');
+            $file = $request->file('profile_photo');
+            $profilePhotoPath = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
         }
 
         // Update User

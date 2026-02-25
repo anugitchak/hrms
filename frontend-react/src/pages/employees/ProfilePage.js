@@ -41,8 +41,7 @@ const ProfilePage = () => {
 
     const getProfilePhotoUrl = (path) => {
         if (!path) return null;
-        // Adjust base URL as needed, assuming localhost:8000 for backend storage
-        return `${STORAGE_URL}/${path}`;
+        return path;
     };
 
     if (isLoading) {

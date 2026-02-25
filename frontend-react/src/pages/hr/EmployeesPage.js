@@ -472,7 +472,7 @@ const EmployeesPage = () => {
 
     const getProfilePhotoUrl = (path) => {
         if (!path) return null;
-        return `${STORAGE_URL}/${path}`;
+        return path;
     };
 
     return (
@@ -627,11 +627,11 @@ const EmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_country" className="text-sm font-medium text-gray-700 dark:text-gray-300">Country *</label>
-                                <select 
-                                    id="add_country" 
-                                    name="country_id" 
-                                    value={formData.country_id || ""} 
-                                    onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })} 
+                                <select
+                                    id="add_country"
+                                    name="country_id"
+                                    value={formData.country_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })}
                                     className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Select Country</option>
@@ -641,11 +641,11 @@ const EmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_sub_company" className="text-sm font-medium text-gray-700 dark:text-gray-300">Sub-Company *</label>
-                                <select 
-                                    id="add_sub_company" 
-                                    name="sub_company_id" 
-                                    value={formData.sub_company_id || ""} 
-                                    onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })} 
+                                <select
+                                    id="add_sub_company"
+                                    name="sub_company_id"
+                                    value={formData.sub_company_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })}
                                     disabled={!formData.country_id || subCompanies.length === 0}
                                     className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                                 >
@@ -732,11 +732,11 @@ const EmployeesPage = () => {
                             </div>
 
                             <div className="col-span-1 md:col-span-2 flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                <input 
-                                    type="checkbox" 
-                                    id="add_enroll_face" 
-                                    checked={enrollFace} 
-                                    onChange={(e) => setEnrollFace(e.target.checked)} 
+                                <input
+                                    type="checkbox"
+                                    id="add_enroll_face"
+                                    checked={enrollFace}
+                                    onChange={(e) => setEnrollFace(e.target.checked)}
                                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                 />
                                 <label htmlFor="add_enroll_face" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
@@ -779,11 +779,11 @@ const EmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_country" className="text-sm font-medium text-gray-700 dark:text-gray-300">Country *</label>
-                                <select 
-                                    id="edit_country" 
-                                    name="country_id" 
-                                    value={formData.country_id || ""} 
-                                    onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })} 
+                                <select
+                                    id="edit_country"
+                                    name="country_id"
+                                    value={formData.country_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })}
                                     className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Select Country</option>
@@ -793,11 +793,11 @@ const EmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_sub_company" className="text-sm font-medium text-gray-700 dark:text-gray-300">Sub-Company *</label>
-                                <select 
-                                    id="edit_sub_company" 
-                                    name="sub_company_id" 
-                                    value={formData.sub_company_id || ""} 
-                                    onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })} 
+                                <select
+                                    id="edit_sub_company"
+                                    name="sub_company_id"
+                                    value={formData.sub_company_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })}
                                     disabled={!formData.country_id || subCompanies.length === 0}
                                     className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                                 >

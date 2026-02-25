@@ -248,8 +248,10 @@ class TaskController extends Controller
         }
 
         if ($request->hasFile('proof_attachment')) {
-            $path = $request->file('proof_attachment')->store('task_proofs', 'public');
-            $task->proof_attachment = $path;
+            $file = $request->file('proof_attachment');
+            $mimeType = $file->getMimeType();
+            $base64 = base64_encode(file_get_contents($file->getPathname()));
+            $task->proof_attachment = 'data:' . $mimeType . ';base64,' . $base64;
         }
 
         $task->submission_notes = $request->submission_notes;

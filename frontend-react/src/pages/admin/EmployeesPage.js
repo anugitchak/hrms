@@ -530,7 +530,7 @@ const AdminEmployeesPage = () => {
 
     const getProfilePhotoUrl = (path) => {
         if (!path) return null;
-        return `${STORAGE_URL}/${path}`;
+        return path;
     };
 
     return (

@@ -32,7 +32,7 @@ class EmployeeDocumentController extends Controller
             if ($request->has('employee_id')) {
                 $query->where('employee_id', $request->employee_id);
             }
-            
+
             // Filter by document type if provided
             if ($request->has('document_type')) {
                 $query->where('document_type', $request->document_type);
@@ -61,28 +61,29 @@ class EmployeeDocumentController extends Controller
 
         if ($user->role_id == 4) {
             $employeeId = $user->employee->id;
-            
+
             // Optional: Check if employee is allowed to upload this type? 
             // For now, allow all based on requirements.
         } else {
-             // Admin/HR
-             $employeeId = $request->employee_id;
+            // Admin/HR
+            $employeeId = $request->employee_id;
         }
 
         if (!$employeeId) {
             return response()->json(['message' => 'Employee identifier missing.'], 400);
         }
-        
+
         // Handle File Upload
-        $path = $request->file('file')->store('employee_documents', 'public');
-        $size = $request->file('file')->getSize(); // in bytes
+        $file = $request->file('file');
+        $base64 = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
+        $size = $file->getSize(); // in bytes
         $sizeKb = round($size / 1024);
 
         $document = EmployeeDocument::create([
             'employee_id' => $employeeId,
             'document_type' => $request->document_type,
             'document_title' => $request->document_title,
-            'file_path' => $path,
+            'file_path' => $base64,
             'file_size' => $sizeKb,
             'uploaded_by' => $user->id,
         ]);
@@ -99,21 +100,18 @@ class EmployeeDocumentController extends Controller
     public function destroy($id)
     {
         $user = auth()->user();
-        
+
         // Only Admin (1, 2) and HR (3 with permission) can delete?
         // Requirement says: "Delete documents (if permission allows)".
         // Assuming Role 4 cannot delete.
-        
+
         if ($user->role_id == 4) {
-             return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $document = EmployeeDocument::findOrFail($id);
-        
-        // Delete file from storage
-        if (Storage::disk('public')->exists($document->file_path)) {
-            Storage::disk('public')->delete($document->file_path);
-        }
+
+        // File is stored as base64 in DB, no local file to delete
 
         $document->delete();
 
@@ -132,17 +130,37 @@ class EmployeeDocumentController extends Controller
         if ($user->role_id == 4) {
             // Employee can only download own
             if ($document->employee_id != $user->employee->id) {
-                 return response()->json(['message' => 'Unauthorized'], 403);
+                return response()->json(['message' => 'Unauthorized'], 403);
             }
-        } 
+        }
         // Admin/HR can download any
 
-        $path = storage_path('app/public/' . $document->file_path);
+        $fileData = $document->file_path; // This is the base64 data URI
 
-        if (!file_exists($path)) {
-            return response()->json(['message' => 'File not found on server'], 404);
+        if (!$fileData || !str_starts_with($fileData, 'data:')) {
+            return response()->json(['message' => 'Invalid file format or file not found'], 404);
         }
 
-        return response()->download($path, $document->document_title . '.' . pathinfo($path, PATHINFO_EXTENSION));
+        // Parse base64
+        // Example: data:image/png;base64,iVBORw0KGgo==
+        list($type, $data) = explode(';', $fileData);
+        list(, $data) = explode(',', $data);
+        $fileContent = base64_decode($data);
+
+        // Get mime type for extension
+        $mime_type = str_replace('data:', '', $type);
+        $extensions = [
+            'image/jpeg' => 'jpg',
+            'image/jpg' => 'jpg',
+            'image/png' => 'png',
+            'application/pdf' => 'pdf',
+            'application/msword' => 'doc',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx'
+        ];
+        $ext = $extensions[$mime_type] ?? 'bin';
+
+        return response($fileContent)
+            ->header('Content-Type', $mime_type)
+            ->header('Content-Disposition', 'attachment; filename="' . str_replace(' ', '_', $document->document_title) . '.' . $ext . '"');
     }
 }
