@@ -1,34 +1,37 @@
 """
-HRMS Face Recognition Microservice v2
+HRMS Face Recognition Microservice v3
 
 Uses OpenCV's built-in face detection (YuNet) and recognition (SFace) models.
+- Flask (WSGI) for cPanel Passenger compatibility
 - YuNet: Fast, accurate face detector
 - SFace: 99.60% accuracy on LFW benchmark
 - Zero compilation required — pure pre-built pip wheels
-- Device-agnostic: processes raw images server-side
-
-Models are auto-downloaded on first run.
 """
 
 import os
+import sys
+
+# Must be set BEFORE importing numpy/cv2
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['OMP_NUM_THREADS'] = '1'
+
 import urllib.request
 import logging
-from contextlib import asynccontextmanager
+import json
+import io
 
 import cv2
 import numpy as np
 from PIL import Image, ImageOps
-import io
-import json
-
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ===== Model Management =====
-MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
+MODELS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models")
 
 FACE_DETECT_MODEL = os.path.join(MODELS_DIR, "face_detection_yunet_2023mar.onnx")
 FACE_RECOG_MODEL = os.path.join(MODELS_DIR, "face_recognition_sface_2021dec.onnx")
@@ -62,54 +65,30 @@ def init_models():
     )
     face_recognizer = cv2.FaceRecognizerSF.create(FACE_RECOG_MODEL, "")
 
-    logger.info("Face detection and recognition models loaded successfully.")
+    logger.info("Face models loaded successfully.")
 
 
-# ===== App Setup =====
-@asynccontextmanager
-async def lifespan(app):
-    init_models()
-    yield
+# ===== Flask App Setup =====
+app = Flask(__name__)
+CORS(app, origins=["*"])
 
-app = FastAPI(
-    title="HRMS Face Recognition Service",
-    description="High-accuracy face recognition using OpenCV SFace (99.60% LFW)",
-    version="2.0.0",
-    lifespan=lifespan,
-)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Initialize models at module load time (for Passenger/WSGI)
+init_models()
 
 
 # ===== Image Processing =====
 
 def preprocess_image(image_bytes: bytes) -> np.ndarray:
-    """
-    Preprocess image for consistent cross-device results:
-    1. Convert to RGB via PIL (handles any format)
-    2. Apply auto-contrast to normalize lighting
-    3. Resize if too large
-    4. Convert to OpenCV BGR format
-    """
+    """Preprocess image for consistent cross-device results."""
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
-    # Resize if too large (OpenCV doesn't need huge images)
     max_size = 1024
     if max(image.size) > max_size:
         ratio = max_size / max(image.size)
         new_size = (int(image.size[0] * ratio), int(image.size[1] * ratio))
         image = image.resize(new_size, Image.LANCZOS)
 
-    # Auto-contrast: normalize lighting differences across devices
     image = ImageOps.autocontrast(image, cutoff=1)
-
-    # Convert PIL RGB -> OpenCV BGR
     img_array = np.array(image)
     img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
 
@@ -117,10 +96,7 @@ def preprocess_image(image_bytes: bytes) -> np.ndarray:
 
 
 def detect_and_align(img_bgr: np.ndarray):
-    """
-    Detect faces and return aligned face(s) with bounding box info.
-    Returns list of (aligned_face, bbox) tuples.
-    """
+    """Detect faces and return aligned face(s)."""
     h, w = img_bgr.shape[:2]
     face_detector.setInputSize((w, h))
 
@@ -145,101 +121,82 @@ def extract_feature(aligned_face: np.ndarray) -> list:
 
 # ===== API Endpoints =====
 
-@app.get("/health")
+@app.route("/health", methods=["GET"])
 def health_check():
-    return {
+    return jsonify({
         "status": "healthy",
         "service": "HRMS Face Recognition Service",
         "model": "OpenCV SFace (99.60% LFW accuracy)",
         "detector": "OpenCV YuNet",
-    }
+    })
 
 
-@app.post("/enroll")
-async def enroll_face(image: UploadFile = File(...)):
-    """
-    Extract face descriptor(s) from an enrollment image.
-    Returns 128-dim feature vector(s) for each detected face.
-    Call 3 times with different angles for best cross-device accuracy.
-    """
+@app.route("/enroll", methods=["POST"])
+def enroll_face():
+    """Extract face descriptor(s) from an enrollment image."""
     try:
-        image_bytes = await image.read()
+        if "image" not in request.files:
+            return jsonify({"error": "missing_image", "message": "No image file provided"}), 400
+
+        image_bytes = request.files["image"].read()
         img_bgr = preprocess_image(image_bytes)
         detected = detect_and_align(img_bgr)
 
         if not detected:
-            raise HTTPException(
-                status_code=422,
-                detail={
-                    "error": "no_face_detected",
-                    "message": "No face detected. Please ensure your face is clearly visible, well-lit, and centered."
-                }
-            )
+            return jsonify({
+                "error": "no_face_detected",
+                "message": "No face detected. Please ensure your face is clearly visible, well-lit, and centered."
+            }), 422
 
         if len(detected) > 1:
             logger.warning(f"Multiple faces detected ({len(detected)}), using largest face")
 
-        # Use the largest face (by bounding box area)
         detected.sort(key=lambda x: x[1][2] * x[1][3], reverse=True)
         aligned_face, bbox = detected[0]
 
         descriptor = extract_feature(aligned_face)
 
-        logger.info(f"Enrollment: extracted descriptor ({len(descriptor)}-dim), bbox area={int(bbox[2]*bbox[3])}")
+        logger.info(f"Enrollment: extracted descriptor ({len(descriptor)}-dim)")
 
-        return {
+        return jsonify({
             "success": True,
             "descriptors": [descriptor],
             "faces_found": len(detected),
             "message": "Face descriptor extracted successfully"
-        }
+        })
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"Enrollment error: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail={"error": "processing_failed", "message": f"Failed to process image: {str(e)}"}
-        )
+        return jsonify({"error": "processing_failed", "message": f"Failed to process image: {str(e)}"}), 500
 
 
-@app.post("/recognize")
-async def recognize_face(
-    image: UploadFile = File(...),
-    stored_descriptors: str = Form(...)
-):
-    """
-    Match a face against stored descriptors using cosine similarity.
-    
-    stored_descriptors format: [{"user_id": 1, "descriptors": [[...128...], ...]}, ...]
-    Returns best match with confidence score.
-    """
+@app.route("/recognize", methods=["POST"])
+def recognize_face():
+    """Match a face against stored descriptors using cosine similarity."""
     try:
-        try:
-            users_data = json.loads(stored_descriptors)
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=400, detail={"error": "invalid_json", "message": "Invalid stored_descriptors JSON"})
+        if "image" not in request.files:
+            return jsonify({"error": "missing_image", "message": "No image file provided"}), 400
 
-        image_bytes = await image.read()
+        stored_descriptors_str = request.form.get("stored_descriptors", "")
+        try:
+            users_data = json.loads(stored_descriptors_str)
+        except json.JSONDecodeError:
+            return jsonify({"error": "invalid_json", "message": "Invalid stored_descriptors JSON"}), 400
+
+        image_bytes = request.files["image"].read()
         img_bgr = preprocess_image(image_bytes)
         detected = detect_and_align(img_bgr)
 
         if not detected:
-            raise HTTPException(
-                status_code=422,
-                detail={
-                    "error": "no_face_detected",
-                    "message": "No face detected. Please ensure good lighting and face the camera directly."
-                }
-            )
+            return jsonify({
+                "error": "no_face_detected",
+                "message": "No face detected. Please ensure good lighting and face the camera directly."
+            }), 422
 
-        # Use the largest face
         detected.sort(key=lambda x: x[1][2] * x[1][3], reverse=True)
         aligned_face, _ = detected[0]
         query_feature = np.array(extract_feature(aligned_face), dtype=np.float64)
 
-        # Compare against all stored descriptors
         best_match_user_id = None
         best_score = -1.0
         second_best_score = -1.0
@@ -254,7 +211,6 @@ async def recognize_face(
 
                 stored_arr = np.array(stored_desc, dtype=np.float64)
 
-                # Cosine similarity (OpenCV SFace uses cosine similarity, not Euclidean)
                 score = float(np.dot(query_feature, stored_arr) / (
                     np.linalg.norm(query_feature) * np.linalg.norm(stored_arr) + 1e-8
                 ))
@@ -266,62 +222,48 @@ async def recognize_face(
                 elif score > second_best_score:
                     second_best_score = score
 
-        # Thresholds for SFace cosine similarity
-        COSINE_THRESHOLD = 0.363  # OpenCV's recommended threshold for SFace
-        MIN_MARGIN = 0.05  # Minimum gap between best and second-best
+        COSINE_THRESHOLD = 0.363
+        MIN_MARGIN = 0.05
 
-        logger.info(
-            f"Recognition: best_score={best_score:.4f}, "
-            f"second_best={second_best_score:.4f}, "
-            f"user_id={best_match_user_id}"
-        )
+        logger.info(f"Recognition: best_score={best_score:.4f}, user_id={best_match_user_id}")
 
         if best_match_user_id is None or best_score < COSINE_THRESHOLD:
-            return {
+            return jsonify({
                 "matched": False,
                 "user_id": None,
                 "confidence": 0,
                 "score": round(best_score, 4),
                 "reason": "no_match",
                 "message": "Face not recognized. Score below threshold."
-            }
+            })
 
-        # Check ambiguity
         if second_best_score > -1.0:
             margin = best_score - second_best_score
             if margin < MIN_MARGIN:
-                logger.warning(f"Low confidence margin: {margin:.4f}")
-                return {
+                return jsonify({
                     "matched": False,
                     "user_id": None,
                     "confidence": 0,
                     "score": round(best_score, 4),
                     "reason": "ambiguous_match",
                     "message": "Recognition confidence too low. Please try again."
-                }
+                })
 
-        # Confidence: 0-100 scale based on how far above threshold
         confidence = int(min(100, max(0, (best_score - COSINE_THRESHOLD) / (1.0 - COSINE_THRESHOLD) * 100)))
 
-        return {
+        return jsonify({
             "matched": True,
             "user_id": best_match_user_id,
             "confidence": confidence,
             "score": round(best_score, 4),
             "reason": "success",
             "message": "Face recognized successfully"
-        }
+        })
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"Recognition error: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail={"error": "processing_failed", "message": f"Face recognition failed: {str(e)}"}
-        )
+        return jsonify({"error": "processing_failed", "message": f"Face recognition failed: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8001)
+    app.run(host="127.0.0.1", port=8001, debug=False)

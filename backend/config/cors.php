@@ -22,7 +22,9 @@ return [
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:3000'),
         'https://hrms-p1demo.onrender.com',
-        'http://localhost:3000'
+        'http://localhost:3000',
+        'http://mmhrms.in',
+        'https://mmhrms.in',
     ],
 
     'allowed_origins_patterns' => [],

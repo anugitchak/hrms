@@ -16,7 +16,13 @@ class AuthController extends Controller
     protected $notifications;
 
     // URL of the Python face recognition microservice
-    const FACE_SERVICE_URL = 'http://127.0.0.1:8001';
+    // In production (cPanel), set FACE_SERVICE_URL in .env to the Passenger URL
+    // e.g. FACE_SERVICE_URL=https://mmhrms.in/face-api
+    // In local dev, defaults to uvicorn on port 8001
+    private static function faceServiceUrl(): string
+    {
+        return env('FACE_SERVICE_URL', 'http://127.0.0.1:8001');
+    }
 
     public function __construct(NotificationService $notifications)
     {
@@ -206,7 +212,7 @@ class AuthController extends Controller
 
         // Check if Python face service is reachable
         try {
-            $healthCheck = Http::timeout(3)->get(self::FACE_SERVICE_URL . '/health');
+            $healthCheck = Http::timeout(3)->get(self::faceServiceUrl() . '/health');
             if (!$healthCheck->successful()) {
                 throw new \Exception('Face service returned non-200');
             }
@@ -224,7 +230,7 @@ class AuthController extends Controller
                 'image',
                 file_get_contents($request->file('face_image')->getPathname()),
                 'face.jpg'
-            )->post(self::FACE_SERVICE_URL . '/enroll');
+            )->post(self::faceServiceUrl() . '/enroll');
 
             if (!$response->successful()) {
                 $error = $response->json();
@@ -295,7 +301,7 @@ class AuthController extends Controller
 
         // Check Python service health
         try {
-            $healthCheck = Http::timeout(3)->get(self::FACE_SERVICE_URL . '/health');
+            $healthCheck = Http::timeout(3)->get(self::faceServiceUrl() . '/health');
             if (!$healthCheck->successful()) {
                 throw new \Exception('Not healthy');
             }
@@ -343,7 +349,7 @@ class AuthController extends Controller
                 'image',
                 file_get_contents($request->file('face_image')->getPathname()),
                 'face.jpg'
-            )->post(self::FACE_SERVICE_URL . '/recognize', [
+            )->post(self::faceServiceUrl() . '/recognize', [
                         'stored_descriptors' => json_encode($usersData)
                     ]);
 
