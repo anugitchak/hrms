@@ -23,6 +23,7 @@ return [
         env('FRONTEND_URL', 'http://localhost:3000'),
         'https://hrms-p1demo.onrender.com',
         'http://localhost:3000',
+        'http://127.0.0.1:8000',
         'http://mmhrms.in',
         'https://mmhrms.in',
     ],
