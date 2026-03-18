@@ -184,6 +184,7 @@ class AttendanceController extends Controller
         $validated = $request->validate([
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
+            'location' => 'nullable|string',
             'device_id' => 'nullable|string|max:255',
             'device_type' => 'nullable|string|max:255',
             'browser' => 'nullable|string|max:255',
@@ -197,6 +198,7 @@ class AttendanceController extends Controller
                 'status' => 'Present',
                 'check_in_latitude' => $validated['latitude'] ?? null,
                 'check_in_longitude' => $validated['longitude'] ?? null,
+                'check_in_location' => $validated['location'] ?? null,
                 'device_id' => $validated['device_id'] ?? null,
                 'device_type' => $validated['device_type'] ?? null,
                 'browser' => $validated['browser'] ?? null,
@@ -255,6 +257,7 @@ class AttendanceController extends Controller
         $validator = Validator::make($request->all(), [
             'check_out_latitude' => 'required|numeric',
             'check_out_longitude' => 'required|numeric',
+            'check_out_location' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -282,6 +285,7 @@ class AttendanceController extends Controller
                 'check_out' => now()->format('H:i:s'),
                 'check_out_latitude' => $request->check_out_latitude,
                 'check_out_longitude' => $request->check_out_longitude,
+                'check_out_location' => $request->check_out_location,
                 'checked_out_by' => $user->id,
                 'checkout_type' => 'manual',
             ]);
@@ -719,8 +723,10 @@ class AttendanceController extends Controller
                     'status' => $record->status,
                     'check_in_latitude' => $record->check_in_latitude,
                     'check_in_longitude' => $record->check_in_longitude,
+                    'check_in_location' => $record->check_in_location,
                     'check_out_latitude' => $record->check_out_latitude,
                     'check_out_longitude' => $record->check_out_longitude,
+                    'check_out_location' => $record->check_out_location,
                     'device_id' => $record->device_id,
                     'device_type' => $record->device_type,
                     'browser' => $record->browser,

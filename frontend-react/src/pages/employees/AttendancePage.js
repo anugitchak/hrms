@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { formatTime, calculateHours, calculateWeeklyStats, calculateMonthlyStats } from "../../utils/dateUtils";
+import { reverseGeocode } from "../../utils/locationUtils";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -99,6 +100,7 @@ const AttendancePage = () => {
     const [isCheckingIn, setIsCheckingIn] = useState(false);
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [currentLocation, setCurrentLocation] = useState(null);
+    const [currentLocationName, setCurrentLocationName] = useState("");
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [pendingAction, setPendingAction] = useState(null); // 'check-in' or 'check-out'
     
@@ -280,8 +282,11 @@ const AttendancePage = () => {
             console.log("📍 Requesting location for check-in...");
             // Request location permission immediately - this triggers browser prompt
             const location = await getLocation();
-            
-            console.log("✅ Location received:", location);
+            console.log("✅ Location received, fetching name:", location);
+            const locationName = await reverseGeocode(location.latitude, location.longitude);
+            setCurrentLocationName(locationName);
+
+            console.log("✅ Location name received:", locationName);
             
             // Check for pending checkouts before proceeding
             const checkResponse = await api.post("/my-attendance/check-in", {
@@ -328,6 +333,7 @@ const AttendancePage = () => {
             const payload = {
                 latitude: currentLocation.latitude,
                 longitude: currentLocation.longitude,
+                location: currentLocationName,
                 force_checkin: true, // Force check-in even with pending checkouts
                 ...deviceInfo
             };
@@ -342,6 +348,7 @@ const AttendancePage = () => {
             setIsCheckingIn(false);
             setPendingAction(null);
             setCurrentLocation(null);
+            setCurrentLocationName("");
             setPendingCheckouts([]);
         }
     };
@@ -352,6 +359,7 @@ const AttendancePage = () => {
         setPendingCheckouts([]);
         setPendingAction(null);
         setCurrentLocation(null);
+        setCurrentLocationName("");
     };
 
     // Check Out Handler - Current Session Only
@@ -363,8 +371,9 @@ const AttendancePage = () => {
 
         try {
             const location = await getLocation();
-            console.log("✅ Location obtained:", location);
-            setCurrentLocation(location);
+            console.log("✅ Location obtained, fetching name:", location);
+            const locationName = await reverseGeocode(location.latitude, location.longitude);
+            setCurrentLocationName(locationName);
             setPendingAction('check-out');
             setShowLocationModal(true);
         } catch (error) {
@@ -386,6 +395,7 @@ const AttendancePage = () => {
             const payload = {
                 latitude: currentLocation.latitude,
                 longitude: currentLocation.longitude,
+                location: currentLocationName,
                 force_checkin: true, // Use force to ensure check-in happens
                 ...deviceInfo
             };
@@ -412,6 +422,7 @@ const AttendancePage = () => {
             const response = await api.post("/my-attendance/check-out", {
                 check_out_latitude: currentLocation.latitude,
                 check_out_longitude: currentLocation.longitude,
+                check_out_location: currentLocationName,
             });
 
             setSuccessMessage("Successfully checked out! 👋");
@@ -693,15 +704,22 @@ const AttendancePage = () => {
                                                 )}
                                             </td>
                                             <td className="p-4 text-xs text-gray-600 dark:text-gray-400">
-                                                {record.check_in_latitude && record.check_in_longitude ? (
-                                                    <div className="flex flex-col gap-1">
-                                                        <span className="font-medium">In: {Number(record.check_in_latitude).toFixed(4)}, {Number(record.check_in_longitude).toFixed(4)}</span>
-                                                        {record.check_out_latitude && record.check_out_longitude && (
-                                                            <span className="font-medium">Out: {Number(record.check_out_latitude).toFixed(4)}, {Number(record.check_out_longitude).toFixed(4)}</span>
-                                                        )}
-                                                    </div>
+                                                {record.check_in_location ? (
+                                                    <span className="block mb-1 font-medium text-gray-800 dark:text-gray-200">{record.check_in_location}</span>
                                                 ) : (
-                                                    <span className="text-gray-400">--</span>
+                                                    record.check_in_latitude && record.check_in_longitude ? (
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="font-medium">In: {Number(record.check_in_latitude).toFixed(4)}, {Number(record.check_in_longitude).toFixed(4)}</span>
+                                                            {record.check_out_latitude && record.check_out_longitude && (
+                                                                <span className="font-medium">Out: {Number(record.check_out_latitude).toFixed(4)}, {Number(record.check_out_longitude).toFixed(4)}</span>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-400">--</span>
+                                                    )
+                                                )}
+                                                {record.check_out_location && (
+                                                    <span className="block mt-1 font-medium text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-1">Out: {record.check_out_location}</span>
                                                 )}
                                             </td>
                                             <td className="p-4 text-xs text-gray-600 dark:text-gray-400">
@@ -797,7 +815,7 @@ const AttendancePage = () => {
                                         </MapContainer>
                                     </div>
                                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        📌 {currentLocation.latitude.toFixed(6)}, {currentLocation.longitude.toFixed(6)}
+                                        📌 {currentLocationName || `${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}`}
                                     </p>
                                 </div>
                             )}

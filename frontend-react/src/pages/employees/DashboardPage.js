@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { formatTime, calculateHours, calculateWeeklyStats, calculateMonthlyStats } from "../../utils/dateUtils";
+import { reverseGeocode } from "../../utils/locationUtils";
 import FaceEnrollment from "../../components/FaceEnrollment";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -238,6 +239,7 @@ const DashboardPage = () => {
     const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState(null);
     const [currentLocation, setCurrentLocation] = useState(null);
+    const [currentLocationName, setCurrentLocationName] = useState("");
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [pendingAction, setPendingAction] = useState(null); // 'check-in' or 'check-out'
 
@@ -446,8 +448,11 @@ const DashboardPage = () => {
             console.log("📍 Requesting location for", type);
             // Request location permission immediately - this triggers browser prompt
             const location = await getLocation();
+            console.log("✅ Location received, fetching name:", location);
+            const locationName = await reverseGeocode(location.latitude, location.longitude);
+            setCurrentLocationName(locationName);
 
-            console.log("✅ Location received, showing modal:", location);
+            console.log("✅ Location name received, showing modal:", locationName);
             // If successful, show modal with map
             setShowLocationModal(true);
         } catch (err) {
@@ -472,6 +477,7 @@ const DashboardPage = () => {
                 payload = {
                     latitude: currentLocation.latitude,
                     longitude: currentLocation.longitude,
+                    location: currentLocationName,
                     force_checkin: true,
                     ...deviceInfo
                 };
@@ -480,6 +486,7 @@ const DashboardPage = () => {
                 payload = {
                     check_out_latitude: currentLocation.latitude,
                     check_out_longitude: currentLocation.longitude,
+                    check_out_location: currentLocationName,
                 };
                 endpoint = "/my-attendance/check-out";
             }
@@ -502,6 +509,7 @@ const DashboardPage = () => {
             setActionLoading(false);
             setPendingAction(null);
             setCurrentLocation(null);
+            setCurrentLocationName("");
         }
     };
 
@@ -641,7 +649,7 @@ const DashboardPage = () => {
                                         </MapContainer>
                                     </div>
                                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        📌 {currentLocation.latitude.toFixed(6)}, {currentLocation.longitude.toFixed(6)}
+                                        📌 {currentLocationName || `${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}`}
                                     </p>
                                 </div>
                             )}

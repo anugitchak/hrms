@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeEmployeeMail;
 
 class SuperAdminEmployeeController extends Controller
 {
@@ -148,6 +150,13 @@ class SuperAdminEmployeeController extends Controller
             ]);
 
             DB::commit();
+            
+            // Send Welcome Email
+            try {
+                Mail::to($user->email)->send(new WelcomeEmployeeMail($employee->load('user', 'department', 'designation'), $plainPassword));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send welcome email: " . $e->getMessage());
+            }
             
             // Return employee data with plain password for admin to see
             $response = $employee->load('user', 'department', 'designation')->toArray();

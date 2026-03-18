@@ -187,9 +187,9 @@ const AttendanceHistoryDrawer = ({ employee, isOpen, onClose, month }) => {
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                                     </svg>
                                                                     <div className="flex-1 min-w-0">
-                                                                        <p className="text-[10px] font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">Check-in Location</p>
-                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                                                                            {record.check_in_latitude}, {record.check_in_longitude}
+                                                                         <p className="text-[10px] font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">Check-in Location</p>
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate" title={record.check_in_location || `${record.check_in_latitude}, ${record.check_in_longitude}`}>
+                                                                            {record.check_in_location || `${record.check_in_latitude}, ${record.check_in_longitude}`}
                                                                         </p>
                                                                         <a
                                                                             href={`https://www.google.com/maps?q=${record.check_in_latitude},${record.check_in_longitude}`}
@@ -210,9 +210,9 @@ const AttendanceHistoryDrawer = ({ employee, isOpen, onClose, month }) => {
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                                     </svg>
                                                                     <div className="flex-1 min-w-0">
-                                                                        <p className="text-[10px] font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">Check-out Location</p>
-                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                                                                            {record.check_out_latitude}, {record.check_out_longitude}
+                                                                         <p className="text-[10px] font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">Check-out Location</p>
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate" title={record.check_out_location || `${record.check_out_latitude}, ${record.check_out_longitude}`}>
+                                                                            {record.check_out_location || `${record.check_out_latitude}, ${record.check_out_longitude}`}
                                                                         </p>
                                                                         <a
                                                                             href={`https://www.google.com/maps?q=${record.check_out_latitude},${record.check_out_longitude}`}
