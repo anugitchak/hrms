@@ -37,6 +37,7 @@ class UserController extends Controller
             'can_manage_departments',
             'can_manage_payslips',
             'can_manage_payroll_settings',
+            'can_manage_payslip_designer',
             'can_force_checkout',
             'can_assign_tasks'
         ];
@@ -66,6 +67,7 @@ class UserController extends Controller
             'can_manage_departments' => (bool) $user->can_manage_departments,
             'can_manage_payslips' => (bool) $user->can_manage_payslips,
             'can_manage_payroll_settings' => (bool) $user->can_manage_payroll_settings,
+            'can_manage_payslip_designer' => (bool) $user->can_manage_payslip_designer,
             'can_force_checkout' => (bool) $user->can_force_checkout,
             'can_assign_tasks' => (bool) $user->can_assign_tasks,
             'face_descriptor' => $user->face_descriptor, // Include for face enrollment check

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import api from '../api/axios';
 
 /**
  * FaceEnrollment Component - v2 (Python Service Integration)
@@ -111,20 +112,11 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
         formData.append('email', email);
       }
 
-      const response = await fetch('/api/auth/enroll-face', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
-          'Accept': 'application/json',
-        },
-        body: formData,
+      const response = await api.post('/auth/enroll-face', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Enrollment failed');
-      }
+      const data = response.data;
 
       const nextStep = captureStep + 1;
       setCapturedCount(prev => prev + 1);
@@ -146,7 +138,7 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
       }
 
     } catch (err) {
-      setError(err.message || 'Failed to enroll face. Please try again.');
+      setError(err.response?.data?.message || err.message || 'Failed to enroll face. Please try again.');
     } finally {
       setIsLoading(false);
     }

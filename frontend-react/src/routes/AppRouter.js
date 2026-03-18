@@ -75,6 +75,9 @@ import SuperAdminHolidays from "../pages/superadmin/policies/HolidayPage";
 import SuperAdminLeavePolicies from "../pages/superadmin/policies/LeavePoliciesPage";
 import SuperAdminSalaries from "../pages/superadmin/payroll/SalariesPage";
 import SuperAdminPayslips from "../pages/superadmin/payroll/PayslipsPage";
+import SuperAdminPayslipDesigner from "../pages/superadmin/payroll/PayslipDesignerPage";
+import HRPayslipDesigner from "../pages/hr/PayslipDesignerPage";
+import AdminPayslipDesigner from "../pages/superadmin/payroll/PayslipDesignerPage";
 import SuperAdminPerformanceReviews from "../pages/superadmin/employees/PerformanceReviewsPage";
 import SuperAdminAnnouncements from "../pages/superadmin/communication/AnnouncementsPage";
 
@@ -407,6 +410,16 @@ const AppRouter = () => (
           }
         />
         <Route
+          path="/admin/payslip-designer"
+          element={
+            <ProtectedRoute roles={[2]}>
+              <AdminLayout>
+                <AdminPayslipDesigner />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/announcements"
           element={
             <ProtectedRoute roles={[2]}>
@@ -626,6 +639,16 @@ const AppRouter = () => (
           }
         />
         <Route
+          path="/hr/payslip-designer"
+          element={
+            <ProtectedRoute roles={[3]}>
+              <HRLayout>
+                <HRPayslipDesigner />
+              </HRLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/superadmin/dashboard"
           element={
             <ProtectedRoute roles={[1]}>
@@ -825,6 +848,16 @@ const AppRouter = () => (
             <ProtectedRoute roles={[1]}>
               <SuperAdminLayout>
                 <SuperAdminPayslips />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/payslip-designer"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <SuperAdminPayslipDesigner />
               </SuperAdminLayout>
             </ProtectedRoute>
           }

@@ -27,6 +27,7 @@ use App\Http\Controllers\AnnouncementController;
 
 
 use App\Http\Controllers\RecruitmentController;
+use App\Http\Controllers\PayslipTemplateController;
 use App\Http\Controllers\PerformanceReviewController;
 use App\Http\Controllers\SettingController;
 
@@ -309,6 +310,27 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/payslips/{id}', [PayslipController::class, 'show']);
         Route::get('/my-payslips', [PayslipController::class, 'myPayslips']);
         Route::get('/my-payslips/download', [PayslipController::class, 'download']); // Employee download own payslip
+    });
+
+    // ======================================
+    // PAYSLIP TEMPLATE ROUTES
+    // ======================================
+    // IMPORTANT: 'active' named route MUST be registered before the {id} wildcard
+    // to prevent Laravel from treating the word "active" as an ID.
+
+    Route::middleware(['role:1,2,3'])->group(function () {
+        // Named routes first (before wildcards)
+        Route::get('/payslip-templates',        [PayslipTemplateController::class, 'index']);
+        Route::get('/payslip-templates/active', [PayslipTemplateController::class, 'getActive']); // MUST be before /{id}
+        Route::get('/payslip-templates/{id}',   [PayslipTemplateController::class, 'show']);
+    });
+
+    // Write operations — SuperAdmin (1), Admin (2), HR (3)
+    Route::middleware(['role:1,2,3'])->group(function () {
+        Route::post('/payslip-templates',               [PayslipTemplateController::class, 'store']);
+        Route::put('/payslip-templates/{id}',           [PayslipTemplateController::class, 'update']);
+        Route::post('/payslip-templates/{id}/activate', [PayslipTemplateController::class, 'activate']);
+        Route::delete('/payslip-templates/{id}',        [PayslipTemplateController::class, 'destroy']);
     });
 
 

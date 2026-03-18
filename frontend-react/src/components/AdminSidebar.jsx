@@ -43,6 +43,10 @@ const AdminSidebar = () => {
         menuItems.push({ key: "payslips", label: "Payslips", to: "/admin/payslips" });
     }
 
+    if (user?.role_id === 2 || hasPermission("can_manage_payslip_designer")) {
+        menuItems.push({ key: "payslip-designer", label: "Payslip Designer", to: "/admin/payslip-designer" });
+    }
+
     if (user?.role_id === 1 || user?.can_assign_tasks) {
         menuItems.push({ key: "tasks", label: "Tasks / Productivity", to: "/admin/tasks" });
     }

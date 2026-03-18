@@ -37,6 +37,7 @@ class User extends Authenticatable
         'can_manage_departments',
         'can_manage_payslips',
         'can_manage_payroll_settings',
+        'can_manage_payslip_designer',
         'can_force_checkout',
         'can_assign_tasks',
     ];
@@ -77,6 +78,7 @@ class User extends Authenticatable
         'can_manage_departments' => 'boolean',
         'can_manage_payslips' => 'boolean',
         'can_manage_payroll_settings' => 'boolean',
+        'can_manage_payslip_designer' => 'boolean',
         'can_force_checkout' => 'boolean',
         'can_assign_tasks' => 'boolean',
     ];

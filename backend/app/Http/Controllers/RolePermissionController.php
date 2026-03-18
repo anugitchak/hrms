@@ -34,7 +34,8 @@ class RolePermissionController extends Controller
                 'can_view_leaves',
                 'can_manage_departments',
                 'can_manage_payslips',
-                'can_assign_tasks'
+                'can_assign_tasks',
+                'can_manage_projects'
             ])
             ->get();
 
@@ -83,6 +84,7 @@ class RolePermissionController extends Controller
                 'can_manage_departments' => false,
                 'can_manage_payslips' => false,
                 'can_manage_payroll_settings' => false,
+                'can_manage_payslip_designer' => false,
                 'can_force_checkout' => false,
                 'can_assign_tasks' => false,
             ];
@@ -101,6 +103,7 @@ class RolePermissionController extends Controller
             'can_manage_departments' => $users->every(fn($u) => $u->can_manage_departments),
             'can_manage_payslips' => $users->every(fn($u) => $u->can_manage_payslips),
             'can_manage_payroll_settings' => $users->every(fn($u) => $u->can_manage_payroll_settings),
+            'can_manage_payslip_designer' => $users->every(fn($u) => $u->can_manage_payslip_designer),
             'can_force_checkout' => $users->every(fn($u) => $u->can_force_checkout),
             'can_assign_tasks' => $users->every(fn($u) => $u->can_assign_tasks),
         ];
@@ -128,6 +131,7 @@ class RolePermissionController extends Controller
             'can_manage_departments' => 'boolean',
             'can_manage_payslips' => 'boolean',
             'can_manage_payroll_settings' => 'boolean',
+            'can_manage_payslip_designer' => 'boolean',
             'can_force_checkout' => 'boolean',
             'can_assign_tasks' => 'boolean',
         ]);
@@ -213,6 +217,12 @@ class RolePermissionController extends Controller
                 'key' => 'can_manage_payroll_settings',
                 'name' => 'Manage Payroll Settings',
                 'description' => 'Configure payroll policies and settings',
+                'category' => 'Payroll'
+            ],
+            [
+                'key' => 'can_manage_payslip_designer',
+                'name' => 'Manage Payslip Designer',
+                'description' => 'Create and edit payslip design templates',
                 'category' => 'Payroll'
             ],
             [

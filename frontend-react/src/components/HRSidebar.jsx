@@ -38,6 +38,10 @@ const HRSidebar = () => {
         menuItems.push({ key: "payslips", label: "Payslips", to: "/hr/payslips" });
     }
 
+    if (hasPermission("can_manage_payslip_designer")) {
+        menuItems.push({ key: "payslip-designer", label: "Payslip Designer", to: "/hr/payslip-designer" });
+    }
+
     if (hasPermission("view_reports")) {
         menuItems.push({ key: "reports", label: "Reports", to: "/hr/reports" });
     }

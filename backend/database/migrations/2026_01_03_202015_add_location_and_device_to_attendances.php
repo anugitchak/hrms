@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('attendances', function (Blueprint $table) {
-            $table->decimal('check_in_latitude', 10, 8)->nullable()->after('check_in');
-            $table->decimal('check_in_longitude', 11, 8)->nullable()->after('check_in_latitude');
-            $table->decimal('check_out_latitude', 10, 8)->nullable()->after('check_out');
-            $table->decimal('check_out_longitude', 11, 8)->nullable()->after('check_out_latitude');
-            $table->string('device_id')->nullable()->after('status');
-            $table->string('device_type')->nullable()->after('device_id');
-            $table->string('browser')->nullable()->after('device_type');
-            $table->string('ip_address')->nullable()->after('browser');
+            if (!Schema::hasColumn('attendances', 'check_in_latitude')) $table->decimal('check_in_latitude', 10, 8)->nullable()->after('check_in');
+            if (!Schema::hasColumn('attendances', 'check_in_longitude')) $table->decimal('check_in_longitude', 11, 8)->nullable()->after('check_in_latitude');
+            if (!Schema::hasColumn('attendances', 'check_out_latitude')) $table->decimal('check_out_latitude', 10, 8)->nullable()->after('check_out');
+            if (!Schema::hasColumn('attendances', 'check_out_longitude')) $table->decimal('check_out_longitude', 11, 8)->nullable()->after('check_out_latitude');
+            if (!Schema::hasColumn('attendances', 'device_id')) $table->string('device_id')->nullable()->after('status');
+            if (!Schema::hasColumn('attendances', 'device_type')) $table->string('device_type')->nullable()->after('device_id');
+            if (!Schema::hasColumn('attendances', 'browser')) $table->string('browser')->nullable()->after('device_type');
+            if (!Schema::hasColumn('attendances', 'ip_address')) $table->string('ip_address')->nullable()->after('browser');
         });
     }
 

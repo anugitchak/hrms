@@ -21,6 +21,7 @@ const SuperAdminSidebar = () => {
 
         { key: "salaries", label: "Salaries", to: "/superadmin/salaries" },
         { key: "payslips", label: "Payslips", to: "/superadmin/payslips" },
+        { key: "payslip-designer", label: "Payslip Designer", to: "/superadmin/payslip-designer" },
         { key: "payroll-settings", label: "Payroll Settings", to: "/superadmin/payroll-settings" },
         { key: "documents", label: "Documents", to: "/superadmin/documents" },
 
