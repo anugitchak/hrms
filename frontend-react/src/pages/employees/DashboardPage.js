@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { formatTime, calculateHours, calculateWeeklyStats, calculateMonthlyStats } from "../../utils/dateUtils";
 import { reverseGeocode } from "../../utils/locationUtils";
 import FaceEnrollment from "../../components/FaceEnrollment";
+import { useGlobalUI } from "../../context/GlobalUIContext";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -226,6 +227,7 @@ const RecentActivitySection = ({ leaves, announcements, payslips, tasks, navigat
 const DashboardPage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { addToast } = useGlobalUI();
 
     const [data, setData] = useState({
         profile: null,
@@ -457,7 +459,7 @@ const DashboardPage = () => {
             setShowLocationModal(true);
         } catch (err) {
             console.error("❌ Location error:", err);
-            alert("Location Error: " + (err?.message || "Please enable location access in browser settings"));
+            addToast("Location Error: " + (err?.message || "Please enable location access in browser settings"), "error");
             setPendingAction(null);
         }
     };
@@ -495,15 +497,15 @@ const DashboardPage = () => {
 
             // Refresh data
             await fetchDashboardData();
-            alert(`${pendingAction === "check-in" ? "Checked in" : "Checked out"} successfully at your current location!`);
+            addToast(`${pendingAction === "check-in" ? "Checked in" : "Checked out"} successfully at your current location!`, "success");
         } catch (err) {
             console.error(`${pendingAction} error:`, err);
 
             // Check if it's a time restriction error
             if (err.response?.data?.error === 'checkout_restricted') {
-                alert(err.response.data.message || "Checkout is not allowed after 9:00 PM. Please contact HR/Admin/SuperAdmin.");
+                addToast(err.response.data.message || "Checkout is not allowed after 9:00 PM. Please contact HR/Admin/SuperAdmin.", "warning");
             } else {
-                alert(err?.response?.data?.message || `Failed to ${pendingAction}`);
+                addToast(err?.response?.data?.message || `Failed to ${pendingAction}`, "error");
             }
         } finally {
             setActionLoading(false);
@@ -526,13 +528,13 @@ const DashboardPage = () => {
             // Success!
             setFaceEnrollmentSuccess(true);
             setShowFaceEnrollment(false);
-            alert(response.data.message || 'Face enrolled successfully! You can now use face authentication for quick sign-in.');
+            addToast(response.data.message || 'Face enrolled successfully! You can now use face authentication for quick sign-in.', "success");
 
             // Refresh profile to update face enrollment status
             await fetchDashboardData();
         } catch (err) {
             console.error('Face enrollment error:', err);
-            alert(err.response?.data?.message || 'Failed to enroll face. Please try again.');
+            addToast(err.response?.data?.message || 'Failed to enroll face. Please try again.', "error");
         } finally {
             setActionLoading(false);
         }

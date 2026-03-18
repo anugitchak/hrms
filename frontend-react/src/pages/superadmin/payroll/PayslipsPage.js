@@ -11,8 +11,10 @@ import DownloadPayslipModal from '../../../components/payslips/DownloadPayslipMo
 import ManagePayslipAccessModal from '../../../components/payslips/ManagePayslipAccessModal';
 
 import { useAuth } from '../../../context/AuthContext';
+import { useGlobalUI } from '../../../context/GlobalUIContext';
 
 const PayslipsPage = () => {
+    const { addToast } = useGlobalUI();
     const [payslips, setPayslips] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -125,7 +127,7 @@ const PayslipsPage = () => {
             link.remove();
         } catch (err) {
             console.error("Download failed", err);
-            alert("Failed to download PDF. Please try again.");
+            addToast("Failed to download PDF. Please try again.", "error");
         }
     };
 

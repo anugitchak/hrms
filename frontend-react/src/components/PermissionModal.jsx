@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { X, Check, Shield } from "lucide-react";
 import api from "../api/axios";
+import { useGlobalUI } from "../context/GlobalUIContext";
 
 const PermissionModal = ({ user, onClose, onUpdate }) => {
+    const { addToast } = useGlobalUI();
     const [permissions, setPermissions] = useState({
         can_manage_employees: user.can_manage_employees || false,
         can_view_employees: user.can_view_employees || false,
@@ -30,10 +32,10 @@ const PermissionModal = ({ user, onClose, onUpdate }) => {
             const response = await api.put(`/superadmin/users/${user.id}/permissions`, permissions);
             if (onUpdate) onUpdate(response.data.user);
             onClose();
-            alert("Permissions updated successfully!");
+            addToast("Permissions updated successfully!", "success");
         } catch (error) {
             console.error("Failed to update permissions", error);
-            alert("Failed to update permissions");
+            addToast("Failed to update permissions", "error");
         } finally {
             setSaving(false);
         }

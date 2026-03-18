@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
+import { useGlobalUI } from "../../context/GlobalUIContext";
 
 // --- UI Components ---
 
@@ -77,6 +78,7 @@ const formatDate = (dateString) => {
 // --- Main Page Component ---
 
 const PayslipsPage = () => {
+    const { addToast } = useGlobalUI();
     const navigate = useNavigate();
     const [payslips, setPayslips] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -132,11 +134,11 @@ const PayslipsPage = () => {
         } catch (err) {
             console.error("Download failed", err);
             if (err.response && err.response.status === 403) {
-                alert("You do not have permission to download payslips.");
+                addToast("You do not have permission to download payslips.", "error");
             } else if (err.response && err.response.status === 404) {
-                alert("No payslip found for the selected period.");
+                addToast("No payslip found for the selected period.", "warning");
             } else {
-                alert("Failed to download PDF. Please try again.");
+                addToast("Failed to download PDF. Please try again.", "error");
             }
         }
     };

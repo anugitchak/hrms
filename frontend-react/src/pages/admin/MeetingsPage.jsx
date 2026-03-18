@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { Calendar, Clock, Video, MapPin, Users, Plus, X, Trash2, Edit2, CalendarClock } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
+import { useGlobalUI } from "../../context/GlobalUIContext";
 
 const MeetingsPage = () => {
+    const { addToast, confirm } = useGlobalUI();
     const [meetings, setMeetings] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -69,17 +71,17 @@ const MeetingsPage = () => {
         try {
             if (isEditing && editingId) {
                 await api.put(`/meetings/${editingId}`, formData);
-                alert("Meeting updated successfully!");
+                addToast("Meeting updated successfully!", "success");
             } else {
                 await api.post("/meetings", formData);
-                alert("Meeting scheduled successfully!");
+                addToast("Meeting scheduled successfully!", "success");
             }
             setIsModalOpen(false);
             resetForm();
             fetchMeetings();
         } catch (err) {
             console.error("Failed to save meeting", err);
-            alert(err.response?.data?.message || "Failed to save meeting");
+            addToast(err.response?.data?.message || "Failed to save meeting", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -122,7 +124,7 @@ const MeetingsPage = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this meeting?")) return;
+        if (!await confirm("Delete Meeting", "Are you sure you want to delete this meeting?", "Delete")) return;
         try {
             await api.delete(`/meetings/${id}`);
             fetchMeetings();

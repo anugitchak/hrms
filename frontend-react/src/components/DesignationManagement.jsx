@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { useGlobalUI } from "../context/GlobalUIContext";
 
 const DesignationManagement = () => {
     const { user } = useAuth();
@@ -30,7 +31,7 @@ const DesignationManagement = () => {
     });
     const [errors, setErrors] = useState({});
     const [submitLoading, setSubmitLoading] = useState(false);
-    const [notification, setNotification] = useState(null);
+    const { addToast, confirm } = useGlobalUI();
 
     // Permission check
     // user.role_id: 1=SuperAdmin, 2=Admin, 3=HR
@@ -53,9 +54,12 @@ const DesignationManagement = () => {
         fetchDesignations();
     }, []);
 
+    useEffect(() => {
+        fetchDesignations();
+    }, []);
+
     const showNotification = (type, message) => {
-        setNotification({ type, message });
-        setTimeout(() => setNotification(null), 3000);
+        addToast(message, type);
     };
 
     const handleOpenModal = (mode, designation = null) => {
@@ -103,7 +107,14 @@ const DesignationManagement = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this designation?")) return;
+        const confirmed = await confirm({
+            title: "Delete Designation",
+            message: "Are you sure you want to delete this designation?",
+            confirmText: "Delete",
+            type: "danger"
+        });
+        
+        if (!confirmed) return;
 
         try {
             await axios.delete(`/designations/${id}`);
@@ -156,19 +167,6 @@ const DesignationManagement = () => {
 
             {/* Content Area */}
             <div className="flex-1 overflow-auto p-6">
-
-                {/* Notification */}
-                {notification && (
-                    <div
-                        className={`mb-4 p-4 rounded-lg flex items-center gap-2 shadow-sm ${notification.type === "success"
-                            ? "bg-green-100 text-green-700 border border-green-200"
-                            : "bg-red-100 text-red-700 border border-red-200"
-                            }`}
-                    >
-                        {notification.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-                        {notification.message}
-                    </div>
-                )}
 
                 {/* Search Bar */}
                 <div className="mb-6">

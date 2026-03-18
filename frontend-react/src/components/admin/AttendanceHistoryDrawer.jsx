@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import { useGlobalUI } from '../../context/GlobalUIContext';
 
 const AttendanceHistoryDrawer = ({ employee, isOpen, onClose, month }) => {
     const { user } = useAuth();
+    const { addToast, confirm } = useGlobalUI();
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -257,15 +259,22 @@ const AttendanceHistoryDrawer = ({ employee, isOpen, onClose, month }) => {
                                                                     <button
                                                                         onClick={async (e) => {
                                                                             e.stopPropagation();
-                                                                            if (!window.confirm(`Force checkout for ${new Date(record.date).toLocaleDateString()}?`)) return;
+                                                                            const confirmed = await confirm({
+                                                                                title: "Force Checkout",
+                                                                                message: `Force checkout for ${new Date(record.date).toLocaleDateString()}?`,
+                                                                                confirmText: "Force Checkout",
+                                                                                type: "warning"
+                                                                            });
+                                                                            if (!confirmed) return;
+                                                                            
                                                                             try {
                                                                                 setLoading(true);
                                                                                 await api.post(`/attendances/${record.id}/checkout`);
-                                                                                alert("Employee checked out successfully");
+                                                                                addToast("Employee checked out successfully", "success");
                                                                                 fetchHistory();
                                                                             } catch (err) {
                                                                                 console.error("Checkout failed", err);
-                                                                                alert(err.response?.data?.message || "Failed to checkout employee");
+                                                                                addToast(err.response?.data?.message || "Failed to checkout employee", "error");
                                                                                 setLoading(false);
                                                                             }
                                                                         }}

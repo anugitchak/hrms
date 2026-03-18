@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { Calendar, Clock, Video, MapPin, CalendarCheck, CheckCircle2, XCircle, ExternalLink, CalendarDays } from "lucide-react";
+import { useGlobalUI } from "../../context/GlobalUIContext";
 
 const MyMeetingsPage = () => {
+    const { addToast } = useGlobalUI();
     const [meetings, setMeetings] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -24,7 +26,7 @@ const MyMeetingsPage = () => {
     const handleResponse = async (id, status) => {
         try {
             await api.post(`/meetings/${id}/respond`, { status });
-            alert(`Response recorded: ${status}`);
+            addToast(`Response recorded: ${status}`, "success");
             fetchMyMeetings();
         } catch (err) {
             console.error("Failed to respond to meeting", err);

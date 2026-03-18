@@ -16,8 +16,10 @@ import {
     Filter,
     PauseCircle,
 } from "lucide-react";
+import { useGlobalUI } from "../../context/GlobalUIContext";
 
 const MyTasksPage = () => {
+    const { addToast } = useGlobalUI();
     const { user } = useAuth();
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -55,7 +57,7 @@ const MyTasksPage = () => {
             fetchTasks();
         } catch (error) {
             console.error("Failed to accept task", error);
-            alert(error.response?.data?.message || "Failed to accept task");
+            addToast(error.response?.data?.message || "Failed to accept task", "error");
         } finally {
             setIsActionLoading(null);
         }
@@ -66,10 +68,10 @@ const MyTasksPage = () => {
         try {
             await api.post(`/tasks/${taskId}/claim`);
             fetchTasks();
-            alert("Task claimed successfully!");
+            addToast("Task claimed successfully!", "success");
         } catch (error) {
             console.error("Failed to claim task", error);
-            alert(error.response?.data?.message || "Failed to claim task.");
+            addToast(error.response?.data?.message || "Failed to claim task.", "error");
         } finally {
             setIsActionLoading(null);
         }
@@ -82,7 +84,7 @@ const MyTasksPage = () => {
             fetchTasks();
         } catch (error) {
             console.error("Failed to start task", error);
-            alert(error.response?.data?.message || "Failed to start task");
+            addToast(error.response?.data?.message || "Failed to start task", "error");
         } finally {
             setIsActionLoading(null);
         }
@@ -107,7 +109,7 @@ const MyTasksPage = () => {
             fetchTasks();
         } catch (error) {
             console.error("Failed to hold task", error);
-            alert(error.response?.data?.message || "Failed to put task on hold.");
+            addToast(error.response?.data?.message || "Failed to put task on hold.", "error");
         } finally {
             setIsActionLoading(null);
         }
@@ -120,7 +122,7 @@ const MyTasksPage = () => {
             fetchTasks();
         } catch (error) {
             console.error("Failed to resume task", error);
-            alert(error.response?.data?.message || "Failed to resume task.");
+            addToast(error.response?.data?.message || "Failed to resume task.", "error");
         } finally {
             setIsActionLoading(null);
         }
@@ -150,10 +152,10 @@ const MyTasksPage = () => {
             setShowSubmitModal(false);
             setSubmissionData({ notes: "", file: null });
             fetchTasks();
-            alert("Task submitted for review!");
+            addToast("Task submitted for review!", "success");
         } catch (error) {
             console.error("Failed to submit task", error);
-            alert("Failed to submit task.");
+            addToast("Failed to submit task.", "error");
         } finally {
             setIsActionLoading(null);
         }

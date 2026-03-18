@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit2, Trash2, Eye, UserX, X, CheckCircle, AlertCircle } from "lucide-react";
 import api from "../../../api/axios";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 const UserManagementPage = () => {
+    const { addToast, confirm } = useGlobalUI();
     // State
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -83,7 +85,14 @@ const UserManagementPage = () => {
     };
 
     const handleDelete = async (userId) => {
-        if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+        const confirmed = await confirm({
+            title: "Delete User",
+            message: "Are you sure you want to delete this user? This action cannot be undone.",
+            confirmText: "Yes, Delete",
+            type: "danger"
+        });
+
+        if (!confirmed) return;
 
         try {
             await api.delete(`/users/${userId}`);
@@ -91,7 +100,7 @@ const UserManagementPage = () => {
             setSuccessModal({ show: true, message: "User deleted successfully" });
         } catch (err) {
             console.error("Failed to delete user", err);
-            alert("Failed to delete user");
+            addToast("Failed to delete user", "error");
         }
     };
 
@@ -129,7 +138,7 @@ const UserManagementPage = () => {
             resetForm();
         } catch (err) {
             console.error("Failed to save user", err);
-            alert("Failed to save user: " + (err.response?.data?.message || err.message));
+            addToast("Failed to save user: " + (err.response?.data?.message || err.message), "error");
         } finally {
             setIsSubmitting(false);
         }

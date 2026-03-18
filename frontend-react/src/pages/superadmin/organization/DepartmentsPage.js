@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import api from "../../../api/axios";
 import { formatDate } from "../../../utils/dateUtils";
 import { useAuth } from "../../../context/AuthContext";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 const DepartmentsPage = () => {
     const { user } = useAuth();
+    const { addToast } = useGlobalUI();
     const canManage = user?.role_id === 1 || user?.role_id === 2 || user?.role_id === 3 || user?.permissions?.includes("can_manage_departments");
     const canDelete = user?.role_id === 1 || user?.permissions?.includes("can_delete_departments"); // Permission-based override
 
@@ -24,7 +26,6 @@ const DepartmentsPage = () => {
     const [formData, setFormData] = useState({ name: "" });
     const [formError, setFormError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null);
 
     // Initial Fetch
     useEffect(() => {
@@ -87,8 +88,7 @@ const DepartmentsPage = () => {
         try {
             const response = await api.post("/departments", formData);
             setDepartments([...departments, response.data.department].sort((a, b) => a.name.localeCompare(b.name)));
-            setSuccessMessage("Department created successfully!");
-            setTimeout(() => setSuccessMessage(null), 3000);
+            addToast("Department created successfully!", "success");
             closeModals();
         } catch (err) {
             console.error("Failed to create department", err);
@@ -109,8 +109,7 @@ const DepartmentsPage = () => {
         try {
             const response = await api.put(`/departments/${selectedDepartment.id}`, formData);
             setDepartments(departments.map(d => d.id === selectedDepartment.id ? response.data.department : d).sort((a, b) => a.name.localeCompare(b.name)));
-            setSuccessMessage("Department updated successfully!");
-            setTimeout(() => setSuccessMessage(null), 3000);
+            addToast("Department updated successfully!", "success");
             closeModals();
         } catch (err) {
             console.error("Failed to update department", err);
@@ -125,12 +124,11 @@ const DepartmentsPage = () => {
         try {
             await api.delete(`/departments/${selectedDepartment.id}`);
             setDepartments(departments.filter(d => d.id !== selectedDepartment.id));
-            setSuccessMessage("Department deleted successfully!");
-            setTimeout(() => setSuccessMessage(null), 3000);
+            addToast("Department deleted successfully!", "success");
             closeModals();
         } catch (err) {
             console.error("Failed to delete department", err);
-            alert("Failed to delete department."); // Fallback if modal closed
+            addToast("Failed to delete department.", "error"); // Fallback if modal closed
         } finally {
             setIsSubmitting(false);
         }
@@ -143,11 +141,6 @@ const DepartmentsPage = () => {
 
     return (
         <div className="p-8 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-            {successMessage && (
-                <div className="fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 animate-fade-in-down">
-                    {successMessage}
-                </div>
-            )}
 
             {/* Header */}
             <div className="flex justify-between items-center mb-6">

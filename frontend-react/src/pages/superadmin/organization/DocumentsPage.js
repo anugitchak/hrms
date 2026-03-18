@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import api from "../../../api/axios";
 import { useAuth } from "../../../context/AuthContext";
 import { FileText, Download, Trash2, Upload, Search, Filter, X, Eye } from "lucide-react";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 const DocumentsPage = () => {
     const { user } = useAuth();
+    const { addToast, confirm } = useGlobalUI();
     const [documents, setDocuments] = useState([]);
     const [employees, setEmployees] = useState([]); // For Admin/HR filter
     const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ const DocumentsPage = () => {
 
             if (!isEmployee) {
                 if (!uploadData.employee_id) {
-                    alert("Please select an employee.");
+                    addToast("Please select an employee.", "warning");
                     setUploading(false);
                     return;
                 }
@@ -95,23 +97,32 @@ const DocumentsPage = () => {
             setIsUploadModalOpen(false);
             setUploadData({ employee_id: "", document_type: "", document_title: "", file: null });
             fetchDocuments(); // Refresh list
+            addToast("Document uploaded successfully", "success");
         } catch (err) {
             console.error("Upload failed", err);
-            alert("Upload failed. Ensure file is within limits (2MB).");
+            addToast("Upload failed. Ensure file is within limits (2MB).", "error");
         } finally {
             setUploading(false);
         }
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this document?")) return;
+        const confirmed = await confirm({
+            title: "Delete Document",
+            message: "Are you sure you want to delete this document?",
+            confirmText: "Yes, Delete",
+            type: "danger"
+        });
+
+        if (!confirmed) return;
+
         try {
             await api.delete(`/employee-documents/${id}`);
             setDocuments(documents.filter(doc => doc.id !== id));
-            setDocuments(documents.filter(doc => doc.id !== id));
+            addToast("Document deleted successfully", "success");
         } catch (err) {
             console.error("Delete failed", err);
-            alert("Failed to delete document.");
+            addToast("Failed to delete document.", "error");
         }
     };
 
@@ -126,7 +137,7 @@ const DocumentsPage = () => {
             window.open(fileURL, '_blank');
         } catch (err) {
             console.error("View failed", err);
-            alert("Failed to view document.");
+            addToast("Failed to view document.", "error");
         }
     };
 
@@ -144,9 +155,10 @@ const DocumentsPage = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            addToast("Download started", "info");
         } catch (err) {
             console.error("Download failed", err);
-            alert("Failed to download document.");
+            addToast("Failed to download document.", "error");
         }
     }
 

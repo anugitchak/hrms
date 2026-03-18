@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, Shield, Save, CheckCircle } from 'lucide-react';
 import axios from '../../api/axios';
+import { useGlobalUI } from '../../context/GlobalUIContext';
 
 const ManagePayslipAccessModal = ({ onClose }) => {
+    const { addToast } = useGlobalUI();
     const [employees, setEmployees] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState([]);
     const [search, setSearch] = useState('');
@@ -75,7 +77,7 @@ const ManagePayslipAccessModal = ({ onClose }) => {
             setSuccessMessage(`${employeeName}'s payslip access ${newStatus ? 'enabled' : 'disabled'} successfully!`);
         } catch (error) {
             console.error("Failed to update status", error);
-            alert(error.response?.data?.message || "Failed to update access. Please try again.");
+            addToast(error.response?.data?.message || "Failed to update access. Please try again.", "error");
         } finally {
             setProcessingId(null);
         }

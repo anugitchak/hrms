@@ -3,8 +3,10 @@ import api from "../../../api/axios";
 import {
     ShieldCheck, Plus, ChevronDown, ChevronUp, Edit2, Trash2, Check, X, AlertTriangle, List, ArrowRight, Users
 } from "lucide-react";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 const LeavePoliciesPage = () => {
+    const { addToast, confirm } = useGlobalUI();
     const [policies, setPolicies] = useState([]);
     const [leaveTypes, setLeaveTypes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -124,29 +126,46 @@ const LeavePoliciesPage = () => {
             setIsModalOpen(false);
         } catch (err) {
             console.error("Failed to save policy", err);
-            alert(err.response?.data?.message || "Failed to save policy");
+            addToast(err.response?.data?.message || "Failed to save policy", "error");
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure? This action cannot be undone.")) return;
+        const confirmed = await confirm({
+            title: "Delete Policy",
+            message: "Are you sure? This action cannot be undone.",
+            confirmText: "Yes, Delete",
+            type: "danger"
+        });
+        
+        if (!confirmed) return;
+        
         try {
             await api.delete(`/leave-policies/${id}`);
             fetchData();
+            addToast("Policy deleted successfully", "success");
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to delete");
+            addToast(err.response?.data?.message || "Failed to delete", "error");
         }
     };
 
     const handleRecalculate = async (id) => {
-        if (!window.confirm("This will update leave balances for all assigned employees. Continue?")) return;
+        const confirmed = await confirm({
+            title: "Recalculate Balances",
+            message: "This will update leave balances for all assigned employees. Continue?",
+            confirmText: "Recalculate",
+            type: "warning"
+        });
+
+        if (!confirmed) return;
+
         try {
             const res = await api.post(`/leave-policies/${id}/recalculate`);
-            alert(res.data.message);
+            addToast(res.data.message, "success");
         } catch (err) {
-            alert("Failed to recalculate");
+            addToast("Failed to recalculate", "error");
         }
     };
 
@@ -184,8 +203,19 @@ const LeavePoliciesPage = () => {
     }, [cfLeaveTypeId, cfPolicy, cfMaxLimit]);
 
     const handleProcessCF = async () => {
-        if (selectedCandidates.length === 0) return alert("Select at least one employee");
-        if (!window.confirm(`Process carry forward for ${selectedCandidates.length} employees? This will add days to their balance.`)) return;
+        if (selectedCandidates.length === 0) {
+            addToast("Select at least one employee", "warning");
+            return;
+        }
+
+        const confirmed = await confirm({
+            title: "Process Carry Forward",
+            message: `Process carry forward for ${selectedCandidates.length} employees? This will add days to their balance.`,
+            confirmText: "Process",
+            type: "warning"
+        });
+
+        if (!confirmed) return;
 
         const candidatesPayload = cfCandidates
             .filter(c => selectedCandidates.includes(c.employee_id))
@@ -199,10 +229,10 @@ const LeavePoliciesPage = () => {
                 leave_type_id: cfLeaveTypeId,
                 candidates: candidatesPayload
             });
-            alert(res.data.message);
+            addToast(res.data.message, "success");
             setIsCFModalOpen(false);
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to process");
+            addToast(err.response?.data?.message || "Failed to process", "error");
         }
     };
 

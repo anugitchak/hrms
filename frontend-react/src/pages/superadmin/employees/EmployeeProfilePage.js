@@ -3,11 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import api, { STORAGE_URL } from "../../../api/axios";
 import { ArrowLeft, Save, Edit2, X } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 const EmployeeProfilePage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { addToast } = useGlobalUI();
     const [employee, setEmployee] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -111,8 +113,9 @@ const EmployeeProfilePage = () => {
             await api.put(`/employees/${id}`, { ...salaryData });
             setIsEditingSalary(false);
             fetchEmployee(); // Refresh data
+            addToast("Salary updated successfully", "success");
         } catch (err) {
-            alert("Failed to update salary: " + (err.response?.data?.message || err.message));
+            addToast("Failed to update salary: " + (err.response?.data?.message || err.message), "error");
         }
     };
 

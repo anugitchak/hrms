@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import api from "../../../api/axios";
 import { formatDate } from "../../../utils/dateUtils";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 const EmployeeAttendancePage = () => {
     const { id } = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
+    const { addToast } = useGlobalUI();
 
     // State
     const [employee, setEmployee] = useState(null);
@@ -75,9 +77,10 @@ const EmployeeAttendancePage = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            addToast("Attendance data exported successfully", "info");
         } catch (err) {
             console.error("Failed to export attendance", err);
-            alert("Failed to export attendance.");
+            addToast("Failed to export attendance.", "error");
         }
     };
 

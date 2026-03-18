@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../api/axios";
 import { Plus, Trash, Edit, Calendar as CalendarIcon, List, ChevronLeft, ChevronRight, Upload, X, FileSpreadsheet } from "lucide-react";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 const HolidayPage = () => {
+    const { addToast, confirm } = useGlobalUI();
     const [holidays, setHolidays] = useState([]);
     const [loading, setLoading] = useState(true);
     const [departments, setDepartments] = useState([]);
@@ -59,18 +61,28 @@ const HolidayPage = () => {
 
             setShowModal(false);
             resetForm();
+            addToast(editingHoliday ? "Holiday updated successfully" : "Holiday created successfully", "success");
         } catch (err) {
-            alert("Failed to save holiday");
+            addToast("Failed to save holiday", "error");
             console.error(err);
         }
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure?")) {
+        const confirmed = await confirm({
+            title: "Delete Holiday",
+            message: "Are you sure you want to delete this holiday?",
+            confirmText: "Delete",
+            type: "danger"
+        });
+
+        if (confirmed) {
             try {
                 await api.delete(`/holidays/${id}`);
                 fetchHolidays();
+                addToast("Holiday deleted successfully", "success");
             } catch (err) {
+                addToast("Failed to delete holiday", "error");
                 console.error(err);
             }
         }
@@ -221,10 +233,10 @@ const HolidayPage = () => {
             });
             await fetchHolidays();
             setShowImportModal(false);
-            alert("Holidays imported successfully!");
+            addToast("Holidays imported successfully!", "success");
         } catch (err) {
             console.error("Import failed", err);
-            alert("Import failed: " + (err.response?.data?.message || err.message));
+            addToast("Import failed: " + (err.response?.data?.message || err.message), "error");
         }
     };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../../../api/axios";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 // Toggle Switch Component
 const ToggleSwitch = ({ enabled, onChange, disabled = false }) => {
@@ -134,39 +135,9 @@ const RoleTab = ({ role, isActive, onClick }) => {
     );
 };
 
-// Notification Toast Component
-const Toast = ({ message, type, onClose }) => {
-    useEffect(() => {
-        const timer = setTimeout(onClose, 4000);
-        return () => clearTimeout(timer);
-    }, [onClose]);
-
-    return (
-        <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg animate-slide-in ${type === 'success'
-            ? 'bg-green-500 text-white'
-            : 'bg-red-500 text-white'
-            }`}>
-            {type === 'success' ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-            ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            )}
-            <span className="font-medium">{message}</span>
-            <button onClick={onClose} className="ml-2 hover:opacity-75">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-    );
-};
-
 // Main Settings Page
 const SettingsPage = () => {
+    const { addToast } = useGlobalUI();
     const [roles, setRoles] = useState([
         { id: 2, name: 'Admin', permissions: {} },
         { id: 3, name: 'HR', permissions: {} }
@@ -175,7 +146,6 @@ const SettingsPage = () => {
     const [activeRoleId, setActiveRoleId] = useState(2);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [toast, setToast] = useState(null);
     const [hasChanges, setHasChanges] = useState(false);
 
     // Fetch data on mount
@@ -194,7 +164,7 @@ const SettingsPage = () => {
             setAvailablePermissions(permissionsRes.data);
         } catch (err) {
             console.error('Failed to fetch permissions:', err);
-            setToast({ message: 'Failed to load permissions', type: 'error' });
+            addToast('Failed to load permissions', 'error');
         } finally {
             setLoading(false);
         }
@@ -216,11 +186,11 @@ const SettingsPage = () => {
         try {
             const activeRole = roles.find(r => r.id === activeRoleId);
             await api.put(`/role-permissions/${activeRoleId}`, activeRole.permissions);
-            setToast({ message: `${activeRole.name} permissions updated successfully!`, type: 'success' });
+            addToast(`${activeRole.name} permissions updated successfully!`, 'success');
             setHasChanges(false);
         } catch (err) {
             console.error('Failed to save permissions:', err);
-            setToast({ message: 'Failed to save permissions', type: 'error' });
+            addToast('Failed to save permissions', 'error');
         } finally {
             setSaving(false);
         }
@@ -276,13 +246,6 @@ const SettingsPage = () => {
 
     return (
         <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
-            {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
-            )}
 
             {/* Header */}
             <div className="mb-8">

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { formatDate } from "../../utils/dateUtils";
+import { useGlobalUI } from "../../context/GlobalUIContext";
 
 const TasksPage = () => {
+    const { addToast, confirm } = useGlobalUI();
     const { user } = useAuth();
     const [tasks, setTasks] = useState([]);
     const [employees, setEmployees] = useState([]);
@@ -106,17 +108,17 @@ const TasksPage = () => {
         try {
             if (isEditing) {
                 await api.put(`/tasks/${editTaskId}`, formData);
-                alert("Task updated successfully!");
+                addToast("Task updated successfully!", "success");
             } else {
                 await api.post("/tasks", formData);
-                alert("Task created successfully!");
+                addToast("Task created successfully!", "success");
             }
             setIsModalOpen(false);
             resetForm();
             fetchTasks();
         } catch (error) {
             console.error("Failed to save task", error);
-            alert(error.response?.data?.message || "Operation failed");
+            addToast(error.response?.data?.message || "Operation failed", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -156,15 +158,15 @@ const TasksPage = () => {
     };
 
     const handleDelete = async (taskId) => {
-        if (!window.confirm("Are you sure you want to delete this task?")) return;
+        if (!await confirm("Delete Task", "Are you sure you want to delete this task?", "Delete")) return;
 
         try {
             await api.delete(`/tasks/${taskId}`);
             fetchTasks();
-            alert("Task deleted successfully");
+            addToast("Task deleted successfully", "success");
         } catch (error) {
             console.error("Failed to delete task", error);
-            alert("Failed to delete task");
+            addToast("Failed to delete task", "error");
         }
     };
 
@@ -175,10 +177,10 @@ const TasksPage = () => {
             setShowApprovalModal(false);
             setAdminFeedback("");
             fetchTasks();
-            alert("Task approved and marked as completed!");
+            addToast("Task approved and marked as completed!", "success");
         } catch (error) {
             console.error("Failed to approve task", error);
-            alert("Approval failed");
+            addToast("Approval failed", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -186,7 +188,7 @@ const TasksPage = () => {
 
     const handleReject = async (taskId) => {
         if (!adminFeedback.trim()) {
-            alert("Please provide feedback for the rejection.");
+            addToast("Please provide feedback for the rejection.", "warning");
             return;
         }
         setIsSubmitting(true);
@@ -195,10 +197,10 @@ const TasksPage = () => {
             setShowApprovalModal(false);
             setAdminFeedback("");
             fetchTasks();
-            alert("Task rejected and sent back for revision.");
+            addToast("Task rejected and sent back for revision.", "success");
         } catch (error) {
             console.error("Failed to reject task", error);
-            alert("Rejection failed");
+            addToast("Rejection failed", "error");
         } finally {
             setIsSubmitting(false);
         }

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { FileText, Download, Trash2, Upload, Search, Filter, X, Eye } from "lucide-react";
+import { useGlobalUI } from "../../context/GlobalUIContext";
 
 const DocumentsPage = () => {
+    const { addToast, confirm } = useGlobalUI();
     const { user } = useAuth();
     const [documents, setDocuments] = useState([]);
     const [employees, setEmployees] = useState([]); // For Admin/HR filter
@@ -77,7 +79,7 @@ const DocumentsPage = () => {
 
             if (!isEmployee) {
                 if (!uploadData.employee_id) {
-                    alert("Please select an employee.");
+                    addToast("Please select an employee.", "warning");
                     setUploading(false);
                     return;
                 }
@@ -95,21 +97,20 @@ const DocumentsPage = () => {
             fetchDocuments(); // Refresh list
         } catch (err) {
             console.error("Upload failed", err);
-            alert("Upload failed. Ensure file is within limits (2MB).");
+            addToast("Upload failed. Ensure file is within limits (2MB).", "error");
         } finally {
             setUploading(false);
         }
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this document?")) return;
+        if (!await confirm("Delete Document", "Are you sure you want to delete this document?", "Delete")) return;
         try {
             await api.delete(`/employee-documents/${id}`);
             setDocuments(documents.filter(doc => doc.id !== id));
-            setDocuments(documents.filter(doc => doc.id !== id));
         } catch (err) {
             console.error("Delete failed", err);
-            alert("Failed to delete document.");
+            addToast("Failed to delete document.", "error");
         }
     };
 
@@ -124,7 +125,7 @@ const DocumentsPage = () => {
             window.open(fileURL, '_blank');
         } catch (err) {
             console.error("View failed", err);
-            alert("Failed to view document.");
+            addToast("Failed to view document.", "error");
         }
     };
 
@@ -144,7 +145,7 @@ const DocumentsPage = () => {
             link.remove();
         } catch (err) {
             console.error("Download failed", err);
-            alert("Failed to download document.");
+            addToast("Failed to download document.", "error");
         }
     }
 

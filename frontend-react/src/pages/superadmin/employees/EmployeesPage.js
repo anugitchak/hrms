@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api, { STORAGE_URL } from "../../../api/axios";
 import { useAuth } from "../../../context/AuthContext"; // Add AuthContext
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 import FaceEnrollment from "../../../components/FaceEnrollment";
 
 import { formatDate } from "../../../utils/dateUtils";
 
 const EmployeesPage = () => {
     const { user } = useAuth();
+    const { addToast } = useGlobalUI();
     // Unified API Endpoint
     const apiEndpoint = "/employees";
 
@@ -620,10 +622,11 @@ const EmployeesPage = () => {
             await api.delete(`${apiEndpoint}/${selectedEmployee.id}`);
             fetchEmployees();
             closeModals();
+            addToast("Employee deleted successfully", "success");
         } catch (err) {
             console.error("Failed to delete employee", err);
             const errorMessage = err.response?.data?.message || "Failed to delete employee. Please try again.";
-            alert(errorMessage);
+            addToast(errorMessage, "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -1690,8 +1693,9 @@ const EmployeesPage = () => {
                                                             );
                                                             setEmployees(updatedEmps);
                                                             setSelectedEmployee({ ...selectedEmployee, overtime_enabled: !selectedEmployee.overtime_enabled });
+                                                            addToast(`Overtime ${!selectedEmployee.overtime_enabled ? 'enabled' : 'disabled'} successfully`, "success");
                                                         } catch (error) {
-                                                            alert(error?.response?.data?.message || 'Failed to toggle overtime permission');
+                                                            addToast(error?.response?.data?.message || 'Failed to toggle overtime permission', "error");
                                                         }
                                                     }}
                                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 border-2 ${selectedEmployee.overtime_enabled

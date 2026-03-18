@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 import {
     fetchAnnouncements,
     createAnnouncement,
@@ -15,6 +16,7 @@ import AnnouncementViewer from "../../../components/announcements/AnnouncementVi
 
 const AnnouncementsPage = () => {
     // State
+    const { addToast, confirm } = useGlobalUI();
     const [announcements, setAnnouncements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
@@ -79,13 +81,20 @@ const AnnouncementsPage = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this announcement?")) return;
+        const confirmed = await confirm({
+            title: "Delete Announcement",
+            message: "Are you sure you want to delete this announcement?",
+            confirmText: "Delete",
+            type: "danger"
+        });
+        if (!confirmed) return;
         try {
             await deleteAnnouncement(id);
+            addToast("Announcement deleted successfully", "success");
             loadAnnouncements();
         } catch (error) {
             console.error("Failed to delete announcement", error);
-            alert("Failed to delete announcement.");
+            addToast("Failed to delete announcement.", "error");
         }
     };
 
@@ -130,12 +139,13 @@ const AnnouncementsPage = () => {
                 await createAnnouncement(payload);
             }
 
+            addToast(selectedAnnouncement ? "Announcement updated successfully" : "Announcement created successfully", "success");
             setIsFormOpen(false);
             loadAnnouncements();
         } catch (error) {
             console.error("Failed to save announcement", error);
             console.error("Error response:", error.response?.data);
-            alert(`Failed to save announcement: ${error.response?.data?.message || error.message}`);
+            addToast(`Failed to save announcement: ${error.response?.data?.message || error.message}`, "error");
         } finally {
             setIsSubmitting(false);
         }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../../../api/axios";
 import { formatDate } from "../../../utils/dateUtils";
 import { useAuth } from "../../../context/AuthContext";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 // --- Components ---
 
@@ -310,6 +311,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
 const LeavesPage = () => {
     // State
     const [leaves, setLeaves] = useState([]);
+    const { addToast } = useGlobalUI();
     const [groupedLeaves, setGroupedLeaves] = useState({});
     const [summary, setSummary] = useState({ total: 0, pending: 0, approved: 0, rejected: 0 });
     const [departments, setDepartments] = useState([]);
@@ -457,7 +459,7 @@ const LeavesPage = () => {
             loadSummary();
             forcePanelRefresh();
         } catch (err) {
-            alert("Failed to update status.");
+            addToast("Failed to update status: " + (err.response?.data?.message || err.message), "error");
         }
     };
 

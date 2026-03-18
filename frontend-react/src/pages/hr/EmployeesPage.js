@@ -3,8 +3,10 @@ import api, { STORAGE_URL } from "../../api/axios";
 import { formatDate } from "../../utils/dateUtils";
 import { useAuth } from "../../context/AuthContext";
 import FaceEnrollment from "../../components/FaceEnrollment";
+import { useGlobalUI } from "../../context/GlobalUIContext";
 
 const EmployeesPage = () => {
+    const { addToast } = useGlobalUI();
     const { user } = useAuth();
     // HR usually has manage permissions, but verify role_id 3
     const canManage = user?.role_id === 3 || user?.can_manage_employees;
@@ -464,7 +466,7 @@ const EmployeesPage = () => {
             closeModals();
         } catch (err) {
             console.error("Failed to delete employee", err);
-            alert("Failed to delete employee");
+            addToast("Failed to delete employee", "error");
         } finally {
             setIsSubmitting(false);
         }

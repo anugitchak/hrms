@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import api from "../../../api/axios";
 import { formatDate } from "../../../utils/dateUtils";
 import { useAuth } from "../../../context/AuthContext";
+import { useGlobalUI } from "../../../context/GlobalUIContext";
 
 const SalariesPage = () => {
     const { user } = useAuth();
+    const { addToast } = useGlobalUI();
     const canManageSalary = user?.role_id === 1 || user?.permissions?.includes("can_manage_salaries");
 
     // State
@@ -156,9 +158,10 @@ const SalariesPage = () => {
             });
             loadSalaries();
             setIsEditModalOpen(false);
+            addToast("Salary updated successfully", "success");
         } catch (err) {
             console.error("Failed to update salary", err);
-            alert("Failed to update salary.");
+            addToast("Failed to update salary.", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -177,9 +180,10 @@ const SalariesPage = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            addToast("Export successful", "info");
         } catch (err) {
             console.error("Failed to export salaries", err);
-            alert("Failed to export salaries.");
+            addToast("Failed to export salaries.", "error");
         }
     };
 
