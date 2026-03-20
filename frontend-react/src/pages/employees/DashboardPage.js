@@ -63,19 +63,19 @@ const AttendanceActionCard = ({ attendance, onCheckIn, onCheckOut, loading }) =>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Check In</div>
+                    <div className="text-sm text-gray-900 mb-1">Check In</div>
                     <div className="text-xl font-semibold text-gray-900 dark:text-white">
                         {attendance?.check_in ? formatTime(attendance.check_in) : "--:--"}
                     </div>
                 </div>
                 <div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Check Out</div>
+                    <div className="text-sm text-gray-900 mb-1">Check Out</div>
                     <div className="text-xl font-semibold text-gray-900 dark:text-white">
                         {attendance?.check_out ? formatTime(attendance.check_out) : "--:--"}
                     </div>
                 </div>
                 <div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Duration</div>
+                    <div className="text-sm text-gray-900 mb-1">Duration</div>
                     <div className="text-xl font-semibold text-indigo-600 dark:text-indigo-400">
                         {calculateHours(attendance?.check_in, attendance?.check_out)}
                     </div>
@@ -87,7 +87,7 @@ const AttendanceActionCard = ({ attendance, onCheckIn, onCheckOut, loading }) =>
                     onClick={onCheckIn}
                     disabled={loading || isCheckedIn}
                     className={`py-3.5 rounded-xl font-semibold text-base transition-all duration-200 ${isCheckedIn
-                        ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed"
+                        ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-900 cursor-not-allowed"
                         : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-md hover:shadow-lg"
                         }`}
                 >
@@ -97,7 +97,7 @@ const AttendanceActionCard = ({ attendance, onCheckIn, onCheckOut, loading }) =>
                     onClick={onCheckOut}
                     disabled={loading || !isCheckedIn || isCheckedOut}
                     className={`py-3.5 rounded-xl font-semibold text-base transition-all duration-200 ${(!isCheckedIn || isCheckedOut)
-                        ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed"
+                        ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-900 cursor-not-allowed"
                         : "bg-rose-500 hover:bg-rose-600 text-white shadow-md hover:shadow-lg"
                         }`}
                 >
@@ -122,7 +122,7 @@ const RecentActivitySection = ({ leaves, announcements, payslips, tasks, navigat
                         <div key={task.id} className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all group">
                             <div className="flex-1 mr-4">
                                 <div className="font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">{task.title}</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
+                                <div className="text-xs text-gray-900 mt-1 flex items-center gap-2">
                                     <span className={`px-1.5 py-0.5 rounded text-[10px] uppercase font-bold ${task.priority === 'urgent' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
                                         }`}>
                                         {task.priority}
@@ -156,7 +156,7 @@ const RecentActivitySection = ({ leaves, announcements, payslips, tasks, navigat
                         <div key={leave.id} className="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
                             <div>
                                 <div className="font-medium text-gray-800 dark:text-gray-200">{leave.leave_type?.name || "Leave"}</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                <div className="text-xs text-gray-900 mt-0.5">
                                     {new Date(leave.start_date).toLocaleDateString()} - {new Date(leave.end_date).toLocaleDateString()}
                                 </div>
                             </div>
@@ -185,7 +185,7 @@ const RecentActivitySection = ({ leaves, announcements, payslips, tasks, navigat
                     {announcements.map(ann => (
                         <div key={ann.id} className="pb-2 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
                             <div className="font-medium text-gray-800 dark:text-gray-200 mb-1">{ann.title}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">{new Date(ann.created_at).toLocaleDateString()}</div>
+                            <div className="text-xs text-gray-900">{new Date(ann.created_at).toLocaleDateString()}</div>
                         </div>
                     ))}
                 </div>
@@ -542,7 +542,7 @@ const DashboardPage = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 transition-colors">
+            <div className="flex justify-center items-center h-screen text-gray-900 bg-gray-50 dark:bg-gray-900 transition-colors">
                 <div className="text-xl font-medium animate-pulse">Loading Dashboard...</div>
             </div>
         );
@@ -650,7 +650,7 @@ const DashboardPage = () => {
                                             </Marker>
                                         </MapContainer>
                                     </div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    <p className="text-xs text-gray-900">
                                         📌 {currentLocationName || `${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}`}
                                     </p>
                                 </div>

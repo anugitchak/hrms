@@ -481,8 +481,8 @@ const EmployeesPage = () => {
         <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
             <div className="flex justify-between items-center p-6 border-b bg-white dark:bg-gray-800 dark:border-gray-700">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">HR Employees</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Manage workforce</p>
+                    <h1 className="text-2xl font-bold text-black font-paperlogy">HR Employees</h1>
+                    <p className="text-sm text-gray-900">Manage workforce</p>
                 </div>
                 {canManage && (
                     <button
@@ -495,7 +495,7 @@ const EmployeesPage = () => {
             </div>
 
             <div className="p-6 pb-0">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex flex-wrap gap-4 items-center">
+                <div className="card p-4 flex flex-wrap gap-4 items-center">
                     <input
                         type="text"
                         placeholder="Search employees..."
@@ -525,37 +525,37 @@ const EmployeesPage = () => {
 
             <div className="flex-1 overflow-auto p-6">
                 {loading ? (
-                    <div className="text-center p-8 text-gray-500">Loading employees...</div>
+                    <div className="text-center p-8 text-gray-900">Loading employees...</div>
                 ) : error ? (
                     <div className="text-center p-8 text-red-500">{error}</div>
                 ) : (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
                         <table className="w-full text-left border-collapse">
-                            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+                            <thead className="bg-brand-50 border-b-2 border-black">
                                 <tr>
-                                    <th onClick={() => handleSort("name")} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer">Employee</th>
-                                    <th onClick={() => handleSort("department")} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer">Department</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Contact</th>
-                                    <th onClick={() => handleSort("date_of_joining")} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase cursor-pointer">Joined</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Face Enrollment</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">Actions</th>
+                                    <th onClick={() => handleSort("name")} className="px-6 py-3 text-xs font-semibold text-gray-900 uppercase cursor-pointer">Employee</th>
+                                    <th onClick={() => handleSort("department")} className="px-6 py-3 text-xs font-semibold text-gray-900 uppercase cursor-pointer">Department</th>
+                                    <th className="px-6 py-3 text-xs font-semibold text-gray-900 uppercase">Contact</th>
+                                    <th onClick={() => handleSort("date_of_joining")} className="px-6 py-3 text-xs font-semibold text-gray-900 uppercase cursor-pointer">Joined</th>
+                                    <th className="px-6 py-3 text-xs font-semibold text-gray-900 uppercase">Status</th>
+                                    <th className="px-6 py-3 text-xs font-semibold text-gray-900 uppercase">Face Enrollment</th>
+                                    <th className="px-6 py-3 text-xs font-semibold text-gray-900 uppercase text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                                 {paginatedEmployees.length === 0 ? (
-                                    <tr><td colSpan="6" className="px-6 py-8 text-center text-gray-500">No employees found.</td></tr>
+                                    <tr><td colSpan="6" className="px-6 py-8 text-center text-gray-900">No employees found.</td></tr>
                                 ) : (
                                     paginatedEmployees.map((emp) => (
                                         <tr key={emp.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="font-medium text-gray-900 dark:text-white">{emp.user?.name}</div>
-                                                <div className="text-xs text-gray-500 dark:text-gray-400">{emp.designation?.name || '-'}</div>
+                                                <div className="text-xs text-gray-900">{emp.designation?.name || '-'}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{emp.department?.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-700 dark:text-gray-300">{emp.user?.email}</div>
-                                                <div className="text-xs text-gray-500 dark:text-gray-400">{emp.phone}</div>
+                                                <div className="text-xs text-gray-900">{emp.phone}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{formatDate(emp.date_of_joining)}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
@@ -876,7 +876,7 @@ const EmployeesPage = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl relative transition-colors duration-200 my-8">
                         <button
                             onClick={closeModals}
-                            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            className="absolute top-4 right-4 text-gray-900 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -900,7 +900,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div>
                                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedEmployee.user?.name}</h2>
-                                    <p className="text-gray-500 dark:text-gray-400">{selectedEmployee.designation?.name}</p>
+                                    <p className="text-gray-900">{selectedEmployee.designation?.name}</p>
                                     <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-2 ${selectedEmployee.user?.is_active
                                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                                         : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
@@ -915,27 +915,27 @@ const EmployeesPage = () => {
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b dark:border-gray-700 pb-2">Personal Details</h3>
                                     <dl className="space-y-3">
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Email</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.user?.email}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Phone</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Phone</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.phone}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Date of Birth</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Date of Birth</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{formatDate(selectedEmployee.dob)}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Gender</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Gender</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.gender}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Marital Status</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Marital Status</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.marital_status}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Current Address</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Current Address</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.address}</dd>
                                         </div>
                                     </dl>
@@ -945,39 +945,39 @@ const EmployeesPage = () => {
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b dark:border-gray-700 pb-2">Employment Details</h3>
                                     <dl className="space-y-3">
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Employee Code</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Employee Code</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.employee_code}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Department</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Department</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.department?.name}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Country</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Country</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.country?.name || "N/A"}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Sub-Company</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Sub-Company</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.sub_company?.name || "N/A"}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Joining Category</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Joining Category</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.joining_category || "N/A"}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Date of Joining</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Date of Joining</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{formatDate(selectedEmployee.date_of_joining)}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Aadhar Number</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Aadhar Number</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.aadhar_number}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">PAN Number</dt>
+                                            <dt className="text-sm font-medium text-gray-900">PAN Number</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.pan_number}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Emergency Contact</dt>
+                                            <dt className="text-sm font-medium text-gray-900">Emergency Contact</dt>
                                             <dd className="text-sm text-gray-900 dark:text-white">{selectedEmployee.emergency_contact}</dd>
                                         </div>
                                     </dl>

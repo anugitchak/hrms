@@ -496,7 +496,7 @@ const AttendancePage = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 transition-colors">
+            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 transition-colors">
                 <div className="text-xl font-medium animate-pulse">Loading attendance...</div>
             </div>
         );
@@ -577,12 +577,12 @@ const AttendancePage = () => {
 
                 {/* Weekly Summary */}
                 <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-200">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 font-medium uppercase tracking-wide">This Week</div>
+                    <div className="text-sm text-gray-900 mb-2 font-medium uppercase tracking-wide">This Week</div>
                     <div className="flex items-baseline gap-2 mb-4">
                         <span className="text-3xl font-bold text-gray-900 dark:text-white">{weeklyStats.formatted || "0h 0m"}</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">worked</span>
+                        <span className="text-sm text-gray-900">worked</span>
                     </div>
-                    <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4">
+                    <div className="flex justify-between text-sm text-gray-900 border-t border-gray-100 dark:border-gray-700 pt-4">
                         <span>Days: <strong className="text-gray-700 dark:text-gray-300">{weeklyStats.daysWorked || 0}</strong></span>
                         <span>Avg: <strong className="text-gray-700 dark:text-gray-300">{weeklyStats.average || "0h"}</strong> / day</span>
                     </div>
@@ -591,7 +591,7 @@ const AttendancePage = () => {
                 {/* Monthly Summary */}
                 <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-200">
                     <div className="flex justify-between items-center mb-2">
-                        <div className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Monthly Overview</div>
+                        <div className="text-sm text-gray-900 font-medium uppercase tracking-wide">Monthly Overview</div>
                         <input
                             type="month"
                             id="month-filter"
@@ -603,9 +603,9 @@ const AttendancePage = () => {
                     </div>
                     <div className="flex items-baseline gap-2 mb-4">
                         <span className="text-3xl font-bold text-gray-900 dark:text-white">{monthlyStats.formatted || "0h 0m"}</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">worked</span>
+                        <span className="text-sm text-gray-900">worked</span>
                     </div>
-                    <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4">
+                    <div className="flex justify-between text-sm text-gray-900 border-t border-gray-100 dark:border-gray-700 pt-4">
                         <span>Days: <strong className="text-gray-700 dark:text-gray-300">{monthlyStats.daysWorked || 0}</strong></span>
                         <span>Avg: <strong className="text-gray-700 dark:text-gray-300">{monthlyStats.average || "0h"}</strong> / day</span>
                     </div>
@@ -623,21 +623,21 @@ const AttendancePage = () => {
                         <table className="w-full text-left border-collapse">
                             <thead className="bg-gray-50 dark:bg-gray-700/50">
                                 <tr>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Check In</th>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Check Out</th>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hours</th>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Overtime</th>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Device</th>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Remarks</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Date</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Check In</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Check Out</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Hours</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Overtime</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Location</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Device</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Status</th>
+                                    <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                                 {filteredAttendance.length > 0 ? (
                                     filteredAttendance.map((record) => (
-                                        <tr key={record.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <tr key={record.id} className="hover:bg-brand-50/50 transition-colors border-b-2 border-black/5">
                                             <td className="p-4 text-sm font-medium text-gray-900 dark:text-white">
                                                 {new Date(record.date).toLocaleDateString("en-US", {
                                                     weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
@@ -726,11 +726,11 @@ const AttendancePage = () => {
                                                 {record.device_id ? (
                                                     <div className="flex flex-col gap-1">
                                                         <span className="font-medium">{record.device_type || 'Unknown'}</span>
-                                                        <span className="text-gray-500 dark:text-gray-500 truncate max-w-[120px]" title={String(record.device_id)}>
+                                                        <span className="text-gray-900 truncate max-w-[120px]" title={String(record.device_id)}>
                                                             ID: {String(record.device_id).substring(0, 12)}...
                                                         </span>
                                                         {record.browser && (
-                                                            <span className="text-gray-500 dark:text-gray-500">{record.browser}</span>
+                                                            <span className="text-gray-900">{record.browser}</span>
                                                         )}
                                                     </div>
                                                 ) : (
@@ -763,7 +763,7 @@ const AttendancePage = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="9" className="p-8 text-center text-gray-500 dark:text-gray-400">
+                                        <td colSpan="9" className="p-8 text-center text-gray-900">
                                             No attendance records found for this month.
                                         </td>
                                     </tr>
@@ -814,7 +814,7 @@ const AttendancePage = () => {
                                             </Marker>
                                         </MapContainer>
                                     </div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    <p className="text-xs text-gray-900">
                                         📌 {currentLocationName || `${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}`}
                                     </p>
                                 </div>
@@ -892,7 +892,7 @@ const AttendancePage = () => {
                                                     Check-in: <span className="font-medium text-green-600 dark:text-green-400">{session.check_in}</span>
                                                 </div>
                                                 {session.check_in_latitude && session.check_in_longitude && (
-                                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    <div className="text-xs text-gray-900 mt-1">
                                                         📍 {Number(session.check_in_latitude).toFixed(4)}, {Number(session.check_in_longitude).toFixed(4)}
                                                     </div>
                                                 )}

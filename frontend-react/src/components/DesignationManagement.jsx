@@ -147,17 +147,17 @@ const DesignationManagement = () => {
     );
 
     return (
-        <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        <div className="p-8">
             {/* Header matches AdminEmployeesPage */}
-            <div className="flex justify-between items-center p-6 border-b bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm">
+            <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Designations</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Define hierarchy and organizational titles</p>
+                    <h1 className="text-3xl font-extrabold text-black font-paperlogy">Designations</h1>
+                    <p className="text-sm font-medium text-gray-900">Define hierarchy and organizational titles</p>
                 </div>
                 {canManage && (
                     <button
                         onClick={() => handleOpenModal("create")}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded shadow transition duration-150 ease-in-out"
+                        className="btn-primary flex items-center gap-2"
                     >
                         <Plus size={18} />
                         Add Designation
@@ -166,11 +166,11 @@ const DesignationManagement = () => {
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-auto p-6">
+            <div className="flex-1">
 
                 {/* Search Bar */}
                 <div className="mb-6">
-                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex flex-wrap gap-4 items-center">
+                    <div className="card p-4 flex flex-wrap gap-4 items-center">
                         <div className="relative w-full max-w-[300px]">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                             <label htmlFor="search-designations" className="sr-only">Search Designations</label>
@@ -180,7 +180,7 @@ const DesignationManagement = () => {
                                 name="search"
                                 autoComplete="off"
                                 placeholder="Search designations..."
-                                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                                className="w-full pl-10 pr-4 py-2.5 border-2 border-black rounded-lg outline-none bg-white text-black focus:ring-4 focus:ring-brand-500 font-medium"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -188,104 +188,74 @@ const DesignationManagement = () => {
                     </div>
                 </div>
 
-                {/* Table */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-                                {/* <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    Hierarchy Level
-                                </th> */}
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    Name
-                                </th>
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    Description
-                                </th>
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    Status
-                                </th>
+                {/* Card Grid */}
+                {loading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                        {[1,2,3].map(i => (
+                            <div key={i} className="card p-5 animate-pulse">
+                                <div className="h-5 bg-gray-200 rounded w-3/4 mb-3"></div>
+                                <div className="h-3 bg-gray-100 rounded w-full mb-2"></div>
+                                <div className="h-3 bg-gray-100 rounded w-2/3"></div>
+                            </div>
+                        ))}
+                    </div>
+                ) : filteredDesignations.length === 0 ? (
+                    <div className="card p-16 text-center flex flex-col items-center gap-4 mt-4">
+                        <div className="bg-gray-100 p-5 rounded-2xl">
+                            <AlertCircle size={40} className="text-gray-300" />
+                        </div>
+                        <p className="font-bold text-gray-500">No designations found.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                        {filteredDesignations.map((designation) => (
+                            <div key={designation.id} className={`card p-5 flex flex-col gap-3 border-2 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 ${designation.is_active ? 'border-black/10' : 'border-red-200 bg-red-50/30'}`}>
+                                {/* Top row: icon + badge */}
+                                <div className="flex items-start justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center text-lg font-black border-2 border-black shadow-[2px_2px_0px_black] shrink-0">
+                                            {designation.name?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-extrabold text-black text-sm leading-tight">{designation.name}</h3>
+                                        </div>
+                                    </div>
+                                    <span className={`px-2.5 py-1 text-[10px] font-bold border rounded-full ${designation.is_active ? 'bg-green-100 text-green-700 border-green-300' : 'bg-red-100 text-red-700 border-red-300'}`}>
+                                        {designation.is_active ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+
+                                {/* Description */}
+                                <p className="text-xs text-gray-500 font-medium min-h-[2rem]">{designation.description || '—'}</p>
+
+                                {/* Actions */}
                                 {canManage && (
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">
-                                        Actions
-                                    </th>
+                                    <div className="flex items-center gap-2 pt-2 border-t-2 border-black/5">
+                                        <button onClick={() => handleToggleStatus(designation.id, designation.is_active)}
+                                            className={`flex-1 text-xs font-bold py-1.5 rounded-lg border-2 transition-all ${designation.is_active ? 'border-red-300 text-red-600 bg-red-50 hover:bg-red-100' : 'border-green-300 text-green-600 bg-green-50 hover:bg-green-100'}`}>
+                                            {designation.is_active ? 'Disable' : 'Enable'}
+                                        </button>
+                                        <button onClick={() => handleOpenModal('edit', designation)}
+                                            className="flex-1 text-xs font-bold py-1.5 rounded-lg border-2 border-blue-300 text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all">
+                                            Edit
+                                        </button>
+                                        <button onClick={() => handleDelete(designation.id)}
+                                            className="flex-1 text-xs font-bold py-1.5 rounded-lg border-2 border-black text-black bg-white hover:bg-gray-100 transition-all shadow-[2px_2px_0px_black]">
+                                            Delete
+                                        </button>
+                                    </div>
                                 )}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                                        Loading designations...
-                                    </td>
-                                </tr>
-                            ) : filteredDesignations.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                                        No designations found.
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredDesignations.map((designation) => (
-                                    <tr key={designation.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold ring-1 ring-blue-200 dark:ring-blue-800">
-                                                {designation.level}
-                                            </span>
-                                        </td> */}
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                            {designation.name}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                                            {designation.description || "-"}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs font-medium ${designation.is_active
-                                                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                                                    : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-                                                    }`}
-                                            >
-                                                {designation.is_active ? "Active" : "Inactive"}
-                                            </span>
-                                        </td>
-                                        {canManage && (
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <div className="flex items-center justify-end gap-3">
-                                                    <button
-                                                        onClick={() => handleToggleStatus(designation.id, designation.is_active)}
-                                                        className={`text-xs ${designation.is_active ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
-                                                    >
-                                                        {designation.is_active ? 'Disable' : 'Enable'}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleOpenModal("edit", designation)}
-                                                        className="text-blue-600 hover:text-blue-900"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(designation.id)}
-                                                        className="text-red-600 hover:text-red-900"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-200">
-                        <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-700">
+                    <div className="card w-full max-w-md">
+                        <div className="flex justify-between items-center p-6 border-b-2 border-black">
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                                 {modalMode === "create" ? "Add Designation" : "Edit Designation"}
                             </h2>
@@ -308,7 +278,7 @@ const DesignationManagement = () => {
                                     name="name"
                                     autoComplete="off"
                                     required
-                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-black bg-white text-black focus:ring-4 focus:ring-brand-500 outline-none font-medium"
                                     placeholder="e.g. Senior Developer"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -324,7 +294,7 @@ const DesignationManagement = () => {
                                     id="designation_description"
                                     name="description"
                                     autoComplete="off"
-                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors resize-none h-24"
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-black bg-white text-black focus:ring-4 focus:ring-brand-500 outline-none font-medium resize-none h-24"
                                     placeholder="Optional description..."
                                     value={formData.description || ""}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -350,14 +320,14 @@ const DesignationManagement = () => {
                                 <button
                                     type="button"
                                     onClick={handleCloseModal}
-                                    className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors font-medium"
+                                    className="flex-1 btn-secondary"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submitLoading}
-                                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                                    className="flex-1 btn-primary flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {submitLoading ? (
                                         <>

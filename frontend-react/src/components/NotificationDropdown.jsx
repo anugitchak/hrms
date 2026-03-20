@@ -63,44 +63,43 @@ const NotificationDropdown = ({ onClose, onSelect }) => {
     return (
         <div
             ref={dropdownRef}
-            className="absolute top-12 right-0 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 flex flex-col max-h-[480px] transition-colors duration-200"
+            className="absolute top-12 right-0 w-[360px] bg-white dark:bg-gray-800 rounded-xl shadow-[8px_8px_0px_rgba(0,0,0,1)] border-4 border-black z-50 flex flex-col max-h-[480px] transition-colors duration-200 overflow-hidden"
         >
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white m-0">Notifications</h3>
+            <div className="p-4 border-b-4 border-black bg-brand-200 flex justify-between items-center">
+                <h3 className="text-lg font-black text-black m-0 uppercase tracking-tight">Notifications</h3>
                 <button
                     onClick={markAllRead}
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline bg-transparent border-none cursor-pointer"
+                    className="text-xs font-bold text-black hover:text-blue-700 bg-white border-2 border-black rounded px-2 py-1 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
                 >
                     Mark all read
                 </button>
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <div className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50 dark:bg-gray-900">
                 {loading ? (
-                    <div className="p-4 text-center text-gray-500 dark:text-gray-400">Loading...</div>
+                    <div className="p-8 text-center text-black font-bold animate-pulse">Loading...</div>
                 ) : notifications.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500 dark:text-gray-400">No notifications</div>
+                    <div className="p-8 text-center text-gray-500 font-bold">You're all caught up! 🚀</div>
                 ) : (
                     notifications.slice(0, 10).map((n) => (
                         <div
                             key={n.id}
                             onClick={() => handleItemClick(n)}
                             className={`
-                                p-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer transition-colors duration-200
-                                ${n.is_read ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-700/30'}
-                                ${!n.is_read ? `border-l-4 ${getBorderColorClass(n.type)}` : 'border-l-4 border-l-transparent'}
-                                hover:bg-gray-50 dark:hover:bg-gray-700/50
+                                p-4 border-b-2 border-black cursor-pointer transition-all duration-200 relative group
+                                ${n.is_read ? 'bg-white opacity-80' : 'bg-white hover:-translate-y-0.5 hover:shadow-[0px_4px_0px_rgba(0,0,0,0.1)]'}
                             `}
                         >
-                            <div className="flex justify-between mb-1">
-                                <span className={`text-sm ${n.is_read ? 'font-medium text-gray-700 dark:text-gray-300' : 'font-bold text-gray-900 dark:text-white'}`}>
+                            {!n.is_read && <div className="absolute top-5 left-2 w-2 h-2 rounded-full bg-blue-600 animate-pulse border border-black z-10"></div>}
+                            <div className={`flex justify-between items-start mb-2 ${!n.is_read ? 'pl-3' : ''}`}>
+                                <span className={`text-sm tracking-tight pr-2 ${n.is_read ? 'font-bold text-gray-800 dark:text-gray-300' : 'font-black text-black dark:text-white'}`}>
                                     {n.title}
                                 </span>
-                                <span className="text-xs text-gray-400 dark:text-gray-500">{timeAgo(n.created_at)}</span>
+                                <span className="text-[10px] font-bold text-gray-700 bg-gray-200 px-2 py-0.5 border-2 border-black rounded-full whitespace-nowrap">{timeAgo(n.created_at)}</span>
                             </div>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 m-0 leading-snug">
+                            <p className={`text-xs m-0 leading-relaxed ${n.is_read ? 'text-gray-500' : 'text-gray-800 font-medium'}`}>
                                 {n.message}
                             </p>
                         </div>
@@ -109,10 +108,10 @@ const NotificationDropdown = ({ onClose, onSelect }) => {
             </div>
 
             {/* Footer */}
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-center">
+            <div className="p-4 border-t-4 border-black bg-white">
                 <button
                     onClick={handleViewAll}
-                    className="w-full p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                    className="w-full py-2.5 bg-blue-100 hover:bg-blue-200 border-2 border-black rounded-lg text-sm font-black text-blue-900 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-all uppercase tracking-widest cursor-pointer"
                 >
                     View All Notifications
                 </button>

@@ -277,7 +277,7 @@ const LeavesPage = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 transition-colors">
+            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 transition-colors">
                 <div className="text-xl font-medium animate-pulse">Loading leaves...</div>
             </div>
         );
@@ -290,7 +290,7 @@ const LeavesPage = () => {
             <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Leaves</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your leave applications</p>
+                    <p className="text-gray-900 mt-1">Manage your leave applications</p>
                 </div>
                 <div className="flex gap-4">
                     <Button variant="secondary" onClick={() => navigate("/employee/dashboard")}>
@@ -306,16 +306,16 @@ const LeavesPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {balances.map((balance) => (
                     <div key={balance.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <div className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">
+                        <div className="text-sm text-gray-900 font-medium mb-1">
                             {balance.leave_type?.name || "Leave"}
                         </div>
                         <div className="flex items-baseline gap-1 mt-1">
                             <span className={`text-2xl font-bold ${balance.remaining_days > 0 ? 'text-gray-900 dark:text-white' : 'text-red-600 dark:text-red-400'}`}>
                                 {balance.remaining_days}
                             </span>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">days available</span>
+                            <span className="text-sm text-gray-900">days available</span>
                         </div>
-                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 text-xs flex justify-between text-gray-400 dark:text-gray-500">
+                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 text-xs flex justify-between text-gray-400 dark:text-gray-900">
                             <span>Allocated: {balance.allocated_days}</span>
                             <span>Used: {balance.used_days}</span>
                         </div>
@@ -333,11 +333,11 @@ const LeavesPage = () => {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-gray-50 dark:bg-gray-700/50">
                             <tr>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dates & Duration</th>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reason</th>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved By</th>
+                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Type</th>
+                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Dates & Duration</th>
+                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Reason</th>
+                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Status</th>
+                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Approved By</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -350,7 +350,7 @@ const LeavesPage = () => {
                                     const returnedDays = leave.approved_days ? days - leave.approved_days : 0;
 
                                     return (
-                                        <tr key={leave.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <tr key={leave.id} className="hover:bg-brand-50/50 transition-colors border-b-2 border-black/5">
                                             <td className="p-4 text-sm font-medium text-gray-900 dark:text-white">
                                                 {leave.leave_type?.name || "Leave"}
                                             </td>
@@ -359,7 +359,7 @@ const LeavesPage = () => {
                                                     <span className="font-medium">
                                                         {new Date(leave.start_date).toLocaleDateString()} - {new Date(leave.end_date).toLocaleDateString()}
                                                     </span>
-                                                    <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                                    <span className="text-xs text-gray-900 mb-1">
                                                         Requested: {days} days
                                                     </span>
 
@@ -397,14 +397,14 @@ const LeavesPage = () => {
                                                 {leave.approver ? (
                                                     <div>
                                                         <div className="font-medium">{leave.approver.name}</div>
-                                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                        <div className="text-xs text-gray-900">
                                                             {leave.approver.role_id === 1 ? 'SuperAdmin' :
                                                                 leave.approver.role_id === 2 ? 'Admin' :
                                                                     leave.approver.role_id === 3 ? 'HR' : 'Employee'}
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-gray-400 dark:text-gray-500 text-xs">-</span>
+                                                    <span className="text-gray-400 dark:text-gray-900 text-xs">-</span>
                                                 )}
                                             </td>
                                         </tr>
@@ -412,7 +412,7 @@ const LeavesPage = () => {
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan="5" className="p-8 text-center text-gray-500 dark:text-gray-400">
+                                    <td colSpan="5" className="p-8 text-center text-gray-900">
                                         No leave applications found.
                                     </td>
                                 </tr>

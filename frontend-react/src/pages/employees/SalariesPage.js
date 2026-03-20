@@ -85,7 +85,7 @@ const SalariesPage = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 transition-colors">
+            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 transition-colors">
                 <div className="text-xl font-medium animate-pulse">Loading Salary...</div>
             </div>
         );
@@ -98,7 +98,7 @@ const SalariesPage = () => {
             <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Salary</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">View your current salary structure</p>
+                    <p className="text-gray-900 mt-1">View your current salary structure</p>
                 </div>
                 <div>
                     <Button variant="secondary" onClick={() => navigate("/employee/dashboard")}>
@@ -132,11 +132,11 @@ const SalariesPage = () => {
                             </h3>
                             <div className="flex flex-col gap-4">
                                 <div className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-gray-800">
-                                    <span className="text-gray-500 dark:text-gray-400">Basic Salary</span>
+                                    <span className="text-gray-900">Basic Salary</span>
                                     <span className="font-semibold text-gray-900 dark:text-white">₹{Number(salary.basic || 0).toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-gray-800">
-                                    <span className="text-gray-500 dark:text-gray-400">HRA</span>
+                                    <span className="text-gray-900">HRA</span>
                                     <span className="font-semibold text-gray-900 dark:text-white">₹{Number(salary.hra || 0).toFixed(2)}</span>
                                 </div>
                             </div>
@@ -149,15 +149,15 @@ const SalariesPage = () => {
                             </h3>
                             <div className="flex flex-col gap-4">
                                 <div className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-gray-800">
-                                    <span className="text-gray-500 dark:text-gray-400">PF</span>
+                                    <span className="text-gray-900">PF</span>
                                     <span className="font-semibold text-red-500 dark:text-red-400">-₹{Number(salary.pf || 0).toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-gray-800">
-                                    <span className="text-gray-500 dark:text-gray-400">ESIC</span>
+                                    <span className="text-gray-900">ESIC</span>
                                     <span className="font-semibold text-red-500 dark:text-red-400">-₹{Number(salary.esic || 0).toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pb-2 border-b border-gray-50 dark:border-gray-800">
-                                    <span className="text-gray-500 dark:text-gray-400">PTAX</span>
+                                    <span className="text-gray-900">PTAX</span>
                                     <span className="font-semibold text-red-500 dark:text-red-400">-₹{Number(salary.ptax || 0).toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pb-2 pt-2 border-t border-gray-100 dark:border-gray-700 mt-2">

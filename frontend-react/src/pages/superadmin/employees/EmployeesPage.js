@@ -635,18 +635,18 @@ const EmployeesPage = () => {
 
     return (
         <>
-            <div className="p-8 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+            <div className="p-8">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Employees</h1>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Manage your organization's workforce</p>
+                        <h1 className="text-3xl font-extrabold text-black font-paperlogy">Employees</h1>
+                        <p className="text-sm font-medium text-gray-900">Manage your organization's workforce</p>
                     </div>
                     <div className="flex gap-3">
-                        <button onClick={openAddModal} className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors">+ Add Employee</button>
+                        <button onClick={openAddModal} className="px-4 py-2 btn-primary">+ Add Employee</button>
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 flex flex-wrap gap-4 items-center transition-colors duration-200">
+                <div className="card p-4 mb-6 flex flex-wrap gap-4 items-center transition-colors duration-200">
                     <label htmlFor="search_employees" className="sr-only">Search Employees</label>
                     <input
                         id="search_employees"
@@ -656,7 +656,7 @@ const EmployeesPage = () => {
                         placeholder="Search employees..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full max-w-[300px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-colors"
+                        className="p-2.5 border-2 border-black rounded-lg outline-none w-full max-w-[300px] bg-white text-black placeholder-gray-500 focus:ring-4 focus:ring-brand-500 font-medium transition-colors"
                     />
                     <label htmlFor="filter_department" className="sr-only">Filter by Department</label>
                     <select
@@ -665,7 +665,7 @@ const EmployeesPage = () => {
                         autoComplete="off"
                         value={departmentFilter}
                         onChange={(e) => setDepartmentFilter(e.target.value)}
-                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full max-w-[200px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors"
+                        className="p-2.5 border-2 border-black rounded-lg outline-none w-full max-w-[200px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors"
                     >
                         <option value="">All Departments</option>
                         {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -677,7 +677,7 @@ const EmployeesPage = () => {
                         autoComplete="off"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full max-w-[150px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors"
+                        className="p-2.5 border-2 border-black rounded-lg outline-none w-full max-w-[150px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors"
                     >
                         <option value="">All Status</option>
                         <option value="Active">Active</option>
@@ -686,110 +686,101 @@ const EmployeesPage = () => {
                 </div>
 
                 {loading ? (
-                    <div className="text-center p-8 text-gray-500 dark:text-gray-400">Loading employees...</div>
+                    <div className="text-center p-8 text-gray-900">Loading employees...</div>
                 ) : error ? (
                     <div className="text-center p-8 text-red-500 dark:text-red-400">{error}</div>
                 ) : (
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-                        <table className="w-full text-left border-collapse">
-                            <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-                                <tr>
-                                    <th onClick={() => handleSort("name")} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
-                                        Employee {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                                    </th>
-                                    <th onClick={() => handleSort("department")} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
-                                        Department {sortConfig.key === "department" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                                    </th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Contact</th>
-                                    <th onClick={() => handleSort("date_of_joining")} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
-                                        Joined {sortConfig.key === "date_of_joining" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                                    </th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Face Enrollment</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                {paginatedEmployees.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="6" className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-                                            No employees found.
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    paginatedEmployees.map((emp) => (
-                                        <tr key={emp.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="font-medium text-gray-900 dark:text-white">{emp.user?.name}</div>
-                                                <div className="text-xs text-gray-500 dark:text-gray-400">{emp.designation?.name || '-'}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{emp.department?.name}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-700 dark:text-gray-300">{emp.user?.email}</div>
-                                                <div className="text-xs text-gray-500 dark:text-gray-400">{emp.phone}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{formatDate(emp.date_of_joining)}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${emp.user?.is_active ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"}`}>
-                                                    {emp.user?.is_active ? "Active" : "Inactive"}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                {(() => {
-                                                    const hasFaceData = emp.face_descriptor || emp.user?.face_descriptor;
-                                                    const isEnrolled = hasFaceData && hasFaceData !== 'null' && hasFaceData.trim() !== '';
-                                                    return isEnrolled ? (
-                                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                                            ✅ Face Enrolled
-                                                        </span>
-                                                    ) : (
-                                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
-                                                            ⏳ Enrollment Pending
-                                                        </span>
-                                                    );
-                                                })()}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <div className="flex justify-end gap-3">
-                                                    <button onClick={() => openViewModal(emp)} className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">View</button>
-                                                    <button onClick={() => openEditModal(emp)} className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300">Edit</button>
-                                                    {canDelete && (
-                                                        <button
-                                                            onClick={() => openDeleteModal(emp)}
-                                                            className="px-2 py-1 text-xs font-semibold text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 rounded transition-colors"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                    )}
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                            {paginatedEmployees.length === 0 ? (
+                                <div className="col-span-full card p-16 text-center flex flex-col items-center gap-4">
+                                    <div className="bg-gray-100 p-5 rounded-2xl">
+                                        <svg className="w-12 h-12 text-gray-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                    </div>
+                                    <p className="font-bold text-gray-500">No employees found.</p>
+                                </div>
+                            ) : paginatedEmployees.map((emp) => {
+                                const hasFaceData = emp.face_descriptor || emp.user?.face_descriptor;
+                                const isEnrolled = hasFaceData && hasFaceData !== 'null' && hasFaceData.trim() !== '';
+                                const avatarColors = ['from-purple-500 to-purple-700','from-blue-500 to-blue-700','from-teal-500 to-teal-700','from-pink-500 to-pink-700','from-orange-500 to-orange-700','from-indigo-500 to-indigo-700'];
+                                const avatarColor = avatarColors[(emp.user?.name?.charCodeAt(0) || 0) % avatarColors.length];
+                                return (
+                                    <div key={emp.id} className="card p-5 flex flex-col gap-3 border-2 border-black/10 hover:-translate-y-1 hover:shadow-lg transition-all duration-200">
+                                        {/* Header: Avatar + Status */}
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} text-white flex items-center justify-center text-xl font-black border-2 border-black shadow-[2px_2px_0px_black] shrink-0`}>
+                                                    {(emp.user?.name || '?').charAt(0).toUpperCase()}
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                                Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredEmployees.length)}</span> of <span className="font-medium">{filteredEmployees.length}</span> results
+                                                <div>
+                                                    <h3 className="font-extrabold text-black text-sm leading-tight">{emp.user?.name}</h3>
+                                                    <p className="text-xs text-gray-500 font-medium mt-0.5">{emp.employee_code}</p>
+                                                </div>
+                                            </div>
+                                            <span className={`px-2.5 py-1 text-[10px] font-bold border rounded-full shrink-0 ${emp.user?.is_active ? 'bg-green-100 text-green-700 border-green-300' : 'bg-red-100 text-red-700 border-red-300'}`}>
+                                                {emp.user?.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </div>
+
+                                        {/* Info grid */}
+                                        <div className="space-y-1.5">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider w-20 shrink-0">Dept</span>
+                                                <span className="text-xs font-bold text-black truncate">{emp.department?.name || '—'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider w-20 shrink-0">Role</span>
+                                                <span className="text-xs font-medium text-gray-600 truncate">{emp.designation?.name || '—'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider w-20 shrink-0">Email</span>
+                                                <span className="text-xs text-gray-600 truncate">{emp.user?.email}</span>
+                                            </div>
+                                            {emp.phone && (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider w-20 shrink-0">Phone</span>
+                                                    <span className="text-xs text-gray-600">{emp.phone}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider w-20 shrink-0">Joined</span>
+                                                <span className="text-xs text-gray-600">{formatDate(emp.date_of_joining)}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Face enrollment badge */}
+                                        <div>
+                                            {isEnrolled ? (
+                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 bg-green-100 text-green-700 border border-green-300 rounded-full">✅ Face Enrolled</span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 bg-orange-100 text-orange-700 border border-orange-300 rounded-full">⏳ Enrollment Pending</span>
+                                            )}
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex items-center gap-2 pt-2 border-t-2 border-black/5">
+                                            <button onClick={() => openViewModal(emp)} className="flex-1 text-xs font-bold py-1.5 rounded-lg border-2 border-blue-300 text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all">View</button>
+                                            <button onClick={() => openEditModal(emp)} className="flex-1 text-xs font-bold py-1.5 rounded-lg border-2 border-amber-300 text-amber-600 bg-amber-50 hover:bg-amber-100 transition-all">Edit</button>
+                                            {canDelete && (
+                                                <button onClick={() => openDeleteModal(emp)} className="flex-1 text-xs font-bold py-1.5 rounded-lg border-2 border-black text-black bg-white hover:bg-gray-100 transition-all shadow-[2px_2px_0px_black]">Delete</button>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Pagination */}
+                        <div className="mt-4 flex justify-between items-center">
+                            <div className="text-sm font-medium text-gray-900">
+                                Showing <span className="font-bold">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-bold">{Math.min(currentPage * itemsPerPage, filteredEmployees.length)}</span> of <span className="font-bold">{filteredEmployees.length}</span> results
                             </div>
                             <div className="flex gap-2">
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                    disabled={currentPage === 1}
-                                    className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm font-medium ${currentPage === 1 ? "text-gray-400 dark:text-gray-500 cursor-not-allowed" : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"}`}
-                                >
-                                    Previous
-                                </button>
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                    disabled={currentPage === totalPages}
-                                    className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm font-medium ${currentPage === totalPages ? "text-gray-400 dark:text-gray-500 cursor-not-allowed" : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"}`}
-                                >
-                                    Next
-                                </button>
+                                <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} className={`px-4 py-2 border-2 border-black rounded-lg text-sm font-bold transition-all ${currentPage === 1 ? "text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50" : "bg-white hover:bg-brand-50 hover:shadow-button"}`}>Previous</button>
+                                <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages || totalPages === 0} className={`px-4 py-2 border-2 border-black rounded-lg text-sm font-bold transition-all ${(currentPage === totalPages || totalPages === 0) ? "text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50" : "bg-white hover:bg-brand-50 hover:shadow-button"}`}>Next</button>
                             </div>
                         </div>
-                    </div>
+                    </>
                 )}
             </div>
 
@@ -798,8 +789,8 @@ const EmployeesPage = () => {
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
                     <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl shadow-xl relative mx-auto transition-colors duration-200 flex flex-col max-h-[85vh]">
                         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Add New Employee</h2>
-                            <button onClick={closeModals} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <h2 className="text-2xl font-bold text-black font-paperlogy">Add New Employee</h2>
+                            <button onClick={closeModals} className="text-gray-900 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
@@ -810,18 +801,18 @@ const EmployeesPage = () => {
                             <form onSubmit={handleAddSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Name *</label>
-                                    <input id="add_name" name="name" type="text" autoComplete="name" value={formData.name || ""} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" />
+                                    <input id="add_name" name="name" type="text" autoComplete="name" value={formData.name || ""} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" />
                                     {formErrors.name && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.name}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_email" className="text-sm font-medium text-gray-700 dark:text-gray-300">Email *</label>
-                                    <input id="add_email" name="email" type="email" autoComplete="off" value={formData.email || ""} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" />
+                                    <input id="add_email" name="email" type="email" autoComplete="off" value={formData.email || ""} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" />
                                     {formErrors.email && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.email}</p>}
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_department" className="text-sm font-medium text-gray-700 dark:text-gray-300">Department *</label>
-                                    <select id="add_department" name="department_id" autoComplete="off" value={formData.department_id || ""} onChange={(e) => setFormData({ ...formData, department_id: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="add_department" name="department_id" autoComplete="off" value={formData.department_id || ""} onChange={(e) => setFormData({ ...formData, department_id: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="">Select Department</option>
                                         {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                                     </select>
@@ -835,7 +826,7 @@ const EmployeesPage = () => {
                                         autoComplete="off"
                                         value={formData.country_id || ""}
                                         onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })}
-                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                                        className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm"
                                     >
                                         <option value="">Select Country</option>
                                         {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -851,7 +842,7 @@ const EmployeesPage = () => {
                                         value={formData.sub_company_id || ""}
                                         onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })}
                                         disabled={!formData.country_id || subCompanies.length === 0}
-                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                                        className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                                     >
                                         <option value="">Select Sub-Company</option>
                                         {subCompanies.map(sc => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
@@ -860,7 +851,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_joining_category" className="text-sm font-medium text-gray-700 dark:text-gray-300">Joining Category *</label>
-                                    <select id="add_joining_category" name="joining_category" autoComplete="off" value={formData.joining_category || ""} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="add_joining_category" name="joining_category" autoComplete="off" value={formData.joining_category || ""} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="New Joinee">New Joinee</option>
                                         <option value="Intern">Intern</option>
                                         <option value="Permanent">Permanent</option>
@@ -875,7 +866,7 @@ const EmployeesPage = () => {
                                             autoComplete="off"
                                             value={formData.probation_months || ""}
                                             onChange={(e) => setFormData({ ...formData, probation_months: e.target.value })}
-                                            className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                                            className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm"
                                         >
                                             <option value="">Select Duration</option>
                                             <option value="3">3 Months</option>
@@ -893,7 +884,7 @@ const EmployeesPage = () => {
                                         placeholder="Select or Type Designation"
                                         value={formData.designation_name || ""}
                                         onChange={(e) => setFormData({ ...formData, designation_name: e.target.value })}
-                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                                        className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm"
                                     />
                                     <datalist id="designation_options">
                                         {designations.map(d => (
@@ -904,7 +895,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_reports_to" className="text-sm font-medium text-gray-700 dark:text-gray-300">Reports To (Manager)</label>
-                                    <select id="add_reports_to" name="reports_to" autoComplete="off" value={formData.reports_to || ""} onChange={(e) => setFormData({ ...formData, reports_to: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="add_reports_to" name="reports_to" autoComplete="off" value={formData.reports_to || ""} onChange={(e) => setFormData({ ...formData, reports_to: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="">No Manager (Top Hierarchy)</option>
                                         {employees.map(e => (
                                             <option key={e.id} value={e.id}>{e.user?.name} ({e.designation?.name || 'N/A'})</option>
@@ -913,7 +904,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_date_of_joining" className="text-sm font-medium text-gray-700 dark:text-gray-300">Date of Joining *</label>
-                                    <input id="add_date_of_joining" name="date_of_joining" type="date" autoComplete="off" value={formData.date_of_joining || ""} onChange={(e) => setFormData({ ...formData, date_of_joining: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" />
+                                    <input id="add_date_of_joining" name="date_of_joining" type="date" autoComplete="off" value={formData.date_of_joining || ""} onChange={(e) => setFormData({ ...formData, date_of_joining: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" />
                                     {formErrors.date_of_joining && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.date_of_joining}</p>}
                                 </div>
 
@@ -925,7 +916,7 @@ const EmployeesPage = () => {
                                     <div className="flex flex-col gap-1 mb-4">
                                         <label htmlFor="add_gross_salary" className="text-sm font-medium text-gray-700 dark:text-gray-300">Gross Salary (Monthly) *</label>
                                         <div className="relative">
-                                            <span className="absolute left-3 top-2 text-gray-500">₹</span>
+                                            <span className="absolute left-3 top-2 text-gray-900">₹</span>
                                             <input
                                                 id="add_gross_salary"
                                                 name="gross_salary"
@@ -933,11 +924,11 @@ const EmployeesPage = () => {
                                                 autoComplete="off"
                                                 value={formData.gross_salary || ""}
                                                 onChange={(e) => setFormData({ ...formData, gross_salary: e.target.value })}
-                                                className="h-9 pl-7 pr-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm font-medium"
+                                                className="h-9 pl-7 pr-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm font-medium"
                                                 placeholder="0.00"
                                             />
                                         </div>
-                                        <p className="text-xs text-gray-500 mt-1">Basic, HRA, and other components will be auto-calculated based on Payroll Policy.</p>
+                                        <p className="text-xs text-gray-900 mt-1">Basic, HRA, and other components will be auto-calculated based on Payroll Policy.</p>
 
                                         {/* Salary Preview Component */}
                                         {(() => {
@@ -996,29 +987,29 @@ const EmployeesPage = () => {
                                                 <div className="mt-3 bg-white dark:bg-gray-700/50 p-3 rounded-lg border border-gray-100 dark:border-gray-600 space-y-2">
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">Basic Salary ({basicPercent}%)</p>
+                                                            <p className="text-xs text-gray-900">Basic Salary ({basicPercent}%)</p>
                                                             <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">₹{basic.toFixed(2)}</p>
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">HRA ({100 - basicPercent}%)</p>
+                                                            <p className="text-xs text-gray-900">HRA ({100 - basicPercent}%)</p>
                                                             <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">₹{hra.toFixed(2)}</p>
                                                         </div>
                                                     </div>
                                                     <div className="border-t border-gray-200 dark:border-gray-600 pt-2 grid grid-cols-3 gap-2">
                                                         <div>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">PF (12%)</p>
+                                                            <p className="text-xs text-gray-900">PF (12%)</p>
                                                             <p className={`text-sm font-medium ${pf > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400'}`}>
                                                                 {pfText}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">ESIC (0.75%)</p>
+                                                            <p className="text-xs text-gray-900">ESIC (0.75%)</p>
                                                             <p className={`text-sm font-medium ${esic > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400'}`}>
                                                                 {esicText}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">PTAX</p>
+                                                            <p className="text-xs text-gray-900">PTAX</p>
                                                             <p className={`text-sm font-medium ${ptax > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400'}`}>
                                                                 {ptaxText}
                                                             </p>
@@ -1076,7 +1067,7 @@ const EmployeesPage = () => {
                                         <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-blue-50 dark:bg-blue-900/20 col-span-2 md:col-span-3">
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-bold text-gray-900 dark:text-white">Payslip Access</span>
-                                                <span className="text-xs text-gray-500 dark:text-gray-400">Allow employee to download payslips?</span>
+                                                <span className="text-xs text-gray-900">Allow employee to download payslips?</span>
                                             </div>
                                             <label className="relative inline-flex items-center cursor-pointer">
                                                 <input
@@ -1096,13 +1087,13 @@ const EmployeesPage = () => {
 
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_dob" className="text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth *</label>
-                                    <input id="add_dob" name="dob" type="date" autoComplete="off" value={formData.dob || ""} onChange={(e) => setFormData({ ...formData, dob: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" />
+                                    <input id="add_dob" name="dob" type="date" autoComplete="off" value={formData.dob || ""} onChange={(e) => setFormData({ ...formData, dob: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" />
                                     {formErrors.dob && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.dob}</p>}
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_aadhar" className="text-sm font-medium text-gray-700 dark:text-gray-300">Aadhar Number</label>
-                                    <input id="add_aadhar" name="aadhar_number" type="text" autoComplete="off" value={formData.aadhar_number || ""} onChange={(e) => setFormData({ ...formData, aadhar_number: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" maxLength={12} />
+                                    <input id="add_aadhar" name="aadhar_number" type="text" autoComplete="off" value={formData.aadhar_number || ""} onChange={(e) => setFormData({ ...formData, aadhar_number: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" maxLength={12} />
                                     {formErrors.aadhar_number && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.aadhar_number}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
@@ -1111,7 +1102,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_pan" className="text-sm font-medium text-gray-700 dark:text-gray-300">PAN Number</label>
-                                    <input id="add_pan" name="pan_number" type="text" autoComplete="off" value={formData.pan_number || ""} onChange={(e) => setFormData({ ...formData, pan_number: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" maxLength={10} />
+                                    <input id="add_pan" name="pan_number" type="text" autoComplete="off" value={formData.pan_number || ""} onChange={(e) => setFormData({ ...formData, pan_number: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" maxLength={10} />
                                     {formErrors.pan_number && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.pan_number}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
@@ -1121,18 +1112,18 @@ const EmployeesPage = () => {
 
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone *</label>
-                                    <input id="add_phone" name="phone" type="text" autoComplete="tel" value={formData.phone || ""} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" maxLength={10} />
+                                    <input id="add_phone" name="phone" type="text" autoComplete="tel" value={formData.phone || ""} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" maxLength={10} />
                                     {formErrors.phone && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.phone}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_emergency" className="text-sm font-medium text-gray-700 dark:text-gray-300">Emergency Contact</label>
-                                    <input id="add_emergency" name="emergency_contact" type="text" autoComplete="tel" value={formData.emergency_contact || ""} onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" maxLength={10} />
+                                    <input id="add_emergency" name="emergency_contact" type="text" autoComplete="tel" value={formData.emergency_contact || ""} onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" maxLength={10} />
                                     {formErrors.emergency_contact && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.emergency_contact}</p>}
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_gender" className="text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
-                                    <select id="add_gender" name="gender" autoComplete="off" value={formData.gender || ""} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="add_gender" name="gender" autoComplete="off" value={formData.gender || ""} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
@@ -1141,7 +1132,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="add_marital" className="text-sm font-medium text-gray-700 dark:text-gray-300">Marital Status</label>
-                                    <select id="add_marital" name="marital_status" autoComplete="off" value={formData.marital_status || ""} onChange={(e) => setFormData({ ...formData, marital_status: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="add_marital" name="marital_status" autoComplete="off" value={formData.marital_status || ""} onChange={(e) => setFormData({ ...formData, marital_status: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="">Select Status</option>
                                         <option value="Single">Single</option>
                                         <option value="Married">Married</option>
@@ -1151,7 +1142,7 @@ const EmployeesPage = () => {
 
                                 <div className="col-span-1 md:col-span-2 flex flex-col gap-1">
                                     <label htmlFor="add_address" className="text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
-                                    <textarea id="add_address" name="address" autoComplete="street-address" value={formData.address || ""} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" rows="2"></textarea>
+                                    <textarea id="add_address" name="address" autoComplete="street-address" value={formData.address || ""} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="p-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" rows="2"></textarea>
                                 </div>
 
                                 <div className="col-span-1 md:col-span-2 flex flex-col gap-1">
@@ -1189,8 +1180,8 @@ const EmployeesPage = () => {
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
                     <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl shadow-xl relative mx-auto transition-colors duration-200 flex flex-col max-h-[85vh]">
                         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Edit Employee</h2>
-                            <button onClick={closeModals} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <h2 className="text-2xl font-bold text-black font-paperlogy">Edit Employee</h2>
+                            <button onClick={closeModals} className="text-gray-900 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
@@ -1201,17 +1192,17 @@ const EmployeesPage = () => {
                             <form onSubmit={handleEditSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Name *</label>
-                                    <input id="edit_name" name="name" type="text" autoComplete="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" />
+                                    <input id="edit_name" name="name" type="text" autoComplete="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" />
                                     {formErrors.name && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.name}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_email" className="text-sm font-medium text-gray-700 dark:text-gray-300">Email *</label>
-                                    <input id="edit_email" name="email" type="email" autoComplete="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" />
+                                    <input id="edit_email" name="email" type="email" autoComplete="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" />
                                     {formErrors.email && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.email}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_department" className="text-sm font-medium text-gray-700 dark:text-gray-300">Department *</label>
-                                    <select id="edit_department" name="department_id" autoComplete="off" value={formData.department_id} onChange={(e) => setFormData({ ...formData, department_id: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="edit_department" name="department_id" autoComplete="off" value={formData.department_id} onChange={(e) => setFormData({ ...formData, department_id: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="">Select Department</option>
                                         {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                                     </select>
@@ -1225,7 +1216,7 @@ const EmployeesPage = () => {
                                         autoComplete="off"
                                         value={formData.country_id || ""}
                                         onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })}
-                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                                        className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm"
                                     >
                                         <option value="">Select Country</option>
                                         {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -1241,7 +1232,7 @@ const EmployeesPage = () => {
                                         value={formData.sub_company_id || ""}
                                         onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })}
                                         disabled={!formData.country_id || subCompanies.length === 0}
-                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                                        className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                                     >
                                         <option value="">Select Sub-Company</option>
                                         {subCompanies.map(sc => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
@@ -1259,7 +1250,7 @@ const EmployeesPage = () => {
                                         placeholder="Select or Type Designation"
                                         value={formData.designation_name}
                                         onChange={(e) => setFormData({ ...formData, designation_name: e.target.value })}
-                                        className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                                        className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm"
                                     />
                                     <datalist id="designation_options_edit">
                                         {designations.map(d => (
@@ -1270,7 +1261,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_reports_to" className="text-sm font-medium text-gray-700 dark:text-gray-300">Reports To (Manager)</label>
-                                    <select id="edit_reports_to" name="reports_to" autoComplete="off" value={formData.reports_to} onChange={(e) => setFormData({ ...formData, reports_to: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="edit_reports_to" name="reports_to" autoComplete="off" value={formData.reports_to} onChange={(e) => setFormData({ ...formData, reports_to: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="">No Manager (Top Hierarchy)</option>
                                         {employees.filter(e => {
                                             if (e.id === selectedEmployee?.id) return false;
@@ -1283,7 +1274,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_joining_category" className="text-sm font-medium text-gray-700 dark:text-gray-300">Joining Category *</label>
-                                    <select id="edit_joining_category" name="joining_category" autoComplete="off" value={formData.joining_category || ""} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="edit_joining_category" name="joining_category" autoComplete="off" value={formData.joining_category || ""} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="New Joinee">New Joinee</option>
                                         <option value="Intern">Intern</option>
                                         <option value="Permanent">Permanent</option>
@@ -1298,7 +1289,7 @@ const EmployeesPage = () => {
                                             autoComplete="off"
                                             value={formData.probation_months || ""}
                                             onChange={(e) => setFormData({ ...formData, probation_months: e.target.value })}
-                                            className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+                                            className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm"
                                         >
                                             <option value="">Select Duration</option>
                                             <option value="3">3 Months</option>
@@ -1308,40 +1299,40 @@ const EmployeesPage = () => {
                                 )}
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_date_of_joining" className="text-sm font-medium text-gray-700 dark:text-gray-300">Date of Joining *</label>
-                                    <input id="edit_date_of_joining" name="date_of_joining" type="date" autoComplete="off" value={formData.date_of_joining} onChange={(e) => setFormData({ ...formData, date_of_joining: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" />
+                                    <input id="edit_date_of_joining" name="date_of_joining" type="date" autoComplete="off" value={formData.date_of_joining} onChange={(e) => setFormData({ ...formData, date_of_joining: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" />
                                     {formErrors.date_of_joining && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.date_of_joining}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_dob" className="text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth *</label>
-                                    <input id="edit_dob" name="dob" type="date" autoComplete="off" value={formData.dob} onChange={(e) => setFormData({ ...formData, dob: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" />
+                                    <input id="edit_dob" name="dob" type="date" autoComplete="off" value={formData.dob} onChange={(e) => setFormData({ ...formData, dob: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" />
                                     {formErrors.dob && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.dob}</p>}
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_aadhar" className="text-sm font-medium text-gray-700 dark:text-gray-300">Aadhar Number</label>
-                                    <input id="edit_aadhar" name="aadhar_number" type="text" autoComplete="off" value={formData.aadhar_number} onChange={(e) => setFormData({ ...formData, aadhar_number: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" maxLength={12} />
+                                    <input id="edit_aadhar" name="aadhar_number" type="text" autoComplete="off" value={formData.aadhar_number} onChange={(e) => setFormData({ ...formData, aadhar_number: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" maxLength={12} />
                                     {formErrors.aadhar_number && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.aadhar_number}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_pan" className="text-sm font-medium text-gray-700 dark:text-gray-300">PAN Number</label>
-                                    <input id="edit_pan" name="pan_number" type="text" autoComplete="off" value={formData.pan_number} onChange={(e) => setFormData({ ...formData, pan_number: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" maxLength={10} />
+                                    <input id="edit_pan" name="pan_number" type="text" autoComplete="off" value={formData.pan_number} onChange={(e) => setFormData({ ...formData, pan_number: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" maxLength={10} />
                                     {formErrors.pan_number && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.pan_number}</p>}
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone *</label>
-                                    <input id="edit_phone" name="phone" type="text" autoComplete="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" maxLength={10} />
+                                    <input id="edit_phone" name="phone" type="text" autoComplete="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" maxLength={10} />
                                     {formErrors.phone && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.phone}</p>}
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_emergency" className="text-sm font-medium text-gray-700 dark:text-gray-300">Emergency Contact</label>
-                                    <input id="edit_emergency" name="emergency_contact" type="text" autoComplete="tel" value={formData.emergency_contact} onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" maxLength={10} />
+                                    <input id="edit_emergency" name="emergency_contact" type="text" autoComplete="tel" value={formData.emergency_contact} onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" maxLength={10} />
                                     {formErrors.emergency_contact && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.emergency_contact}</p>}
                                 </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_gender" className="text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
-                                    <select id="edit_gender" name="gender" autoComplete="off" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="edit_gender" name="gender" autoComplete="off" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
@@ -1351,7 +1342,7 @@ const EmployeesPage = () => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <label htmlFor="edit_marital" className="text-sm font-medium text-gray-700 dark:text-gray-300">Marital Status</label>
-                                    <select id="edit_marital" name="marital_status" autoComplete="off" value={formData.marital_status} onChange={(e) => setFormData({ ...formData, marital_status: e.target.value })} className="h-9 px-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
+                                    <select id="edit_marital" name="marital_status" autoComplete="off" value={formData.marital_status} onChange={(e) => setFormData({ ...formData, marital_status: e.target.value })} className="h-9 px-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm">
                                         <option value="">Select Status</option>
                                         <option value="Single">Single</option>
                                         <option value="Married">Married</option>
@@ -1362,7 +1353,7 @@ const EmployeesPage = () => {
 
                                 <div className="col-span-1 md:col-span-2 flex flex-col gap-1">
                                     <label htmlFor="edit_address" className="text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
-                                    <textarea id="edit_address" name="address" autoComplete="street-address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm" rows="2"></textarea>
+                                    <textarea id="edit_address" name="address" autoComplete="street-address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="p-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm" rows="2"></textarea>
                                     {formErrors.address && <p className="text-xs text-red-600 dark:text-red-400">{formErrors.address}</p>}
                                 </div>
 
@@ -1379,7 +1370,7 @@ const EmployeesPage = () => {
                                         <div className="flex flex-col gap-1 mb-4">
                                             <label htmlFor="edit_gross_salary" className="text-sm font-medium text-gray-700 dark:text-gray-300">Gross Salary (Monthly) *</label>
                                             <div className="relative">
-                                                <span className="absolute left-3 top-2 text-gray-500">₹</span>
+                                                <span className="absolute left-3 top-2 text-gray-900">₹</span>
                                                 <input
                                                     id="edit_gross_salary"
                                                     name="gross_salary"
@@ -1387,12 +1378,12 @@ const EmployeesPage = () => {
                                                     autoComplete="off"
                                                     value={formData.gross_salary}
                                                     onChange={(e) => setFormData({ ...formData, gross_salary: e.target.value })}
-                                                    className="h-9 pl-7 pr-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors text-sm font-medium"
+                                                    className="h-9 pl-7 pr-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors text-sm font-medium"
                                                     placeholder="0.00"
                                                 />
                                             </div>
                                             {formErrors.gross_salary && <p className="text-xs text-red-600 dark:text-red-400 mt-1">{formErrors.gross_salary}</p>}
-                                            <p className="text-xs text-gray-500 mt-1">Basic, HRA, and other components will be auto-calculated based on Payroll Policy.</p>
+                                            <p className="text-xs text-gray-900 mt-1">Basic, HRA, and other components will be auto-calculated based on Payroll Policy.</p>
 
                                             {/* Salary Preview Component */}
                                             {(() => {
@@ -1451,29 +1442,29 @@ const EmployeesPage = () => {
                                                     <div className="mt-3 bg-white dark:bg-gray-700/50 p-3 rounded-lg border border-gray-100 dark:border-gray-600 space-y-2">
                                                         <div className="grid grid-cols-2 gap-4">
                                                             <div>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">Basic Salary ({basicPercent}%)</p>
+                                                                <p className="text-xs text-gray-900">Basic Salary ({basicPercent}%)</p>
                                                                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">₹{basic.toFixed(2)}</p>
                                                             </div>
                                                             <div>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">HRA ({100 - basicPercent}%)</p>
+                                                                <p className="text-xs text-gray-900">HRA ({100 - basicPercent}%)</p>
                                                                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">₹{hra.toFixed(2)}</p>
                                                             </div>
                                                         </div>
                                                         <div className="border-t border-gray-200 dark:border-gray-600 pt-2 grid grid-cols-3 gap-2">
                                                             <div>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">PF (12%)</p>
+                                                                <p className="text-xs text-gray-900">PF (12%)</p>
                                                                 <p className={`text-sm font-medium ${pf > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400'}`}>
                                                                     {pfText}
                                                                 </p>
                                                             </div>
                                                             <div>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">ESIC (0.75%)</p>
+                                                                <p className="text-xs text-gray-900">ESIC (0.75%)</p>
                                                                 <p className={`text-sm font-medium ${esic > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400'}`}>
                                                                     {esicText}
                                                                 </p>
                                                             </div>
                                                             <div>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">PTAX</p>
+                                                                <p className="text-xs text-gray-900">PTAX</p>
                                                                 <p className={`text-sm font-medium ${ptax > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400'}`}>
                                                                     {ptaxText}
                                                                 </p>
@@ -1532,7 +1523,7 @@ const EmployeesPage = () => {
 
                                 <div className="flex flex-col gap-2">
                                     <label htmlFor="edit_status" className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                                    <select id="edit_status" name="status" autoComplete="off" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors">
+                                    <select id="edit_status" name="status" autoComplete="off" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="p-3 border-2 border-black rounded-lg outline-none w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors">
                                         <option value="Active">Active</option>
                                         <option value="Inactive">Inactive</option>
                                     </select>
@@ -1554,14 +1545,14 @@ const EmployeesPage = () => {
             {/* DELETE MODAL */}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-start z-50 overflow-y-auto p-4 pt-20">
-                    <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-full max-w-md shadow-xl relative mx-auto transition-colors duration-200">
+                    <div className="card p-8 rounded$3">
                         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Delete Employee</h2>
                         <p className="text-gray-600 dark:text-gray-300 mb-6">
                             Are you sure you want to delete <strong>{selectedEmployee?.user?.name}</strong>?
                             This action cannot be undone and will remove their user account as well.
                         </p>
                         <div className="flex justify-end gap-3">
-                            <button onClick={closeModals} className="px-4 py-2 rounded-lg font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+                            <button onClick={closeModals} className="btn-secondary$5">Cancel</button>
                             <button onClick={handleDeleteSubmit} disabled={isSubmitting} className={`px-4 py-2 rounded-lg font-medium bg-red-600 text-white hover:bg-red-700 transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}>
                                 {isSubmitting ? "Deleting..." : "Delete Employee"}
                             </button>
@@ -1573,7 +1564,7 @@ const EmployeesPage = () => {
             {/* VIEW MODAL */}
             {isViewModalOpen && selectedEmployee && (
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-start z-50 overflow-y-auto p-4 pt-20">
-                    <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-full max-w-3xl shadow-xl relative mx-auto transition-colors duration-200">
+                    <div className="card p-8 rounded$3">
                         <div className="flex justify-between items-start mb-6">
                             <div className="flex items-center gap-4">
                                 <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden border-2 border-white shadow-sm">
@@ -1591,11 +1582,11 @@ const EmployeesPage = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-gray-800 dark:text-white">{selectedEmployee.user?.name}</h2>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm">{selectedEmployee.designation?.name || selectedEmployee.designation || "N/A"}</p>
+                                    <h2 className="text-2xl font-bold text-black font-paperlogy">{selectedEmployee.user?.name}</h2>
+                                    <p className="text-gray-900 text-sm">{selectedEmployee.designation?.name || selectedEmployee.designation || "N/A"}</p>
                                 </div>
                             </div>
-                            <button onClick={closeModals} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xl">✕</button>
+                            <button onClick={closeModals} className="text-gray-900 hover:text-gray-700 dark:hover:text-gray-200 text-xl">✕</button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1603,31 +1594,31 @@ const EmployeesPage = () => {
                                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 border-b border-gray-200 dark:border-gray-700 pb-2">Personal Details</h3>
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Email</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Email</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.user?.email}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Phone</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Phone</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.phone || "N/A"}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Emergency Contact</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Emergency Contact</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.emergency_contact || "N/A"}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Date of Birth</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Date of Birth</label>
                                         <p className="text-gray-900 dark:text-white">{formatDate(selectedEmployee.dob)}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Gender</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Gender</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.gender || "N/A"}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Marital Status</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Marital Status</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.marital_status || "N/A"}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Address</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Address</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.address || "N/A"}</p>
                                     </div>
                                 </div>
@@ -1637,48 +1628,48 @@ const EmployeesPage = () => {
                                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 border-b border-gray-200 dark:border-gray-700 pb-2">Employment Details</h3>
                                 <div className="space-y-3">
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Code</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Code</label>
                                         <p className="text-gray-900 dark:text-white font-medium">{selectedEmployee.employee_code}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Department</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Department</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.department?.name}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Country</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Country</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.country?.name || "N/A"}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Sub-Company</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Sub-Company</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.sub_company?.name || "N/A"}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Joining Category</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Joining Category</label>
                                         <p className="text-gray-900 dark:text-white">{selectedEmployee.joining_category || "N/A"}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Joined</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Joined</label>
                                         <p className="text-gray-900 dark:text-white">{formatDate(selectedEmployee.date_of_joining)}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Aadhar Number</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Aadhar Number</label>
                                         <p className="text-gray-900 dark:text-white font-mono">
                                             {selectedEmployee.aadhar_number ? selectedEmployee.aadhar_number.replace(/\d{8}(\d{4})/, "XXXX-XXXX-$1") : "N/A"}
                                         </p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">PAN Number</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">PAN Number</label>
                                         <p className="text-gray-900 dark:text-white font-mono">{selectedEmployee.pan_number || "N/A"}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Status</label>
+                                        <label className="text-xs text-gray-900 uppercase font-semibold">Status</label>
                                         <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-medium ${selectedEmployee.user?.is_active ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"}`}>
                                             {selectedEmployee.user?.is_active ? "Active" : "Inactive"}
                                         </span>
                                     </div>
                                     {canManage && (
                                         <div>
-                                            <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Overtime Permission</label>
+                                            <label className="text-xs text-gray-900 uppercase font-semibold">Overtime Permission</label>
                                             <div className="mt-2 flex items-center gap-2">
                                                 <button
                                                     onClick={async () => {
@@ -1710,7 +1701,7 @@ const EmployeesPage = () => {
                                                             }`}
                                                     />
                                                 </button>
-                                                <span className={`text-xs font-medium transition-colors duration-300 ${selectedEmployee.overtime_enabled ? 'text-blue-500 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'
+                                                <span className={`text-xs font-medium transition-colors duration-300 ${selectedEmployee.overtime_enabled ? 'text-blue-500 dark:text-blue-400' : 'text-gray-900'
                                                     }`}>
                                                     {selectedEmployee.overtime_enabled ? 'Enabled' : 'Disabled'}
                                                 </span>
@@ -1720,23 +1711,23 @@ const EmployeesPage = () => {
                                 </div>
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Code</label>
+                                <label className="text-xs text-gray-900 uppercase font-semibold">Code</label>
                                 <p className="text-gray-900 dark:text-white font-medium">{selectedEmployee.employee_code}</p>
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Email</label>
+                                <label className="text-xs text-gray-900 uppercase font-semibold">Email</label>
                                 <p className="text-gray-900 dark:text-white">{selectedEmployee.user?.email}</p>
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Department</label>
+                                <label className="text-xs text-gray-900 uppercase font-semibold">Department</label>
                                 <p className="text-gray-900 dark:text-white">{selectedEmployee.department?.name}</p>
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Designation</label>
+                                <label className="text-xs text-gray-900 uppercase font-semibold">Designation</label>
                                 <p className="text-gray-900 dark:text-white">{selectedEmployee.designation?.name || selectedEmployee.designation || "N/A"}</p>
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Joined</label>
+                                <label className="text-xs text-gray-900 uppercase font-semibold">Joined</label>
                                 <p className="text-gray-900 dark:text-white">{formatDate(selectedEmployee.date_of_joining)}</p>
                             </div>
                             <div className="col-span-1 md:col-span-2 bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg">
@@ -1745,48 +1736,48 @@ const EmployeesPage = () => {
                                         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 border-b border-gray-200 dark:border-gray-600 pb-2">Salary Structure</h3>
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                             <div>
-                                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Basic</label>
+                                                <label className="text-xs text-gray-900 uppercase font-semibold">Basic</label>
                                                 <p className="text-gray-900 dark:text-white font-medium">₹{selectedEmployee.current_salary?.basic || "0"}</p>
                                             </div>
                                             <div>
-                                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">HRA</label>
+                                                <label className="text-xs text-gray-900 uppercase font-semibold">HRA</label>
                                                 <p className="text-gray-900 dark:text-white font-medium">₹{selectedEmployee.current_salary?.hra || "0"}</p>
                                             </div>
                                             <div>
-                                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">PF</label>
+                                                <label className="text-xs text-gray-900 uppercase font-semibold">PF</label>
                                                 <p className="text-red-600 dark:text-red-400 font-medium">-₹{selectedEmployee.current_salary?.pf || "0"}</p>
                                             </div>
                                             <div>
-                                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">ESIC</label>
+                                                <label className="text-xs text-gray-900 uppercase font-semibold">ESIC</label>
                                                 <p className="text-red-600 dark:text-red-400 font-medium">-₹{selectedEmployee.current_salary?.esic || "0"}</p>
                                             </div>
                                             <div>
-                                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">PTAX</label>
+                                                <label className="text-xs text-gray-900 uppercase font-semibold">PTAX</label>
                                                 <p className="text-red-600 dark:text-red-400 font-medium">-₹{selectedEmployee.current_salary?.ptax || "0"}</p>
                                             </div>
                                             <div>
-                                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Gross Salary</label>
+                                                <label className="text-xs text-gray-900 uppercase font-semibold">Gross Salary</label>
                                                 <p className="text-green-600 dark:text-green-400 font-bold text-lg">₹{selectedEmployee.current_salary?.gross_salary || "0"}</p>
                                             </div>
                                         </div>
                                     </>
                                 )}
                                 {!canViewSalary && (
-                                    <p className="text-sm text-gray-500 italic">Salary details are hidden.</p>
+                                    <p className="text-sm text-gray-900 italic">Salary details are hidden.</p>
                                 )}
                             </div>
                             <div>
-                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Status</label>
+                                <label className="text-xs text-gray-900 uppercase font-semibold">Status</label>
                                 <span className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-medium ${selectedEmployee.user?.is_active ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"}`}>
                                     {selectedEmployee.user?.is_active ? "Active" : "Inactive"}
                                 </span>
                             </div>
                             <div className="col-span-1 md:col-span-2">
-                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Address</label>
+                                <label className="text-xs text-gray-900 uppercase font-semibold">Address</label>
                                 <p className="text-gray-900 dark:text-white">{selectedEmployee.address || "N/A"}</p>
                             </div>
                             <div className="col-span-1 md:col-span-2">
-                                <label className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Phone</label>
+                                <label className="text-xs text-gray-900 uppercase font-semibold">Phone</label>
                                 <p className="text-gray-900 dark:text-white">{selectedEmployee.phone || "N/A"}</p>
                             </div>
                         </div>
@@ -1802,8 +1793,8 @@ const EmployeesPage = () => {
             {
                 isPasswordModalOpen && (
                     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[2000]">
-                        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl w-[90%] max-w-sm text-center relative transition-colors duration-200">
-                            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+                        <div className="card p-8 rounded$3">
+                            <h2 className="text-2xl font-bold text-black font-paperlogy mb-6">
                                 Temporary Password
                             </h2>
 
@@ -1811,7 +1802,7 @@ const EmployeesPage = () => {
                                 <p className="text-3xl font-extrabold text-blue-700 dark:text-blue-400 font-mono tracking-wider m-0">
                                     {createdPassword}
                                 </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                <p className="text-sm text-gray-900 mt-2">
                                     Copy this password now
                                 </p>
                             </div>

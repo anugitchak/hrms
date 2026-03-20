@@ -6,6 +6,31 @@ const NotificationContext = createContext();
 
 export const useNotifications = () => useContext(NotificationContext);
 
+// Simple web audio API notification sound
+const playNotificationSound = () => {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        
+        osc.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+        
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.2);
+    } catch (e) {
+        console.warn('Audio play restricted by browser setting', e);
+    }
+};
+
 export const NotificationProvider = ({ children }) => {
     const { user } = useAuth();
     const [notifications, setNotifications] = useState([]);
@@ -37,7 +62,13 @@ export const NotificationProvider = ({ children }) => {
 
         try {
             const response = await api.get("/notifications/unread-count");
-            setUnreadCount(response.data.unread);
+            const newCount = response.data.unread;
+            setUnreadCount(prev => {
+                if (newCount > prev) {
+                    playNotificationSound();
+                }
+                return newCount;
+            });
         } catch (err) {
             // Suppress network errors (often happens on wake from sleep or offline)
             if (err.code === "ERR_NETWORK" || err.message === "Network Error") {

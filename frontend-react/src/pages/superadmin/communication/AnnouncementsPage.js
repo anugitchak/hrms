@@ -156,14 +156,14 @@ const AnnouncementsPage = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Announcements</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Create and manage system-wide announcements</p>
+                    <h1 className="text-3xl font-extrabold text-black font-paperlogy">Announcements</h1>
+                    <p className="text-sm text-gray-900 mt-1">Create and manage system-wide announcements</p>
                 </div>
                 <button
                     onClick={handleCreate}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-brand-400 hover:bg-brand-500 text-black font-black tracking-wider border-4 border-black rounded-lg shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none transition-all"
                 >
-                    <Plus size={20} />
+                    <Plus size={20} strokeWidth={3} />
                     Create Announcement
                 </button>
             </div>

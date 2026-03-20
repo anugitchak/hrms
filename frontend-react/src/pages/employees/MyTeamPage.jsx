@@ -87,7 +87,7 @@ const MyTeamPage = () => {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">My Team</h1>
+            <h1 className="text-2xl font-bold text-black font-paperlogy dark:text-gray-100 mb-6">My Team</h1>
 
             {/* Tabs */}
             <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
@@ -97,7 +97,7 @@ const MyTeamPage = () => {
                         onClick={() => setActiveTab(tab)}
                         className={`px-4 py-2 font-medium capitalize focus:outline-none ${activeTab === tab
                             ? "text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400"
-                            : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            : "text-gray-900 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                             }`}
                     >
                         {tab}
@@ -117,10 +117,10 @@ const MyTeamPage = () => {
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead className="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employee</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Department</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Designation</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Employee</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Department</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Designation</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Contact</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -131,18 +131,18 @@ const MyTeamPage = () => {
                                                     <div className="flex items-center">
                                                         <div className="ml-0">
                                                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{emp.user?.name}</div>
-                                                            <div className="text-sm text-gray-500 dark:text-gray-400">{emp.email}</div>
+                                                            <div className="text-sm text-gray-900">{emp.email}</div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{emp.department?.name || "-"}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{emp.designation?.name || emp.designation || "-"}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{emp.user?.email}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{emp.department?.name || "-"}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{emp.designation?.name || emp.designation || "-"}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{emp.user?.email}</td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No team members found.</td>
+                                            <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-900">No team members found.</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -207,11 +207,11 @@ const MyTeamPage = () => {
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead className="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employee</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Check In</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Check Out</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Employee</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Date</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Check In</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Check Out</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -219,9 +219,9 @@ const MyTeamPage = () => {
                                             attendance.map((record) => (
                                                 <tr key={record.id}>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{record.employee?.user?.name}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.date || attendanceDate}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.check_in}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.check_out}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.date || attendanceDate}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.check_in}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.check_out}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                             ${record.status === 'Present' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
@@ -234,7 +234,7 @@ const MyTeamPage = () => {
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No attendance records found.</td>
+                                                <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-900">No attendance records found.</td>
                                             </tr>
                                         )}
                                     </tbody>
@@ -244,11 +244,11 @@ const MyTeamPage = () => {
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead className="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Check In</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Check Out</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Hrs</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Date</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Check In</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Check Out</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Total Hrs</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -258,9 +258,9 @@ const MyTeamPage = () => {
                                             historyData.map((record) => (
                                                 <tr key={record.id}>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{record.date}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.check_in || '-'}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.check_out || '-'}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.total_hours}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.check_in || '-'}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.check_out || '-'}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.total_hours}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                             ${record.status === 'Present' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
@@ -273,7 +273,7 @@ const MyTeamPage = () => {
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No history found for this month.</td>
+                                                <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-900">No history found for this month.</td>
                                             </tr>
                                         )}
                                     </tbody>
@@ -308,12 +308,12 @@ const MyTeamPage = () => {
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead className="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employee</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Leave Type</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dates</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reason</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Approved By</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Employee</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Leave Type</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Dates</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Reason</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Approved By</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -321,14 +321,14 @@ const MyTeamPage = () => {
                                         leaves.map((leave) => (
                                             <tr key={leave.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{leave.employee?.user?.name}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{leave.leave_type?.name}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{leave.leave_type?.name}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     {leave.start_date} to {leave.end_date}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate" title={leave.reason}>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate" title={leave.reason}>
                                                     {leave.reason || "-"}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     {leave.approver ? leave.approver.name : "-"}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -343,7 +343,7 @@ const MyTeamPage = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No leave requests found.</td>
+                                            <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-900">No leave requests found.</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -389,20 +389,20 @@ const MyTeamPage = () => {
                                                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                                         <thead className="bg-gray-50 dark:bg-gray-700">
                                                             <tr>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Check In</th>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Check Out</th>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Hrs</th>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Date</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Check In</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Check Out</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Total Hrs</th>
+                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Status</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 max-h-96 overflow-y-auto block">
                                                             {historyData.map((record) => (
                                                                 <tr key={record.id} className="table-row w-full display-table">
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{record.date}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.check_in || '-'}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.check_out || '-'}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{record.total_hours}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.check_in || '-'}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.check_out || '-'}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.total_hours}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                                         ${record.status === 'Present' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :

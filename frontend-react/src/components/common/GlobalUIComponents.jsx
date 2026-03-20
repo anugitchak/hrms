@@ -49,11 +49,11 @@ const ToastItem = ({ toast, onRemove }) => {
             onClick={onRemove}
         >
             <div className={`absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-gradient-to-b ${gradientBorder[toast.type]}`} />
-            
+
             <div className={`flex-shrink-0 p-2 rounded-xl border border-gray-100 dark:border-gray-700/50 ${bgColors[toast.type]}`}>
                 {icons[toast.type]}
             </div>
-            
+
             <div className="flex-grow flex flex-col py-1">
                 <span className="text-base font-bold text-gray-900 dark:text-white leading-tight capitalize tracking-tight">
                     {toast.type}
@@ -86,30 +86,28 @@ export const ConfirmModal = ({ title, message, confirmText, cancelText, type, on
             >
                 <div className="p-6">
                     <div className="flex items-center gap-4 mb-4">
-                        <div className={`p-3 rounded-xl ${
-                            type === 'danger' ? 'bg-rose-500/20 text-rose-400' : 
-                            type === 'warning' ? 'bg-amber-500/20 text-amber-400' :
-                            'bg-sky-500/20 text-sky-400'
-                        }`}>
-                            {type === 'danger' ? <AlertCircle className="w-6 h-6" /> : 
-                             type === 'warning' ? <AlertTriangle className="w-6 h-6" /> : 
-                             <Info className="w-6 h-6" />}
+                        <div className={`p-3 rounded-xl ${type === 'danger' ? 'bg-rose-500/20 text-rose-400' :
+                                type === 'warning' ? 'bg-amber-500/20 text-amber-400' :
+                                    'bg-sky-500/20 text-sky-400'
+                            }`}>
+                            {type === 'danger' ? <AlertCircle className="w-6 h-6" /> :
+                                type === 'warning' ? <AlertTriangle className="w-6 h-6" /> :
+                                    <Info className="w-6 h-6" />}
                         </div>
                         <h3 className="text-xl font-bold text-white tracking-tight">{title}</h3>
                     </div>
-                    
+
                     <p className="text-slate-400 leading-relaxed mb-8">
                         {message}
                     </p>
-                    
+
                     <div className="flex flex-col sm:flex-row-reverse gap-3">
                         <button
                             onClick={() => onClose(true)}
-                            className={`px-6 py-2.5 rounded-xl font-bold transition-all transform active:scale-95 ${
-                                type === 'danger' ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/30' :
-                                type === 'warning' ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/30' :
-                                'bg-teal-500 hover:bg-teal-600 text-white shadow-lg shadow-teal-500/30'
-                            }`}
+                            className={`px-6 py-2.5 rounded-xl font-bold transition-all transform active:scale-95 ${type === 'danger' ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-lg shadow-rose-500/30' :
+                                    type === 'warning' ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/30' :
+                                        'bg-teal-500 hover:bg-teal-600 text-white shadow-lg shadow-teal-500/30'
+                                }`}
                         >
                             {confirmText}
                         </button>
@@ -121,13 +119,12 @@ export const ConfirmModal = ({ title, message, confirmText, cancelText, type, on
                         </button>
                     </div>
                 </div>
-                
+
                 {/* Decorative Accent */}
-                <div className={`h-1 w-full ${
-                    type === 'danger' ? 'bg-rose-500' : 
-                    type === 'warning' ? 'bg-amber-500' : 
-                    'bg-teal-500'
-                }`} />
+                <div className={`h-1 w-full ${type === 'danger' ? 'bg-rose-500' :
+                        type === 'warning' ? 'bg-amber-500' :
+                            'bg-teal-500'
+                    }`} />
             </motion.div>
         </div>
     );

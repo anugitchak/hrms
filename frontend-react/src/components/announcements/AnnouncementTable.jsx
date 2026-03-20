@@ -41,101 +41,96 @@ const AnnouncementTable = ({ announcements = [], loading, pagination, onPageChan
     }
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors duration-200">
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700 text-xs uppercase text-gray-500 dark:text-gray-400 font-semibold">
-                            <th className="px-6 py-4">Title</th>
-                            <th className="px-6 py-4">Category</th>
-                            <th className="px-6 py-4">Audience</th>
-                            <th className="px-6 py-4">Posted By</th>
-                            <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4 text-center">Status</th>
-                            <th className="px-6 py-4 text-center">Views</th>
-                            <th className="px-6 py-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                        {safeAnnouncements.map((item) => (
-                            <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
-                                <td className="px-6 py-4">
-                                    <div className="font-medium text-gray-900 dark:text-white">{item.title}</div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">{(item.message || "").replace(/<[^>]+>/g, '')}</div>
-                                </td>
-                                <td className="px-6 py-4">{getCategoryBadge(item.category)}</td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-                                        <Users size={14} className="text-gray-400 dark:text-gray-500" />
-                                        {Array.isArray(item.target_audience) ? item.target_audience.join(", ") : item.target_audience}
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {safeAnnouncements.map((item) => {
+                    const categoryColors = {
+                        General: "bg-blue-100 text-blue-800 border-blue-400",
+                        HR: "bg-purple-100 text-purple-800 border-purple-400",
+                        Payroll: "bg-green-100 text-green-800 border-green-400",
+                        Events: "bg-yellow-100 text-yellow-800 border-yellow-400",
+                        Urgent: "bg-red-100 text-red-800 border-red-400",
+                    };
+                    const catStyle = categoryColors[item.category] || "bg-gray-100 text-gray-800 border-gray-400";
+                    
+                    return (
+                        <div key={item.id} className="bg-white p-5 flex flex-col gap-4 border-4 border-black rounded-xl shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all duration-200 flex-1">
+                            {/* Header */}
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="flex-1">
+                                    <h3 className="font-black text-black text-xl tracking-tight leading-tight line-clamp-2 uppercase">{item.title}</h3>
+                                    <div className="flex items-center gap-2 mt-3">
+                                        <span className={`px-3 py-1 text-xs font-black border-2 rounded-lg uppercase tracking-wider ${catStyle}`}>
+                                            {item.category}
+                                        </span>
+                                        <span className={`px-3 py-1 text-xs font-black border-2 rounded-lg uppercase tracking-wider ${item.status === 'Active' ? 'bg-green-200 text-green-900 border-green-600' : 'bg-gray-200 text-gray-700 border-gray-600'}`}>
+                                            {item.status}
+                                        </span>
                                     </div>
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                    {item.user?.name || "Unknown"}
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                    <div className="flex items-center gap-1">
-                                        <Calendar size={14} className="text-gray-400 dark:text-gray-500" />
-                                        {new Date(item.created_at).toLocaleDateString()}
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 text-center">{getStatusBadge(item.status)}</td>
-                                <td className="px-6 py-4 text-center">
-                                    <div className="flex items-center justify-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-                                        <BarChart2 size={14} className="text-gray-400 dark:text-gray-500" />
-                                        {item.views_count || 0}
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            onClick={() => onView(item)}
-                                            className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                                            title="View"
-                                        >
-                                            <Eye size={16} />
-                                        </button>
-                                        <button
-                                            onClick={() => onEdit(item)}
-                                            className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
-                                            title="Edit"
-                                        >
-                                            <Edit2 size={16} />
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(item.id)}
-                                            className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                                            title="Delete"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                </div>
+                            </div>
+
+                            {/* Body (Message snippet) */}
+                            <div className="text-sm text-black font-bold line-clamp-3 my-2 bg-gray-50 border-2 border-black p-4 rounded-xl flex-1 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                                {(item.message || "").replace(/<[^>]+>/g, '') || <span className="text-gray-500 italic">No description provided...</span>}
+                            </div>
+
+                            {/* Meta Info */}
+                            <div className="grid grid-cols-2 gap-3 text-xs font-black text-black border-t-4 border-gray-100 pt-4 mt-2">
+                                <div className="flex items-center gap-2 bg-gray-50 flex-1 p-2.5 rounded-lg border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                                    <Users size={16} className="text-black stroke-[3]" />
+                                    <span className="truncate uppercase">{Array.isArray(item.target_audience) ? item.target_audience.join(", ") : item.target_audience}</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-gray-50 flex-1 p-2.5 rounded-lg border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                                    <Calendar size={16} className="text-black stroke-[3]" />
+                                    <span className="uppercase">{new Date(item.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-gray-50 flex-1 p-2.5 rounded-lg border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                                    <Edit2 size={16} className="text-black stroke-[3]" />
+                                    <span className="truncate uppercase">{item.user?.name || "Unknown"}</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-brand-200 flex-1 p-2.5 rounded-lg border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] text-black">
+                                    <BarChart2 size={16} className="text-black stroke-[3]" />
+                                    <span className="uppercase">{item.views_count || 0} Views</span>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-3 mt-4">
+                                <button onClick={() => onView(item)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-wider rounded-lg border-2 border-black text-black bg-blue-200 hover:bg-blue-300 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none transition-all flex justify-center items-center gap-2">
+                                    <Eye size={16} strokeWidth={3} /> View
+                                </button>
+                                <button onClick={() => onEdit(item)} className="flex-1 py-2.5 text-xs font-black uppercase tracking-wider rounded-lg border-2 border-black text-black bg-purple-200 hover:bg-purple-300 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none transition-all flex justify-center items-center gap-2">
+                                    <Edit2 size={16} strokeWidth={3} /> Edit
+                                </button>
+                                <button onClick={() => onDelete(item.id)} className="flex-none px-4 py-2.5 text-xs rounded-lg border-2 border-black text-white bg-red-600 hover:bg-red-700 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none transition-all flex justify-center items-center">
+                                    <Trash2 size={18} strokeWidth={3} />
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
-            {/* Pagination */}
+            {/* Pagination Controls */}
             {pagination && pagination.last_page > 1 && (
-                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800">
+                <div className="mt-8 flex items-center justify-between border-t-4 border-black pt-6">
                     <button
                         onClick={() => onPageChange(pagination.current_page - 1)}
                         disabled={pagination.current_page === 1}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-extrabold text-black bg-white border-2 border-black rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none disabled:translate-y-0 disabled:cursor-not-allowed transition-all"
                     >
-                        <ChevronLeft size={16} /> Previous
+                        <ChevronLeft size={16} strokeWidth={3} /> Previous
                     </button>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-sm font-extrabold text-black bg-gray-100 px-4 py-2 rounded-lg border-2 border-black">
                         Page {pagination.current_page} of {pagination.last_page}
                     </span>
                     <button
                         onClick={() => onPageChange(pagination.current_page + 1)}
                         disabled={pagination.current_page === pagination.last_page}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-extrabold text-black bg-white border-2 border-black rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none disabled:translate-y-0 disabled:cursor-not-allowed transition-all"
                     >
-                        Next <ChevronRight size={16} />
+                        Next <ChevronRight size={16} strokeWidth={3} />
                     </button>
                 </div>
             )}

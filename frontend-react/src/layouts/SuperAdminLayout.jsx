@@ -14,7 +14,7 @@ const SuperAdminLayout = ({ children }) => {
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        <div className="flex h-screen overflow-hidden mesh-bg">
             {/* Sidebar */}
             <div className="hidden md:block">
                 <SuperAdminSidebar />
@@ -23,7 +23,7 @@ const SuperAdminLayout = ({ children }) => {
             {/* Main area */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Topbar */}
-                <header className="h-16 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 bg-white dark:bg-gray-900 transition-colors duration-200">
+                <header className="h-16 bg-white dark:bg-brand-900 border-b-2 border-black dark:border-white flex items-center justify-between px-6 shadow-sm transition-colors duration-200 sticky top-0 z-50">
                     <div>
                         <span className="font-medium text-gray-700 dark:text-gray-300">Welcome, </span>
                         <span className="font-bold text-gray-900 dark:text-white">{user?.name || "Super Admin"}</span>
@@ -33,7 +33,7 @@ const SuperAdminLayout = ({ children }) => {
                         <NotificationBell />
                         <button
                             onClick={handleLogout}
-                            className="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            className="btn-accent"
                         >
                             Logout
                         </button>

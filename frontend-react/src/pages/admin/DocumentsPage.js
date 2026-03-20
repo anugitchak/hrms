@@ -153,11 +153,11 @@ const DocumentsPage = () => {
         <div className="p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-black font-paperlogy flex items-center gap-2">
                         <FileText className="text-blue-600" />
                         Employee Documents
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                    <p className="text-gray-900 text-sm mt-1">
                         {isEmployee ? "Manage your personal documents" : "Manage all employee documents safely"}
                     </p>
                 </div>
@@ -173,7 +173,7 @@ const DocumentsPage = () => {
             {/* Filters (Admin/HR Only) */}
             {!isEmployee && (
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 flex flex-col md:flex-row gap-4 items-center">
-                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-2 text-gray-900">
                         <Filter size={18} /> <span className="text-sm font-medium">Filters:</span>
                     </div>
 
@@ -221,9 +221,9 @@ const DocumentsPage = () => {
             {/* Document List */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                 {loading ? (
-                    <div className="p-8 text-center text-gray-500">Loading documents...</div>
+                    <div className="p-8 text-center text-gray-900">Loading documents...</div>
                 ) : documents.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500 flex flex-col items-center">
+                    <div className="p-8 text-center text-gray-900 flex flex-col items-center">
                         <FileText className="w-12 h-12 text-gray-300 mb-3" />
                         <p>No documents found.</p>
                     </div>
@@ -243,11 +243,11 @@ const DocumentsPage = () => {
                             </thead>
                             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                                 {documents.map((doc) => (
-                                    <tr key={doc.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <tr key={doc.id} className="hover:bg-brand-50/50 transition-colors border-b-2 border-black/5">
                                         {!isEmployee && (
                                             <td className="p-4 text-sm text-gray-900 dark:text-white">
                                                 <div className="font-medium">{doc.employee?.user?.name || "Unknown"}</div>
-                                                <div className="text-xs text-gray-500">{doc.employee?.employee_code}</div>
+                                                <div className="text-xs text-gray-900">{doc.employee?.employee_code}</div>
                                             </td>
                                         )}
                                         <td className="p-4 text-sm text-gray-700 dark:text-gray-300">
@@ -256,8 +256,8 @@ const DocumentsPage = () => {
                                             </span>
                                         </td>
                                         <td className="p-4 text-sm font-medium text-gray-900 dark:text-white">{doc.document_title}</td>
-                                        <td className="p-4 text-sm text-gray-500 dark:text-gray-400">{doc.file_size ? `${doc.file_size} KB` : "N/A"}</td>
-                                        <td className="p-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <td className="p-4 text-sm text-gray-900">{doc.file_size ? `${doc.file_size} KB` : "N/A"}</td>
+                                        <td className="p-4 text-sm text-gray-900">
                                             {new Date(doc.created_at).toLocaleDateString()}
                                         </td>
                                         {!isEmployee && (
@@ -265,7 +265,7 @@ const DocumentsPage = () => {
                                                 {doc.uploader ? (
                                                     <div>
                                                         <div className="font-medium">{doc.uploader.name}</div>
-                                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                        <div className="text-xs text-gray-900">
                                                             {doc.uploader.role_id === 1 ? 'SuperAdmin' :
                                                                 doc.uploader.role_id === 2 ? 'Admin' :
                                                                     doc.uploader.role_id === 3 ? 'HR' : 'Employee'}
@@ -318,7 +318,7 @@ const DocumentsPage = () => {
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upload Document</h2>
                             <button
                                 onClick={() => setIsUploadModalOpen(false)}
-                                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                className="text-gray-900 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 <X size={24} />
                             </button>

@@ -21,7 +21,7 @@ const EmployeeLayout = ({ children }) => {
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        <div className="flex h-screen overflow-hidden mesh-bg">
             {/* Sidebar */}
             <div className="hidden md:block">
                 <EmployeeSidebar />
@@ -35,7 +35,7 @@ const EmployeeLayout = ({ children }) => {
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Top Bar */}
-                <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-6 shadow-sm transition-colors duration-200">
+                <header className="h-16 bg-white dark:bg-brand-900 border-b-2 border-black dark:border-white flex items-center justify-between px-6 shadow-sm transition-colors duration-200 sticky top-0 z-50">
                     <div>
                         <span className="text-gray-500 dark:text-gray-400">Welcome, </span>
                         <span className="font-semibold text-gray-900 dark:text-white">
@@ -47,7 +47,7 @@ const EmployeeLayout = ({ children }) => {
                         <NotificationBell />
                         <button
                             onClick={handleLogout}
-                            className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-600 dark:border-red-400 rounded-lg hover:bg-red-600 hover:text-white dark:hover:bg-red-500 dark:hover:text-white transition-all duration-200 bg-transparent"
+                            className="btn-accent"
                         >
                             Logout
                         </button>
@@ -55,7 +55,7 @@ const EmployeeLayout = ({ children }) => {
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-6">
+                <main className="flex-1 overflow-y-auto p-6 relative">
                     {children}
                 </main>
             </div>

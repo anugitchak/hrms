@@ -106,15 +106,18 @@ const PayrollSettingsPage = () => {
     };
 
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Payroll Settings</h1>
+        <div className="p-8">
+            <div className="mb-8">
+                <h1 className="text-3xl font-extrabold text-black font-paperlogy">Payroll Settings</h1>
+                <p className="text-sm font-medium text-gray-600 mt-1">Configure salary structure, deductions, and tax slabs.</p>
+            </div>
 
             {!canAccess ? (
                 <div className="flex flex-col items-center justify-center py-20">
                     <ShieldOff className="w-16 h-16 text-red-400 mb-4" />
                     <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Access Denied</h2>
-                    <p className="text-gray-500 dark:text-gray-400">You don't have permission to access Payroll Settings.</p>
-                    <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">Contact your Super Admin to request access.</p>
+                    <p className="text-gray-900">You don't have permission to access Payroll Settings.</p>
+                    <p className="text-gray-400 dark:text-gray-900 text-sm mt-2">Contact your Super Admin to request access.</p>
                 </div>
             ) : (
                 <>
@@ -125,180 +128,126 @@ const PayrollSettingsPage = () => {
                         </div>
                     )}
 
-                    {loading ? <p>Loading...</p> : (
-                        <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
+                    {loading ? <p className="font-medium text-gray-500">Loading...</p> : (
+                        <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
                             {/* Salary Components */}
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                                <h2 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Salary Structure Breakdown</h2>
+                            <div className="card p-6">
+                                <div className="flex items-center gap-2 mb-5 pb-3 border-b-2 border-black/10">
+                                    <h2 className="text-lg font-extrabold text-black">Salary Structure Breakdown</h2>
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label htmlFor="basic_percentage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Basic Salary (%)</label>
-                                        <div className="flex items-center">
+                                        <label htmlFor="basic_percentage" className="block text-xs font-extrabold text-gray-700 uppercase tracking-wider mb-2">Basic Salary (%)</label>
+                                        <div className="flex items-center gap-2">
                                             <input
-                                                id="basic_percentage"
-                                                type="number"
-                                                name="basic_percentage"
-                                                value={policies.basic_percentage}
-                                                onChange={handleChange}
-                                                className="w-full border rounded-lg px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                min="0"
-                                                max="100"
-                                                autoComplete="off"
+                                                id="basic_percentage" type="number" name="basic_percentage"
+                                                value={policies.basic_percentage} onChange={handleChange}
+                                                className="w-full border-2 border-black rounded-xl px-4 py-2.5 font-bold text-black bg-white outline-none focus:ring-4 focus:ring-brand-500"
+                                                min="0" max="100" autoComplete="off"
                                             />
-                                            <span className="ml-2 text-gray-500">%</span>
+                                            <span className="font-extrabold text-gray-700 text-lg">%</span>
                                         </div>
                                     </div>
                                     <div>
-                                        <label htmlFor="hra_percentage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">HRA (%)</label>
-                                        <div className="flex items-center">
+                                        <label htmlFor="hra_percentage" className="block text-xs font-extrabold text-gray-700 uppercase tracking-wider mb-2">HRA (%) — Auto</label>
+                                        <div className="flex items-center gap-2">
                                             <input
-                                                id="hra_percentage"
-                                                type="number"
-                                                name="hra_percentage"
-                                                value={policies.hra_percentage}
-                                                readOnly // Auto-calculated
-                                                className="w-full border rounded-lg px-3 py-2 bg-gray-100 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300 cursor-not-allowed"
+                                                id="hra_percentage" type="number" name="hra_percentage"
+                                                value={policies.hra_percentage} readOnly
+                                                className="w-full border-2 border-black rounded-xl px-4 py-2.5 font-bold bg-gray-100 text-gray-500 cursor-not-allowed outline-none"
                                                 autoComplete="off"
                                             />
-                                            <span className="ml-2 text-gray-500">%</span>
+                                            <span className="font-extrabold text-gray-700 text-lg">%</span>
                                         </div>
-                                        <p className="text-xs text-gray-500 mt-1">Automatically set to (100 - Basic).</p>
+                                        <p className="text-xs font-medium text-gray-500 mt-1.5">Automatically set to (100 − Basic).</p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Deductions */}
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                                <h2 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Statutory Deductions (Global)</h2>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-medium text-gray-800 dark:text-white">Provident Fund (PF)</h3>
-                                            <p className="text-sm text-gray-500">12% of Basic Salary</p>
+                            <div className="card p-6">
+                                <div className="flex items-center gap-2 mb-5 pb-3 border-b-2 border-black/10">
+                                    <h2 className="text-lg font-extrabold text-black">Statutory Deductions (Global)</h2>
+                                </div>
+                                <div className="space-y-3">
+                                    {[
+                                        { id: 'pf_enabled', name: 'pf_enabled', checked: policies.pf_enabled, label: 'Provident Fund (PF)', sub: '12% of Basic Salary', color: 'text-blue-600 bg-blue-50 border-blue-200' },
+                                        { id: 'esic_enabled', name: 'esic_enabled', checked: policies.esic_enabled, label: 'ESIC', sub: '0.75% of Gross Salary', color: 'text-purple-600 bg-purple-50 border-purple-200' },
+                                        { id: 'ptax_enabled', name: 'ptax_enabled', checked: policies.ptax_enabled, label: 'Professional Tax (PTAX)', sub: 'Slab-based deduction', color: 'text-orange-600 bg-orange-50 border-orange-200' },
+                                    ].map(item => (
+                                        <div key={item.id} className={`flex items-center justify-between p-4 rounded-xl border-2 border-black transition-all ${ item.checked ? item.color : 'bg-white border-black/20' }`}>
+                                            <div>
+                                                <h3 className="font-extrabold text-black text-sm">{item.label}</h3>
+                                                <p className="text-xs font-medium text-gray-600 mt-0.5">{item.sub}</p>
+                                            </div>
+                                            <label htmlFor={item.id} className="relative inline-flex items-center cursor-pointer">
+                                                <input id={item.id} type="checkbox" name={item.name} checked={item.checked} onChange={handleChange} className="sr-only peer" aria-label={`Enable ${item.label}`} />
+                                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
+                                            </label>
                                         </div>
-                                        <label htmlFor="pf_enabled" className="relative inline-flex items-center cursor-pointer">
-                                            <input
-                                                id="pf_enabled"
-                                                type="checkbox"
-                                                name="pf_enabled"
-                                                checked={policies.pf_enabled}
-                                                onChange={handleChange}
-                                                className="sr-only peer"
-                                                aria-label="Enable Provident Fund"
-                                            />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
-
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-medium text-gray-800 dark:text-white">ESIC</h3>
-                                            <p className="text-sm text-gray-500">0.75% of Gross Salary</p>
-                                        </div>
-                                        <label htmlFor="esic_enabled" className="relative inline-flex items-center cursor-pointer">
-                                            <input
-                                                id="esic_enabled"
-                                                type="checkbox"
-                                                name="esic_enabled"
-                                                checked={policies.esic_enabled}
-                                                onChange={handleChange}
-                                                className="sr-only peer"
-                                                aria-label="Enable ESIC"
-                                            />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
-
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-medium text-gray-800 dark:text-white">Professional Tax (PTAX)</h3>
-                                            <p className="text-sm text-gray-500">Slab-based deduction</p>
-                                        </div>
-                                        <label htmlFor="ptax_enabled" className="relative inline-flex items-center cursor-pointer">
-                                            <input
-                                                id="ptax_enabled"
-                                                type="checkbox"
-                                                name="ptax_enabled"
-                                                checked={policies.ptax_enabled}
-                                                onChange={handleChange}
-                                                className="sr-only peer"
-                                                aria-label="Enable Professional Tax"
-                                            />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
 
                             {/* PTAX Slabs */}
                             {policies.ptax_enabled && (
-                                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Professional Tax Slabs</h2>
-                                        <button type="button" onClick={addSlab} className="flex items-center text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded hover:bg-blue-100">
-                                            <Plus className="w-4 h-4 mr-1" /> Add Slab
+                                <div className="card p-6">
+                                    <div className="flex justify-between items-center mb-5 pb-3 border-b-2 border-black/10">
+                                        <h2 className="text-lg font-extrabold text-black">Professional Tax Slabs</h2>
+                                        <button type="button" onClick={addSlab} className="btn-secondary flex items-center gap-1.5 text-sm">
+                                            <Plus className="w-4 h-4" /> + Add Slab
                                         </button>
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="space-y-3">
                                         {policies.ptax_slabs.map((slab, index) => (
-                                            <div key={index} className="flex items-center gap-4">
+                                            <div key={index} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border-2 border-black/10">
                                                 <div className="flex-1">
                                                     <label htmlFor={`ptax_min_${index}`} className="sr-only">Min Salary</label>
                                                     <input
-                                                        id={`ptax_min_${index}`}
-                                                        name={`ptax_min_${index}`}
-                                                        type="number"
-                                                        placeholder="Min Salary"
-                                                        value={slab.min_salary}
+                                                        id={`ptax_min_${index}`} name={`ptax_min_${index}`}
+                                                        type="number" placeholder="Min Salary" value={slab.min_salary}
                                                         onChange={(e) => handleSlabChange(index, 'min_salary', e.target.value)}
-                                                        className="w-full border rounded px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                        aria-label={`Minimum Salary for Slab ${index + 1}`}
-                                                        autoComplete="off"
+                                                        className="w-full border-2 border-black rounded-lg px-3 py-2 text-sm font-bold bg-white outline-none focus:ring-4 focus:ring-brand-500"
+                                                        aria-label={`Minimum Salary for Slab ${index + 1}`} autoComplete="off"
                                                     />
                                                 </div>
-                                                <span className="text-gray-500">-</span>
+                                                <span className="font-black text-gray-400">—</span>
                                                 <div className="flex-1">
                                                     <label htmlFor={`ptax_max_${index}`} className="sr-only">Max Salary</label>
                                                     <input
-                                                        id={`ptax_max_${index}`}
-                                                        name={`ptax_max_${index}`}
-                                                        type="number"
-                                                        placeholder="Max Salary"
-                                                        value={slab.max_salary || ""}
+                                                        id={`ptax_max_${index}`} name={`ptax_max_${index}`}
+                                                        type="number" placeholder="Max Salary" value={slab.max_salary || ""}
                                                         onChange={(e) => handleSlabChange(index, 'max_salary', e.target.value)}
-                                                        className="w-full border rounded px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                        aria-label={`Maximum Salary for Slab ${index + 1}`}
-                                                        autoComplete="off"
+                                                        className="w-full border-2 border-black rounded-lg px-3 py-2 text-sm font-bold bg-white outline-none focus:ring-4 focus:ring-brand-500"
+                                                        aria-label={`Maximum Salary for Slab ${index + 1}`} autoComplete="off"
                                                     />
                                                 </div>
-                                                <span className="text-gray-500">→</span>
+                                                <span className="font-black text-gray-400">→</span>
                                                 <div className="w-32">
                                                     <label htmlFor={`ptax_amount_${index}`} className="sr-only">Tax Amount</label>
                                                     <input
-                                                        id={`ptax_amount_${index}`}
-                                                        name={`ptax_amount_${index}`}
-                                                        type="number"
-                                                        placeholder="Tax Amount"
-                                                        value={slab.tax_amount}
+                                                        id={`ptax_amount_${index}`} name={`ptax_amount_${index}`}
+                                                        type="number" placeholder="₹ Tax" value={slab.tax_amount}
                                                         onChange={(e) => handleSlabChange(index, 'tax_amount', e.target.value)}
-                                                        className="w-full border rounded px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                        aria-label={`Tax Amount for Slab ${index + 1}`}
-                                                        autoComplete="off"
+                                                        className="w-full border-2 border-black rounded-lg px-3 py-2 text-sm font-bold bg-white outline-none focus:ring-4 focus:ring-brand-500"
+                                                        aria-label={`Tax Amount for Slab ${index + 1}`} autoComplete="off"
                                                     />
                                                 </div>
-                                                <button type="button" onClick={() => removeSlab(index)} className="text-red-500 hover:text-red-700" aria-label={`Remove Slab ${index + 1}`}>
+                                                <button type="button" onClick={() => removeSlab(index)}
+                                                    className="p-2 border-2 border-red-300 text-red-500 rounded-lg bg-red-50 hover:bg-red-100 transition-all"
+                                                    aria-label={`Remove Slab ${index + 1}`}>
                                                     <Trash className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         ))}
-                                        {policies.ptax_slabs.length === 0 && <p className="text-gray-400 text-sm">No slabs defined.</p>}
+                                        {policies.ptax_slabs.length === 0 && <p className="text-gray-400 text-sm font-medium py-4 text-center">No slabs defined. Click "+ Add Slab" to get started.</p>}
                                     </div>
                                 </div>
                             )}
 
                             <div className="flex justify-end">
-                                <button type="submit" className="flex items-center bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                                    <Save className="w-5 h-5 mr-2" /> Save Settings
+                                <button type="submit" className="btn-primary flex items-center gap-2">
+                                    <Save className="w-5 h-5" /> Save Settings
                                 </button>
                             </div>
                         </form>

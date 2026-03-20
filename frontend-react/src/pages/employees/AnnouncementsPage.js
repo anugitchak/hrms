@@ -75,7 +75,7 @@ const AnnouncementsPage = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 transition-colors">
+            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 transition-colors">
                 <div className="text-xl font-medium animate-pulse">Loading announcements...</div>
             </div>
         );
@@ -88,7 +88,7 @@ const AnnouncementsPage = () => {
             <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Announcements</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Latest updates and news</p>
+                    <p className="text-gray-900 mt-1">Latest updates and news</p>
                 </div>
                 <div>
                     <Button variant="secondary" onClick={() => navigate("/employee/dashboard")}>
@@ -103,13 +103,13 @@ const AnnouncementsPage = () => {
             {/* Content */}
             {!loading && !error && announcements.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-center shadow-sm">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4 text-gray-400 dark:text-gray-500">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4 text-gray-400 dark:text-gray-900">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
                     </div>
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">No announcements yet</h3>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
+                    <p className="text-gray-900 mt-1 max-w-sm">
                         Check back later for news and updates from the administration.
                     </p>
                 </div>
@@ -125,7 +125,7 @@ const AnnouncementsPage = () => {
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
                                     {announcement.title}
                                 </h3>
-                                <div className="flex items-center text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full whitespace-nowrap">
+                                <div className="flex items-center text-xs font-medium text-gray-900 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full whitespace-nowrap">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                                     </svg>

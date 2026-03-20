@@ -117,7 +117,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                     )}
 
                     <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
-                        <button onClick={onClose} className="px-4 py-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
+                        <button onClick={onClose} className="px-4 py-2 text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
                         <button
                             onClick={handleSubmit}
                             className={`px-4 py-2 rounded-lg text-white font-medium ${action === 'reject' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}
@@ -149,7 +149,7 @@ const EmployeeSummaryCard = ({ group, isSelected, onClick }) => {
             <div className="flex items-center gap-3">
                 <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${isSelected
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                    : 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-400'
                     }`}>
                     {employee?.user?.name?.charAt(0) || 'U'}
                 </div>
@@ -157,7 +157,7 @@ const EmployeeSummaryCard = ({ group, isSelected, onClick }) => {
                     <h4 className={`font-semibold truncate ${isSelected ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-white'}`}>
                         {employee?.user?.name}
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    <p className="text-xs text-gray-900 truncate">
                         {employee?.employee_code} • {employee?.department?.name}
                     </p>
                 </div>
@@ -214,7 +214,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
 
     if (!employeeId) {
         return (
-            <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 p-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+            <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-900 p-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
                 <svg className="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 <p>Select an employee to view leave history</p>
             </div>
@@ -222,14 +222,14 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
     }
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 h-[calc(100vh-200px)] overflow-hidden flex flex-col">
+        <div className="card h-[calc(100vh-200px)] overflow-hidden flex flex-col">
             <div className="p-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex justify-between items-center">
                 <h3 className="font-bold text-gray-900 dark:text-white">Leave History</h3>
                 <div className="flex items-center gap-1">
-                    <button onClick={fetchHistory} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-500 transition-colors" title="Refresh">
+                    <button onClick={fetchHistory} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-900 transition-colors" title="Refresh">
                         <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     </button>
-                    <button onClick={onClose} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-500 transition-colors" title="Close">
+                    <button onClick={onClose} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-900 transition-colors" title="Close">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
@@ -241,7 +241,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                         {[1, 2, 3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-gray-700/50 rounded-lg animate-pulse"></div>)}
                     </div>
                 ) : history.length === 0 ? (
-                    <div className="text-center py-10 text-gray-500">No leave history found.</div>
+                    <div className="text-center py-10 text-gray-900">No leave history found.</div>
                 ) : (
                     history.map(leave => (
                         <div key={leave.id} className="relative bg-white dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -257,7 +257,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                                 <div className="flex justify-between items-start mb-2">
                                     <div>
                                         <h4 className="font-semibold text-sm text-gray-900 dark:text-white">{leave.leave_type?.name}</h4>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(leave.start_date)} - {formatDate(leave.end_date)}</p>
+                                        <p className="text-xs text-gray-900">{formatDate(leave.start_date)} - {formatDate(leave.end_date)}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {leave.status === 'Partially Approved' && leave.approved_start_date && leave.approved_end_date && (
@@ -274,7 +274,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                                 </p>
 
                                 {leave.approver && (
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
+                                    <div className="text-xs text-gray-900 mb-3 flex items-center gap-2">
                                         <span className="font-medium">Approved by:</span>
                                         <span className="text-gray-700 dark:text-gray-300 font-medium">{leave.approver.name}</span>
                                         <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">
@@ -465,31 +465,31 @@ const LeavesPage = () => {
         <div className="p-8 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Leaves Management</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Grouped by Employee</p>
+                <p className="text-sm text-gray-900 mt-1">Grouped by Employee</p>
             </div>
 
             {/* Metrics Row */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+                <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-gray-900 dark:text-white">{summary.total}</div>
-                    <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">Total Leaves</div>
+                    <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Total Leaves</div>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+                <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-orange-600">{summary.pending}</div>
-                    <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">Pending</div>
+                    <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Pending</div>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+                <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-green-600">{summary.approved}</div>
-                    <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">Approved</div>
+                    <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Approved</div>
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+                <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-red-600">{summary.rejected}</div>
-                    <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">Rejected</div>
+                    <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Rejected</div>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 flex flex-wrap gap-4">
+            <div className="card p-4 mb-6 flex flex-wrap gap-4">
                 <label htmlFor="employee-search" className="sr-only">Search Employee</label>
                 <input
                     id="employee-search"
@@ -531,11 +531,11 @@ const LeavesPage = () => {
                 {/* Left Column: List */}
                 <div className="lg:col-span-4 space-y-3">
                     {loading ? (
-                        <div className="text-center py-8 text-gray-500">Loading...</div>
+                        <div className="text-center py-8 text-gray-900">Loading...</div>
                     ) : error ? (
                         <div className="text-red-500 text-center">{error}</div>
                     ) : Object.keys(groupedLeaves).length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">No records found.</div>
+                        <div className="text-center py-8 text-gray-900">No records found.</div>
                     ) : (
                         // Force sort by most recent leave in group
                         Object.values(groupedLeaves)

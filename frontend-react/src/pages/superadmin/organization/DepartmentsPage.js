@@ -140,25 +140,25 @@ const DepartmentsPage = () => {
     );
 
     return (
-        <div className="p-8 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        <div className="p-8">
 
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Departments Management</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage all departments in the organization</p>
+                    <h1 className="text-3xl font-extrabold text-black font-paperlogy">Departments Management</h1>
+                    <p className="text-sm text-gray-900 mt-1">Manage all departments in the organization</p>
                 </div>
                 <div className="flex gap-3">
                     <button
                         onClick={fetchDepartments}
-                        className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
+                        className="btn-secondary transition-colors text-sm font-medium"
                     >
                         Refresh
                     </button>
                     {canManage && (
                         <button
                             onClick={openAddModal}
-                            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors text-sm font-medium border-none"
+                            className="btn-primary text-sm font-medium border-none"
                         >
                             + Add Department
                         </button>
@@ -176,70 +176,62 @@ const DepartmentsPage = () => {
                     placeholder="Search by department name..."
                     value={searchQuery}
                     onChange={handleSearch}
-                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full max-w-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors"
+                    className="p-3 border-2 border-black rounded-lg outline-none w-full max-w-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors"
                 />
             </div>
 
-            {/* Table */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors duration-200">
+            {/* Cards Grid */}
+            <div className="">
                 {loading ? (
-                    <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading departments...</div>
+                    <div className="p-8 text-center text-gray-900 font-bold bg-white border-2 border-black hr-shadow rounded-lg w-full max-w-sm mx-auto">Loading departments...</div>
                 ) : error ? (
-                    <div className="p-8 text-center text-red-500 dark:text-red-400">{error}</div>
+                    <div className="p-8 text-center text-red-600 font-bold bg-red-50 border-2 border-red-600 hr-shadow rounded-lg w-full max-w-sm mx-auto">{error}</div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created At</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                {filteredDepartments.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="3" className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-                                            No departments found.
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    filteredDepartments.map((dept) => (
-                                        <tr key={dept.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{dept.name}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{formatDate(dept.created_at)}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                {canManage && (
-                                                    <>
-                                                        <button
-                                                            onClick={() => openEditModal(dept)}
-                                                            className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-4 transition-colors"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        {canDelete && (
-                                                            <button
-                                                                onClick={() => openDeleteModal(dept)}
-                                                                className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition-colors"
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        )}
-                                                    </>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {filteredDepartments.length === 0 ? (
+                            <div className="col-span-full p-12 bg-gray-50 border-2 border-black border-dashed flex items-center justify-center rounded-xl">
+                                <p className="text-xl font-bold text-gray-500">No departments found.</p>
+                            </div>
+                        ) : (
+                            filteredDepartments.map((dept) => (
+                                <div key={dept.id} className="bg-white border-4 border-black p-6 rounded-xl shadow-[8px_8px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[12px_12px_0px_rgba(0,0,0,1)] transition-all flex flex-col justify-between">
+                                    <div className="mb-6">
+                                        <h3 className="text-xl font-black text-black tracking-tight mb-4">{dept.name}</h3>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <div className="px-3 py-1 bg-brand-100 border-2 border-black rounded-lg text-xs font-black text-brand-900 tracking-wider">
+                                                CREATED: {formatDate(dept.created_at)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {canManage && (
+                                        <div className="flex gap-3 mt-auto pt-4 border-t-4 border-gray-100">
+                                            <button
+                                                onClick={() => openEditModal(dept)}
+                                                className="flex-1 py-2.5 bg-teal-400 hover:bg-teal-300 border-2 border-black rounded-lg text-black font-black text-sm tracking-wider transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none"
+                                            >
+                                                Edit
+                                            </button>
+                                            {canDelete && (
+                                                <button
+                                                    onClick={() => openDeleteModal(dept)}
+                                                    className="flex-1 py-2.5 bg-red-400 hover:bg-red-300 border-2 border-black rounded-lg text-black font-black text-sm tracking-wider transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            ))
+                        )}
                     </div>
                 )}
             </div>
 
             {/* ADD MODAL */}
             {isAddModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 z-50 p-4">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 transition-colors duration-200">
                         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Add Department</h2>
                         {formError && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm">{formError}</div>}
@@ -253,7 +245,7 @@ const DepartmentsPage = () => {
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors"
+                                    className="w-full p-2.5 border-2 border-black rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors"
                                     autoFocus
                                 />
                             </div>
@@ -261,7 +253,7 @@ const DepartmentsPage = () => {
                                 <button
                                     type="button"
                                     onClick={closeModals}
-                                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+                                    className="btn-secondary transition-colors text-sm font-medium"
                                 >
                                     Cancel
                                 </button>
@@ -280,7 +272,7 @@ const DepartmentsPage = () => {
 
             {/* EDIT MODAL */}
             {isEditModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 z-50 p-4">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 transition-colors duration-200">
                         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Edit Department</h2>
                         {formError && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm">{formError}</div>}
@@ -294,7 +286,7 @@ const DepartmentsPage = () => {
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-colors"
+                                    className="w-full p-2.5 border-2 border-black rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-brand-500 font-medium transition-colors"
                                     autoFocus
                                 />
                             </div>
@@ -302,7 +294,7 @@ const DepartmentsPage = () => {
                                 <button
                                     type="button"
                                     onClick={closeModals}
-                                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+                                    className="btn-secondary transition-colors text-sm font-medium"
                                 >
                                     Cancel
                                 </button>
@@ -321,7 +313,7 @@ const DepartmentsPage = () => {
 
             {/* DELETE MODAL */}
             {isDeleteModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 z-50 p-4">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-sm p-6 transition-colors duration-200">
                         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Delete Department</h2>
                         <p className="text-gray-600 dark:text-gray-300 mb-6">
@@ -331,7 +323,7 @@ const DepartmentsPage = () => {
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={closeModals}
-                                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+                                className="btn-secondary transition-colors text-sm font-medium"
                             >
                                 Cancel
                             </button>

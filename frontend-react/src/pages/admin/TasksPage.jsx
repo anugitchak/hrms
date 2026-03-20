@@ -245,16 +245,16 @@ const TasksPage = () => {
     });
 
     return (
-        <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200 overflow-hidden">
+        <div className="p-8">
             {/* Standard Header */}
-            <div className="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm flex justify-between items-center">
+            <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">Productivity Management</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Design workflows and verify employee contributions.</p>
+                    <h1 className="text-3xl font-extrabold text-black font-paperlogy">Productivity Management</h1>
+                    <p className="text-sm font-medium text-gray-900">Design workflows and verify employee contributions.</p>
                 </div>
                 <button
                     onClick={() => { resetForm(); setIsModalOpen(true); }}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow-sm font-semibold text-sm transition-colors"
+                    className="btn-primary"
                 >
                     Create New Task
                 </button>
@@ -263,7 +263,7 @@ const TasksPage = () => {
             <div className="flex-1 overflow-auto p-6 space-y-8">
 
                 {/* ── Filter Bar ── */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
+                <div className="card p-4">
                     <div className="flex flex-wrap gap-3 items-end">
                         {/* Employee name search */}
                         <div className="flex flex-col gap-1 min-w-[180px] flex-1">
@@ -342,26 +342,26 @@ const TasksPage = () => {
                 </div>
                 {/* Pending Verification Table */}
                 {pendingReviewTasks.length > 0 && (
-                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-                        <div className="p-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                            <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Awaiting Verification</h2>
+                    <div className="card overflow-hidden">
+                        <div className="p-4 border-b-2 border-black bg-accent-50">
+                            <h2 className="text-sm font-bold text-black uppercase tracking-wider">Awaiting Verification</h2>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left text-sm">
                                 <thead>
-                                    <tr className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
-                                        <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300">Task</th>
-                                        <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300">Employee</th>
-                                        <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300">Department</th>
-                                        <th className="px-6 py-3 text-right font-semibold text-gray-600 dark:text-gray-300">Action</th>
+                                    <tr className="bg-brand-50 border-b-2 border-black">
+                                        <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Task</th>
+                                        <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Employee</th>
+                                        <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Department</th>
+                                        <th className="px-6 py-3 text-right text-xs font-bold text-black uppercase tracking-wider">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y dark:divide-gray-700">
                                     {pendingReviewTasks.map((task) => (
-                                        <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <tr key={task.id} className="hover:bg-brand-50/50 transition-colors border-b-2 border-black/5">
                                             <td className="px-6 py-4">
                                                 <div className="font-bold text-gray-900 dark:text-white">{task.title}</div>
-                                                <div className="text-xs text-gray-500 line-clamp-1">{task.description}</div>
+                                                <div className="text-xs text-gray-900 line-clamp-1">{task.description}</div>
                                             </td>
                                             <td className="px-6 py-4 text-gray-700 dark:text-gray-300 font-medium">
                                                 {task.assignee?.user?.name || 'Unassigned'}
@@ -388,29 +388,29 @@ const TasksPage = () => {
                 )}
 
                 {/* All Tasks Table */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-                        <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">All Tasks</h2>
+                <div className="card overflow-hidden">
+                    <div className="p-4 border-b-2 border-black">
+                        <h2 className="text-sm font-bold text-black uppercase tracking-wider">All Tasks</h2>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
                             <thead>
-                                <tr className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
-                                    <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300">Task Details</th>
-                                    <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300 text-center">Necessity</th>
-                                    <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300">Type</th>
-                                    <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300">Assignee / Worker</th>
-                                    <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300">Status</th>
-                                    <th className="px-6 py-3 font-semibold text-gray-600 dark:text-gray-300">Deadline</th>
-                                    <th className="px-6 py-3 text-right font-semibold text-gray-600 dark:text-gray-300">Actions</th>
+                                <tr className="bg-brand-50 border-b-2 border-black">
+                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Task Details</th>
+                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider text-center">Necessity</th>
+                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Type</th>
+                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Assignee / Worker</th>
+                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Deadline</th>
+                                    <th className="px-6 py-3 text-right text-xs font-bold text-black uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y dark:divide-gray-700">
                                 {allOtherTasks.map((task) => (
-                                    <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <tr key={task.id} className="hover:bg-brand-50/50 transition-colors border-b-2 border-black/5">
                                         <td className="px-6 py-4">
                                             <div className="font-bold text-gray-900 dark:text-white">{task.title}</div>
-                                            <div className="text-xs text-gray-500 font-mono uppercase tracking-tighter">
+                                            <div className="text-xs text-gray-900 font-mono uppercase tracking-tighter">
                                                 {task.department?.name || 'All Departments'}
                                                 {task.designation && ` • ${task.designation.name}`}
                                             </div>
@@ -421,7 +421,7 @@ const TasksPage = () => {
                                                     ${task.priority === 'urgent' ? 'bg-red-50 text-red-600 border-red-200 shadow-red-100' :
                                                         task.priority === 'high' ? 'bg-orange-50 text-orange-600 border-orange-200' :
                                                             task.priority === 'medium' ? 'bg-blue-50 text-blue-600 border-blue-200' :
-                                                                'bg-gray-50 text-gray-500 border-gray-200'}`}>
+                                                                'bg-gray-50 text-gray-900 border-gray-200'}`}>
                                                     {task.priority}
                                                 </span>
                                             )}
@@ -516,15 +516,15 @@ const TasksPage = () => {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Title</label>
+                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Title</label>
                                     <input required type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500" />
                                 </div>
                                 <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Description</label>
+                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Description</label>
                                     <textarea required rows="3" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"></textarea>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Department</label>
+                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Department</label>
                                     <select value={formData.department_id} onChange={e => setFormData({ ...formData, department_id: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
                                         <option value="">All Departments</option>
                                         {departments.map(dept => (
@@ -533,7 +533,7 @@ const TasksPage = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Designation</label>
+                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Designation</label>
                                     <select value={formData.designation_id} onChange={e => setFormData({ ...formData, designation_id: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
                                         <option value="">All Designations</option>
                                         {designations.map(desig => (
@@ -542,11 +542,11 @@ const TasksPage = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Due Date</label>
+                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Due Date</label>
                                     <input type="date" value={formData.due_date} onChange={e => setFormData({ ...formData, due_date: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm" />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Deadline Time</label>
+                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Deadline Time</label>
                                     <input
                                         type="time"
                                         value={formData.due_time}
@@ -555,16 +555,16 @@ const TasksPage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Assignment Type</label>
+                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Assignment Type</label>
                                     <select value={formData.is_pool_task} onChange={e => setFormData({ ...formData, is_pool_task: e.target.value === 'true', assigned_to: "" })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
                                         <option value="false">Direct Assignment</option>
                                         <option value="true">Post to Pool</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Work Necessity / Priority</label>
+                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Work Necessity / Priority</label>
                                     <select value={formData.priority} onChange={e => setFormData({ ...formData, priority: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
-                                        <option value="low" className="text-gray-500">Low (Routine)</option>
+                                        <option value="low" className="text-gray-900">Low (Routine)</option>
                                         <option value="medium" className="text-blue-600">Medium (Standard)</option>
                                         <option value="high" className="text-orange-600">High (Important)</option>
                                         <option value="urgent" className="text-red-600">Urgent (Immediate Action)</option>
@@ -572,7 +572,7 @@ const TasksPage = () => {
                                 </div>
                                 {!formData.is_pool_task && (
                                     <div className="col-span-2">
-                                        <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Assign To</label>
+                                        <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Assign To</label>
                                         <select required value={formData.assigned_to} onChange={e => setFormData({ ...formData, assigned_to: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
                                             <option value="">Select Employee</option>
                                             {filteredEmployees.map(emp => (
@@ -586,7 +586,7 @@ const TasksPage = () => {
                                 )}
                             </div>
                             <div className="flex gap-3 pt-6">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-2 text-sm font-semibold text-gray-500 border rounded hover:bg-gray-50">Cancel</button>
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-2 text-sm font-semibold text-gray-900 border rounded hover:bg-gray-50">Cancel</button>
                                 <button disabled={isSubmitting} type="submit" className="flex-1 py-2 bg-blue-600 text-white rounded font-semibold text-sm hover:bg-blue-700 shadow-sm disabled:opacity-50">
                                     {isSubmitting ? (isEditing ? "Updating..." : "Creating...") : (isEditing ? "Update Task" : "Create Task")}
                                 </button>
