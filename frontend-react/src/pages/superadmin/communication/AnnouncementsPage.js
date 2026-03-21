@@ -151,21 +151,49 @@ const AnnouncementsPage = () => {
         }
     };
 
+    // Calculate Stats
+    const stats = [
+        { label: "Total Dispatch", value: pagination.total, icon: <Plus className="text-teal-500" />, color: "teal" },
+        { label: "Live Units", value: announcements.filter(a => a.status === 'Active').length, icon: <Plus className="text-emerald-500" />, color: "emerald" },
+        { label: "Critical", value: announcements.filter(a => a.category === 'Urgent').length, icon: <Plus className="text-rose-500" />, color: "rose" },
+        { label: "Intelligence Views", value: announcements.reduce((acc, curr) => acc + (curr.views_count || 0), 0), icon: <Plus className="text-blue-500" />, color: "blue" },
+    ];
+
     return (
-        <div className="p-8 max-w-[1600px] mx-auto">
+        <div className="p-8 max-w-[1600px] mx-auto min-h-screen">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-black font-paperlogy">Announcements</h1>
-                    <p className="text-sm text-gray-900 mt-1">Create and manage system-wide announcements</p>
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight leading-none mb-2">
+                        <span className="italic">System</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Announcements</span>
+                    </h1>
+                    <div className="flex items-center gap-3 mt-3">
+                        <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Broadcast Intelligence Management Hub</p>
+                    </div>
                 </div>
                 <button
                     onClick={handleCreate}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-brand-400 hover:bg-brand-500 text-black font-black tracking-wider border-4 border-black rounded-lg shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none transition-all"
+                    className="flex items-center gap-2 text-xs font-black text-white bg-teal-600 hover:bg-teal-500 px-6 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md"
                 >
-                    <Plus size={20} strokeWidth={3} />
-                    Create Announcement
+                    <Plus size={20} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300" />
+                    Create Dispatch
                 </button>
+            </div>
+
+            {/* Summary Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                {stats.map((stat, i) => (
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300 group">
+                        <div className={`w-14 h-14 rounded-2xl bg-${stat.color}-50 dark:bg-${stat.color}-500/10 border-2 border-${stat.color}-100 dark:border-${stat.color}-500/20 flex items-center justify-center text-${stat.color}-600 group-hover:scale-110 transition-transform duration-500 shadow-sm`}>
+                            {React.cloneElement(stat.icon, { size: 24, strokeWidth: 2.5 })}
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{stat.value.toLocaleString()}</div>
+                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-teal-600 transition-colors">{stat.label}</div>
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* Filters */}

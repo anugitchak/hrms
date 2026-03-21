@@ -1,8 +1,214 @@
-import { useState, useEffect } from"react"; import { useNotifications } from"../../../context/NotificationContext"; import { useAuth } from"../../../context/AuthContext"; // Import AuthContext
-import { timeAgo } from"../../../utils/timeAgo"; import { useNavigate } from"react-router-dom"; import NotificationDetailModal from"../../../components/ui/NotificationDetailModal"; const NotificationsPage = () => { const { notifications, fetchNotifications, markRead, markAllRead, loading } = useNotifications(); const { user } = useAuth(); // Get user from context
-const navigate = useNavigate(); const [filter, setFilter] = useState("all"); const [search, setSearch] = useState(""); const [currentPage, setCurrentPage] = useState(1); const itemsPerPage = 10; useEffect(() => { fetchNotifications(); }, [fetchNotifications]); // Determine Dashboard Path based on Role
-const getDashboardPath = () => { switch (user?.role_id) { case 1: return"/superadmin/dashboard"; case 2: return"/admin/dashboard"; case 3: return"/hr/dashboard"; case 4: return"/employee/dashboard"; default: return"/login"; } }; const [selectedNotification, setSelectedNotification] = useState(null); const handleItemClick = (notification) => { if (!notification.is_read) { markRead(notification.id); } // Logic for navigation vs modal
-// 1. If it's an announcement, navigate to announcements page
-if (notification.type === 'announcement' || notification.title.toLowerCase().includes('announcement')) { navigate("/employee/announcements"); return; } // 2. Otherwise, open the detail modal (card)
-setSelectedNotification(notification); }; const filteredNotifications = notifications.filter(n => { const matchesSearch = n.title.toLowerCase().includes(search.toLowerCase()) || n.message.toLowerCase().includes(search.toLowerCase()); if (!matchesSearch) return false; if (filter ==="all") return true; if (filter ==="unread") return !n.is_read; return n.type === filter; }); // Pagination Logic
-const totalPages = Math.ceil(filteredNotifications.length / itemsPerPage); const paginatedNotifications = filteredNotifications.slice( (currentPage - 1) * itemsPerPage, currentPage * itemsPerPage ); const handlePageChange = (newPage) => { if (newPage >= 1 && newPage <= totalPages) { setCurrentPage(newPage); window.scrollTo(0, 0); } }; const getBorderColorClass = (type) => { switch (type) { case 'leave': return 'border-l-amber-500'; case 'attendance': return 'border-l-blue-500'; case 'hr-action': return 'border-l-violet-500'; case 'admin-action': return 'border-l-emerald-500'; case 'security': return 'border-l-red-500'; default: return 'border-l-gray-500'; } }; return ( <div className="p-8 max-w-4xl mx-auto"> <div className="mb-6"> <button onClick={() => navigate(getDashboardPath())} className="flex items-center text-gray-900 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors" > <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> Back to Dashboard </button> </div> <div className="flex justify-between items-center mb-8"> <h1 className="text-3xl font-extrabold text-black font-paperlogy">Notifications</h1> <button onClick={markAllRead} className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm" > Mark All Read </button> </div> {/* Filters */} <div className="flex gap-3 mb-6 flex-wrap"> {['all', 'unread', 'leave', 'attendance', 'hr-action', 'admin-action', 'security'].map(f => ( <button key={f} onClick={() => setFilter(f)} className={` px-4 py-1.5 rounded-full text-sm font-medium transition-colors capitalize ${filter === f ?"bg-blue-600 text-white shadow-md" :"bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"} `} > {f.replace('-', ' ')} </button> ))} </div> {/* Search */} <input type="text" placeholder="Search notifications..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 outline-none mb-8 transition-colors shadow-sm" /> {/* List */} <div className="flex flex-col gap-4"> {loading ? ( <p className="text-center text-gray-900 py-8">Loading...</p> ) : filteredNotifications.length === 0 ? ( <p className="text-center text-gray-900 py-8">No notifications found.</p> ) : ( <> {paginatedNotifications.map(n => ( <div key={n.id} onClick={() => handleItemClick(n)} className={` bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 border-l-4 ${getBorderColorClass(n.type)} cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${n.is_read ? 'opacity-75 dark:opacity-60' : 'opacity-100'} `} > <div className="flex justify-between mb-2"> <h3 className="text-base font-semibold text-gray-900 dark:text-white m-0 flex items-center gap-2"> {n.title} {!n.is_read && <span className="text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-bold">NEW</span>} </h3> <span className="text-xs text-gray-900">{timeAgo(n.created_at)}</span> </div> <p className="text-sm text-gray-600 dark:text-gray-300 m-0">{n.message}</p> </div> ))} {/* Pagination Controls */} {totalPages > 1 && ( <div className="flex justify-center gap-2 mt-8"> <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className={` px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium transition-colors ${currentPage === 1 ?"bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed" :"bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"} `} > Previous </button> <span className="flex items-center px-4 text-sm text-gray-600 dark:text-gray-400"> Page {currentPage} of {totalPages} </span> <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className={` px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium transition-colors ${currentPage === totalPages ?"bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed" :"bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"} `} > Next </button> </div> )} </> )} </div> {/* Detail Modal */} <NotificationDetailModal isOpen={!!selectedNotification} onClose={() => setSelectedNotification(null)} notification={selectedNotification} /> </div> ); }; export default NotificationsPage; 
+import React, { useState, useEffect, useCallback } from "react";
+import { useNotifications } from "../../../context/NotificationContext";
+import { useAuth } from "../../../context/AuthContext";
+import { timeAgo } from "../../../utils/timeAgo";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, Bell, CheckAll, Search, Filter, Loader2, ChevronRight } from "lucide-react";
+import NotificationDetailModal from "../../../components/ui/NotificationDetailModal";
+
+const NotificationsPage = () => {
+    const { notifications, fetchNotifications, markRead, markAllRead, loading } = useNotifications();
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    
+    const [filter, setFilter] = useState("all");
+    const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    useEffect(() => {
+        fetchNotifications();
+    }, [fetchNotifications]);
+
+    const getDashboardPath = useCallback(() => {
+        switch (user?.role_id) {
+            case 1: return "/superadmin/dashboard";
+            case 2: return "/admin/dashboard";
+            case 3: return "/hr/dashboard";
+            case 4: return "/employee/dashboard";
+            default: return "/login";
+        }
+    }, [user]);
+
+    const [selectedNotification, setSelectedNotification] = useState(null);
+
+    const handleItemClick = (notification) => {
+        if (!notification.is_read) {
+            markRead(notification.id);
+        }
+        if (notification.type === 'announcement' || notification.title.toLowerCase().includes('announcement')) {
+            navigate("/superadmin/communication/announcements");
+            return;
+        }
+        setSelectedNotification(notification);
+    };
+
+    const filteredNotifications = notifications.filter(n => {
+        const matchesSearch = n.title?.toLowerCase().includes(search.toLowerCase()) || 
+                             n.message?.toLowerCase().includes(search.toLowerCase());
+        if (!matchesSearch) return false;
+        if (filter === "all") return true;
+        if (filter === "unread") return !n.is_read;
+        return n.type === filter;
+    });
+
+    const totalPages = Math.ceil(filteredNotifications.length / itemsPerPage);
+    const paginatedNotifications = filteredNotifications.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const getBadgeStyle = (type) => {
+        switch (type) {
+            case 'leave': return 'bg-amber-50 text-amber-600 border-amber-100';
+            case 'attendance': return 'bg-blue-50 text-blue-600 border-blue-100';
+            case 'hr-action': return 'bg-violet-50 text-violet-600 border-violet-100';
+            case 'admin-action': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
+            case 'security': return 'bg-red-50 text-red-600 border-red-100';
+            default: return 'bg-slate-50 text-slate-600 border-slate-100';
+        }
+    };
+
+    return (
+        <div className="p-8 max-w-[1200px] mx-auto min-h-screen">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                <div>
+                    <h1 className="text-5xl font-extrabold text-slate-900 dark:text-white font-paperlogy tracking-tight leading-none mb-2">
+                        <span className="italic">Activity</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Stream</span>
+                    </h1>
+                    <p className="text-base font-medium text-slate-500 dark:text-slate-400">
+                        Stay updated with real-time system alerts and requests.
+                    </p>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={markAllRead}
+                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-6 py-3.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0"
+                    >
+                        <Bell size={18} className="text-teal-500" />
+                        <span className="uppercase tracking-widest">Mark All Read</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Filters & Search Bar */}
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] mb-10 border-2 border-slate-50 dark:border-white/5 space-y-5">
+                <div className="flex flex-wrap gap-3">
+                    {['all', 'unread', 'leave', 'attendance', 'hr-action', 'admin-action', 'security'].map(f => (
+                        <button 
+                            key={f} 
+                            onClick={() => { setFilter(f); setCurrentPage(1); }} 
+                            className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                filter === f 
+                                    ? "bg-slate-900 text-white shadow-md -translate-y-0.5" 
+                                    : "bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 border border-transparent hover:border-slate-200"
+                            }`}
+                        >
+                            {f.replace('-', ' ')}
+                        </button>
+                    ))}
+                </div>
+                <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-500 transition-colors" size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search activity manifest..." 
+                        value={search} 
+                        onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }} 
+                        className="pl-12 pr-6 w-full py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 font-bold text-slate-900 dark:text-white transition-all shadow-inner" 
+                    />
+                </div>
+            </div>
+
+            {/* Notifications List */}
+            <div className="space-y-4">
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900/60 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-white/10">
+                        <Loader2 size={48} className="animate-spin text-teal-600 mb-4" />
+                        <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Synchronizing activity streams...</p>
+                    </div>
+                ) : filteredNotifications.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900/60 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-white/10">
+                        <Bell size={64} className="text-slate-100 dark:text-white/5 mb-4" />
+                        <p className="text-sm font-black text-slate-400 uppercase tracking-widest italic">No matching activities found.</p>
+                    </div>
+                ) : (
+                    <>
+                        {paginatedNotifications.map(n => (
+                            <div 
+                                key={n.id} 
+                                onClick={() => handleItemClick(n)} 
+                                className={`group bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl border-2 transition-all duration-300 cursor-pointer relative overflow-hidden flex items-center gap-6 ${
+                                    n.is_read 
+                                        ? 'border-slate-100 dark:border-white/5 opacity-70 grayscale-[0.5]' 
+                                        : 'border-slate-900 dark:border-teal-500/30 shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] hover:shadow-xl hover:-translate-y-1'
+                                }`}
+                            >
+                                <div className={`w-14 h-14 shrink-0 rounded-2xl border-2 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform ${getBadgeStyle(n.type)}`}>
+                                    <Bell size={24} strokeWidth={2.5} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight truncate flex items-center gap-3">
+                                            {n.title}
+                                            {!n.is_read && <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>}
+                                        </h3>
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap ml-4">
+                                            {timeAgo(n.created_at)}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 line-clamp-1">{n.message}</p>
+                                </div>
+                                <div className="text-slate-300 group-hover:text-teal-500 transition-colors ml-2">
+                                    <ChevronRight size={24} strokeWidth={3} />
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-between items-center mt-10 p-6 bg-slate-900 dark:bg-slate-900/60 rounded-3xl border-4 border-slate-900">
+                                <button 
+                                    onClick={() => handlePageChange(currentPage - 1)} 
+                                    disabled={currentPage === 1} 
+                                    className="px-6 py-3 bg-white text-slate-900 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-30 disabled:scale-95 transition-all hover:bg-teal-50" 
+                                > 
+                                    Previous 
+                                </button>
+                                <div className="flex items-center gap-3 text-white">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Stream Layer</span>
+                                    <span className="w-8 h-8 flex items-center justify-center bg-teal-500 text-white rounded-lg font-black text-sm shadow-lg">{currentPage}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">of {totalPages}</span>
+                                </div>
+                                <button 
+                                    onClick={() => handlePageChange(currentPage + 1)} 
+                                    disabled={currentPage === totalPages} 
+                                    className="px-6 py-3 bg-white text-slate-900 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-30 disabled:scale-95 transition-all hover:bg-teal-50" 
+                                > 
+                                    Next 
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+
+            {/* Detail Modal */}
+            <NotificationDetailModal 
+                isOpen={!!selectedNotification} 
+                onClose={() => setSelectedNotification(null)} 
+                notification={selectedNotification} 
+            />
+        </div>
+    );
+};
+
+export default NotificationsPage;

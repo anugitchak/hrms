@@ -15,22 +15,34 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
         switch (status) {
             case 'Present':
             case 'Checked In':
-                return { bg: 'bg-green-50 border-green-300', badge: 'bg-green-100 text-green-700 border-green-300', dot: 'bg-green-500', icon: <CheckCircle size={13} /> };
+                return { 
+                    badge: 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-100 dark:border-green-500/20', 
+                    dot: 'bg-green-500', 
+                    icon: <CheckCircle size={12} /> 
+                };
             case 'Absent':
-                return { bg: 'bg-red-50 border-red-300', badge: 'bg-red-100 text-red-700 border-red-300', dot: 'bg-red-500', icon: <XCircle size={13} /> };
+                return { 
+                    badge: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-100 dark:border-red-500/20', 
+                    dot: 'bg-red-500', 
+                    icon: <XCircle size={12} /> 
+                };
             default:
-                return { bg: 'bg-gray-50 border-gray-200', badge: 'bg-gray-100 text-gray-600 border-gray-300', dot: 'bg-gray-400', icon: <Clock size={13} /> };
+                return { 
+                    badge: 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10', 
+                    dot: 'bg-slate-400', 
+                    icon: <Clock size={12} /> 
+                };
         }
     };
 
     const getAvatarColor = (name) => {
         const colors = [
-            'bg-gradient-to-br from-purple-500 to-purple-700',
-            'bg-gradient-to-br from-blue-500 to-blue-700',
-            'bg-gradient-to-br from-teal-500 to-teal-700',
-            'bg-gradient-to-br from-pink-500 to-pink-700',
-            'bg-gradient-to-br from-orange-500 to-orange-700',
-            'bg-gradient-to-br from-indigo-500 to-indigo-700',
+            'bg-purple-400 text-black',
+            'bg-blue-400 text-black',
+            'bg-teal-400 text-black',
+            'bg-pink-400 text-black',
+            'bg-orange-400 text-black',
+            'bg-brand-400 text-black',
         ];
         const idx = (name?.charCodeAt(0) || 0) % colors.length;
         return colors[idx];
@@ -38,18 +50,17 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
 
     if (loading) {
         return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[1,2,3].map(i => (
-                    <div key={i} className="card p-5 animate-pulse">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-2xl bg-gray-200"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] animate-pulse border-2 border-slate-50 dark:border-white/5">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5"></div>
                             <div className="flex-1">
-                                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                                <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+                                <div className="h-4 bg-slate-100 dark:bg-white/5 rounded w-3/4 mb-2"></div>
+                                <div className="h-3 bg-slate-50 dark:bg-white/5 rounded w-1/2"></div>
                             </div>
                         </div>
-                        <div className="h-3 bg-gray-100 rounded w-full mb-2"></div>
-                        <div className="h-3 bg-gray-100 rounded w-2/3"></div>
+                        <div className="h-20 bg-slate-50 dark:bg-white/5 rounded-2xl w-full"></div>
                     </div>
                 ))}
             </div>
@@ -58,18 +69,20 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
 
     if (summary.length === 0) {
         return (
-            <div className="card p-16 text-center flex flex-col items-center gap-4">
-                <div className="bg-gray-100 p-5 rounded-2xl">
-                    <Calendar size={48} className="text-gray-300" />
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-20 rounded-[3rem] shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] text-center flex flex-col items-center gap-6 border-2 border-slate-50 dark:border-white/5">
+                <div className="bg-slate-50 dark:bg-white/5 p-6 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10">
+                    <Calendar size={64} className="text-slate-300 dark:text-slate-600" />
                 </div>
-                <h3 className="text-xl font-bold text-black">No attendance records</h3>
-                <p className="text-gray-500 font-medium">No records found for this period.</p>
+                <div>
+                    <h3 className="text-2xl font-black text-slate-400 uppercase tracking-widest">No attendance records</h3>
+                    <p className="text-slate-400 dark:text-slate-500 font-bold mt-2">No records found for the selected criteria.</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {summary.map((employee) => {
                 const sc = getStatusConfig(employee.today_status);
                 const hasPendingCheckout = employee.pending_checkout_dates?.length > 0;
@@ -77,67 +90,69 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
                     <div
                         key={employee.id}
                         onClick={() => onEmployeeClick(employee)}
-                        className={`card p-5 cursor-pointer hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border-2 ${sc.bg} flex flex-col gap-4`}
+                        className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-6 group cursor-pointer border-2 border-transparent hover:border-brand-500/20"
                     >
                         {/* Top: Avatar + Status */}
                         <div className="flex items-start justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-12 h-12 rounded-2xl ${getAvatarColor(employee.name)} text-white flex items-center justify-center text-xl font-black border-2 border-black shadow-[2px_2px_0px_black] shrink-0`}>
+                            <div className="flex items-center gap-4">
+                                <div className={`w-14 h-14 rounded-2xl ${getAvatarColor(employee.name)} flex items-center justify-center text-xl font-bold border border-white dark:border-slate-800 shadow-md group-hover:scale-110 transition-transform duration-500`}>
                                     {employee.name?.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <h3 className="font-extrabold text-black text-sm leading-tight">{employee.name}</h3>
-                                    <p className="text-xs text-gray-500 font-medium mt-0.5">{employee.code}</p>
-                                    <p className="text-xs text-gray-400">{employee.department}</p>
+                                    <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-tight tracking-tight">{employee.name}</h3>
+                                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">{employee.code}</p>
                                 </div>
                             </div>
-                            <span className={`flex items-center gap-1 px-2.5 py-1 text-xs font-bold border rounded-full shrink-0 ${sc.badge}`}>
-                                {sc.icon}
+                            <span className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-full shadow-sm border transition-all ${sc.badge}`}>
+                                <span className={`w-2 h-2 rounded-full ${sc.dot} ${employee.today_status === 'Present' ? 'animate-pulse' : ''}`}></span>
                                 {employee.today_status}
                             </span>
                         </div>
 
                         {/* Stats Row */}
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-white/70 rounded-xl p-3 border border-black/10">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                    <Calendar size={12} className="text-brand-500" />
-                                    <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider">Working Days</span>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-slate-50 dark:bg-brand-800/20 rounded-2xl p-4 border border-slate-900/5 dark:border-white/5 group-hover:bg-brand-50 dark:group-hover:bg-brand-500/5 transition-colors duration-300">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Calendar size={14} className="text-brand-500" />
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Days</span>
                                 </div>
-                                <span className="text-lg font-black text-black">{employee.total_working_days}</span>
-                                <span className="text-xs font-medium text-gray-500"> days</span>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-xl font-black text-slate-900 dark:text-white">{employee.total_working_days}</span>
+                                    <span className="text-[10px] font-bold text-slate-400">/mo</span>
+                                </div>
                             </div>
-                            <div className="bg-white/70 rounded-xl p-3 border border-black/10">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                    <Timer size={12} className="text-teal-500" />
-                                    <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider">Total Hours</span>
+                            <div className="bg-slate-50 dark:bg-brand-800/20 rounded-2xl p-4 border border-slate-900/5 dark:border-white/5 group-hover:bg-teal-50 dark:group-hover:bg-teal-500/5 transition-colors duration-300">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Timer size={14} className="text-teal-500" />
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hours</span>
                                 </div>
-                                <span className="text-lg font-black text-black">{formatDuration(employee.total_hours)}</span>
+                                <span className="text-xl font-black text-slate-900 dark:text-white">{formatDuration(employee.total_hours)}</span>
                             </div>
                         </div>
 
                         {/* Pending Checkout Warning */}
                         {hasPendingCheckout && (
-                            <div className="flex items-start gap-2 bg-orange-50 border-2 border-orange-300 rounded-xl px-3 py-2">
-                                <AlertTriangle size={14} className="text-orange-500 shrink-0 mt-0.5" />
+                            <div className="flex items-start gap-3 bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 rounded-2xl p-4 shadow-sm">
+                                <AlertTriangle size={18} className="text-orange-500 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-xs font-extrabold text-orange-700">
+                                    <p className="text-xs font-black text-orange-700 dark:text-orange-400 uppercase tracking-tight">
                                         {employee.pending_checkout_dates.length} Pending Checkout{employee.pending_checkout_dates.length > 1 ? 's' : ''}
                                     </p>
-                                    <p className="text-[10px] text-orange-600 font-medium mt-0.5">
-                                        {employee.pending_checkout_dates.slice(0,2).map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })).join(', ')}
-                                        {employee.pending_checkout_dates.length > 2 ? ` +${employee.pending_checkout_dates.length - 2} more` : ''}
+                                    <p className="text-[10px] text-orange-600 dark:text-orange-500 font-bold mt-1 leading-relaxed">
+                                        {employee.pending_checkout_dates.slice(0, 2).map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })).join(', ')}
+                                        {employee.pending_checkout_dates.length > 2 ? ` +${employee.pending_checkout_dates.length - 2}` : ''}
                                     </p>
                                 </div>
                             </div>
                         )}
 
-                        {/* View History Button */}
-                        <div className="flex items-center justify-end pt-1 border-t-2 border-black/5">
-                            <button className="flex items-center gap-1.5 text-xs font-bold text-brand-600 hover:text-brand-700 transition-colors">
-                                <History size={13} />
-                                View History
-                            </button>
+                        {/* Footer Action Hint */}
+                        <div className="flex items-center justify-between pt-4 mt-auto border-t border-slate-900/5 dark:border-white/5">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{employee.department}</span>
+                            <div className="flex items-center gap-1.5 text-[10px] font-black text-brand-500 uppercase tracking-widest group-hover:translate-x-1 transition-transform">
+                                <span>History</span>
+                                <History size={12} strokeWidth={3} />
+                            </div>
                         </div>
                     </div>
                 );

@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import api from "../../../api/axios";
-import { formatDate } from "../../../utils/dateUtils";
-import { useAuth } from "../../../context/AuthContext";
+import { Search, Filter, Calendar, Users, CheckCircle, XCircle, Clock, ChevronRight, RefreshCw, Layers } from "lucide-react";
 import { useGlobalUI } from "../../../context/GlobalUIContext";
+import { useAuth } from "../../../context/AuthContext";
+import { formatDate } from "../../../utils/dateUtils";
 
 // --- Components ---
 
 const StatusBadge = ({ status }) => {
     const getStatusStyle = (status) => {
         switch (status) {
-            case "Approved": return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
-            case "Partially Approved": return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
-            case "Rejected": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
-            case "Pending": return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400";
-            case "Withdrawn": return "bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-400";
-            default: return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+            case "Approved": return "bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-100 dark:border-green-500/20 shadow-sm";
+            case "Partially Approved": return "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-500/20 shadow-sm";
+            case "Rejected": return "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-100 dark:border-red-500/20 shadow-sm";
+            case "Pending": return "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-100 dark:border-orange-500/20 shadow-sm";
+            case "Withdrawn": return "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 shadow-sm";
+            default: return "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 shadow-sm";
         }
     };
     return (
@@ -56,25 +57,34 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
     if (!isOpen || !leave) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
-                <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Review Leave Request</h3>
-                <div className="space-y-4">
-                    <div className="p-3  rounded-lg text-sm dark:text-gray-300">
-                        <p><strong>Employee:</strong> {leave.employee?.user?.name}</p>
-                        <p><strong>Type:</strong> {leave.leave_type?.name}</p>
-                        <p><strong>Reason:</strong> {leave.reason}</p>
-                        <p><strong>Dates:</strong> {formatDate(leave.start_date)} to {formatDate(leave.end_date)}</p>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] max-w-md w-full p-8 shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-500 to-teal-500"></div>
+
+                <h3 className="text-2xl font-black mb-6 text-slate-900 dark:text-white uppercase tracking-tight">Review Leave Request</h3>
+
+                <div className="space-y-6">
+                    <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-2xl border-2 border-slate-900/5 dark:border-white/5 space-y-2">
+                        <div className="flex justify-between">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Employee</span>
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">{leave.employee?.user?.name}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</span>
+                            <span className="text-xs font-bold text-brand-600 dark:text-brand-400">{leave.leave_type?.name}</span>
+                        </div>
+                        <div className="pt-2 border-t border-slate-900/5 dark:border-white/5">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Reason</span>
+                            <p className="text-xs font-medium text-slate-600 dark:text-slate-300 italic">"{leave.reason}"</p>
+                        </div>
                     </div>
 
                     <div>
-                        <label htmlFor="action-select" className="block text-sm font-medium mb-2 dark:text-gray-300">Action</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Choose Action</label>
                         <select
-                            id="action-select"
-                            name="action"
                             value={action}
                             onChange={(e) => setAction(e.target.value)}
-                            className="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-white"
+                            className="w-full p-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white cursor-pointer transition-all appearance-none"
                         >
                             <option value="approve">Approve Full Leave</option>
                             <option value="partial">Approve Partial Leave</option>
@@ -83,48 +93,49 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                     </div>
 
                     {action === "partial" && (
-                        <div className="grid grid-cols-2 gap-3 p-3 border border-blue-200 rounded-lg bg-blue-50 dark:bg-blue-900/10 dark:border-blue-800">
+                        <div className="grid grid-cols-2 gap-4 p-5 bg-blue-50/50 dark:bg-brand-500/5 border-2 border-brand-500/20 rounded-2xl">
                             <div>
-                                <label htmlFor="start-date" className="text-xs font-bold text-blue-800 dark:text-blue-300">Start</label>
+                                <label className="text-[10px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest block mb-2 px-1">Start Date</label>
                                 <input
-                                    id="start-date"
-                                    name="start_date"
-                                    autoComplete="off"
                                     type="date"
                                     value={dates.start}
                                     min={leave.start_date}
                                     max={leave.end_date}
                                     onChange={(e) => handleDateChange("start", e.target.value)}
-                                    className="w-full text-sm p-1 mt-1 rounded border dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                    className="w-full text-xs p-3 rounded-xl border-2 border-slate-900/10 dark:border-white/10 dark:bg-slate-800 font-bold text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-all"
                                 />
                             </div>
                             <div>
-                                <label htmlFor="end-date" className="text-xs font-bold text-blue-800 dark:text-blue-300">End</label>
+                                <label className="text-[10px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest block mb-2 px-1">End Date</label>
                                 <input
-                                    id="end-date"
-                                    name="end_date"
-                                    autoComplete="off"
                                     type="date"
                                     value={dates.end}
                                     min={dates.start}
                                     max={leave.end_date}
                                     onChange={(e) => handleDateChange("end", e.target.value)}
-                                    className="w-full text-sm p-1 mt-1 rounded border dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                    className="w-full text-xs p-3 rounded-xl border-2 border-slate-900/10 dark:border-white/10 dark:bg-slate-800 font-bold text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-all"
                                 />
                             </div>
-                            <div className="col-span-2 text-xs text-right font-medium text-blue-600 dark:text-blue-400">
-                                Duration: {days} Days
+                            <div className="col-span-2 flex justify-end items-center gap-2 mt-2 pt-2 border-t border-brand-500/10">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Modified Duration:</span>
+                                <span className="text-sm font-black text-brand-600">{days} Days</span>
                             </div>
                         </div>
                     )}
 
-                    <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
-                        <button onClick={onClose} className="px-4 py-2 text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
+                    <div className="flex justify-end gap-3 mt-8">
+                        <button
+                            onClick={onClose}
+                            className="px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                        >
+                            Cancel
+                        </button>
                         <button
                             onClick={handleSubmit}
-                            className={`px-4 py-2 rounded-lg text-white font-medium ${action === 'reject' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                            className={`px-8 py-3 rounded-xl text-white text-xs font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:translate-y-0.5 active:shadow-none transition-all ${action === 'reject' ? 'bg-red-500 hover:bg-red-600' : 'bg-brand-500 hover:bg-brand-600'
+                                }`}
                         >
-                            Confirm
+                            Confirm Action
                         </button>
                     </div>
                 </div>
@@ -137,43 +148,47 @@ const EmployeeSummaryCard = ({ group, isSelected, onClick }) => {
     const { employee, leaves } = group;
     const pendingCount = leaves.filter(l => l.status === 'Pending').length;
 
-    // We can infer some info from the leaves present in the current page, 
-    // but the backend 'approved_leaves_count' is the most reliable for 'Total Leaves Taken'.
-
     return (
         <div
             onClick={onClick}
-            className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 mb-3 ${isSelected
-                ? 'bg-blue-50 border-blue-500 shadow-md dark:bg-blue-900/20 dark:border-blue-500'
-                : 'bg-white border-gray-100 hover:border-blue-300 hover:shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600'
+            className={`p-5 rounded-3xl border-2 cursor-pointer transition-all duration-300 relative overflow-hidden group mb-4 ${isSelected
+                ? 'bg-white dark:bg-brand-500/10 border-brand-500 shadow-[6px_6px_0px_0px_rgba(0,185,205,0.2)] dark:shadow-[6px_6px_0px_0px_rgba(0,185,205,0.1)] -translate-y-1'
+                : 'bg-white/60 dark:bg-slate-900/40 border-slate-900/5 dark:border-white/5 shadow-[4px_4px_0px_0px_rgba(71,85,105,0.1)] hover:border-slate-300 dark:hover:border-white/10 hover:shadow-lg'
                 }`}
         >
-            <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${isSelected
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-400'
+            <div className="flex items-center gap-4">
+                <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-xs border shadow-sm transition-all duration-500 ${isSelected
+                    ? 'bg-brand-500 text-white border-white dark:border-slate-800 scale-110 shadow-md'
+                    : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10'
                     }`}>
                     {employee?.user?.name?.charAt(0) || 'U'}
                 </div>
-                <div className="overflow-hidden">
-                    <h4 className={`font-semibold truncate ${isSelected ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-white'}`}>
+                <div className="overflow-hidden flex-1">
+                    <h4 className={`font-black text-sm truncate uppercase tracking-tight ${isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 group-hover:text-slate-900'}`}>
                         {employee?.user?.name}
                     </h4>
-                    <p className="text-xs text-gray-900 truncate">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate mt-1">
                         {employee?.employee_code} • {employee?.department?.name}
                     </p>
                 </div>
+                {isSelected && (
+                    <div className="bg-brand-500 rounded-full p-1 text-white shadow-sm">
+                        <ChevronRight size={14} strokeWidth={3} />
+                    </div>
+                )}
             </div>
 
-            <div className="mt-3 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-2 py-1 rounded">
-                    <svg className="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span className="font-medium">{employee?.total_approved_days || 0}</span> Approved Days
+            <div className="mt-4 flex items-center justify-between">
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border font-black text-[10px] uppercase tracking-widest transition-colors ${isSelected ? 'bg-green-500/10 text-green-600 border-green-500/20' : 'bg-slate-50 dark:bg-white/5 text-slate-400 border-slate-900/5'
+                    }`}>
+                    <CheckCircle size={12} className={isSelected ? 'text-green-500' : 'text-slate-300'} />
+                    <span>{employee?.total_approved_days || 0} Days</span>
                 </div>
 
                 {pendingCount > 0 && (
-                    <div className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-full font-bold animate-pulse">
-                        {pendingCount} Pending
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse">
+                        <Clock size={12} strokeWidth={3} />
+                        <span>{pendingCount} Pending</span>
                     </div>
                 )}
             </div>
@@ -196,16 +211,12 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
     const fetchHistory = async () => {
         setLoading(true);
         try {
-            // Fetch ALL leaves for this employee (or paginated, but ideally a dedicated list)
-            // Re-using the main endpoint with employee_id filter
             const response = await api.get("/leaves", {
                 params: {
                     employee_id: employeeId,
-                    per_page: 50 // Try to get more history
+                    per_page: 50
                 }
             });
-            // Ensure history is sorted by latest first (should be default from backend, but double check)
-            // Backend sort is created_at desc. That's good.
             setHistory(response.data.data);
         } catch (err) {
             console.error(err);
@@ -216,86 +227,96 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
 
     if (!employeeId) {
         return (
-            <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-900 p-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-                <svg className="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                <p>Select an employee to view leave history</p>
+            <div className="h-[calc(100vh-320px)] flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 p-12 bg-white/40 dark:bg-slate-900/20 backdrop-blur-sm border-2 border-dashed border-slate-200 dark:border-white/5 rounded-[3rem] transition-all duration-500">
+                <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] mb-6 shadow-inner border border-slate-100 dark:border-white/5 group-hover:scale-110 transition-transform">
+                    <Users className="w-20 h-20 opacity-30" strokeWidth={1.5} />
+                </div>
+                <h4 className="text-xl font-black uppercase tracking-widest text-slate-300 dark:text-slate-700">Selection Required</h4>
+                <p className="text-sm font-bold mt-2">Select an employee to view leave history</p>
             </div>
         );
     }
 
     return (
-        <div className="card h-[calc(100vh-200px)] overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex justify-between items-center">
-                <h3 className="font-bold text-gray-900 dark:text-white">Leave History</h3>
-                <div className="flex items-center gap-1">
-                    <button onClick={fetchHistory} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-900 transition-colors" title="Refresh">
-                        <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] border-2 border-slate-900/5 dark:border-white/5 h-[calc(100vh-320px)] overflow-hidden flex flex-col group">
+            <div className="p-6 border-b-2 border-slate-900/5 dark:border-white/5 bg-slate-50/50 dark:bg-brand-500/5 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                    <div className="bg-brand-500 p-2 rounded-xl text-white shadow-sm">
+                        <Clock size={18} strokeWidth={3} />
+                    </div>
+                    <div>
+                        <h3 className="font-extrabold text-slate-900 dark:text-white text-lg tracking-tight leading-none">History</h3>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Leave applications trail</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button onClick={fetchHistory} className="p-2.5 hover:bg-white dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-brand-500 transition-all shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-white/5" title="Refresh">
+                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                     </button>
-                    <button onClick={onClose} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-900 transition-colors" title="Close">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <button onClick={onClose} className="p-2.5 hover:bg-white dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-red-500 transition-all shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-white/5" title="Close Panel">
+                        <XCircle size={18} />
                     </button>
                 </div>
             </div>
 
-            <div className="overflow-y-auto flex-1 p-4 space-y-3">
+            <div className="overflow-y-auto flex-1 p-6 space-y-4 custom-scrollbar">
                 {loading ? (
-                    <div className="space-y-3">
-                        {[1, 2, 3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-gray-700/50 rounded-lg animate-pulse"></div>)}
+                    <div className="space-y-4">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="h-32 bg-slate-50 dark:bg-white/5 rounded-3xl animate-pulse"></div>
+                        ))}
                     </div>
                 ) : history.length === 0 ? (
-                    <div className="text-center py-10 text-gray-900">No leave history found.</div>
+                    <div className="text-center py-20">
+                        <Calendar size={48} className="mx-auto text-slate-100 dark:text-slate-800 mb-4" />
+                        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">No history found</p>
+                    </div>
                 ) : (
                     history.map(leave => (
-                        <div key={leave.id} className="relative bg-white dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
-
-                            {/* Status Stripe */}
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-lg ${leave.status === 'Approved' ? 'bg-green-500' :
-                                leave.status === 'Rejected' ? 'bg-red-500' :
-                                    leave.status === 'Pending' ? 'bg-orange-500' :
-                                        'bg-gray-300'
-                                }`}></div>
-
-                            <div className="pl-3">
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h4 className="font-semibold text-sm text-gray-900 dark:text-white">{leave.leave_type?.name}</h4>
-                                        <p className="text-xs text-gray-900">{formatDate(leave.start_date)} - {formatDate(leave.end_date)}</p>
+                        <div key={leave.id} className="relative bg-white dark:bg-white/5 border-2 border-slate-900/5 dark:border-white/5 rounded-[2rem] p-6 hover:shadow-lg hover:border-brand-500/10 transition-all duration-300">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h4 className="font-black text-slate-900 dark:text-white uppercase tracking-tight">{leave.leave_type?.name}</h4>
+                                        <div className="h-1 w-1 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{formatDate(leave.created_at)}</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        {leave.status === 'Partially Approved' && leave.approved_start_date && leave.approved_end_date && (
-                                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">
-                                                {Math.round((new Date(leave.approved_end_date) - new Date(leave.approved_start_date)) / (1000 * 60 * 60 * 24)) + 1} Days
-                                            </span>
-                                        )}
-                                        <StatusBadge status={leave.status} />
-                                    </div>
-                                </div>
-
-                                <p className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-2 rounded mb-2">
-                                    {leave.reason}
-                                </p>
-
-                                {leave.approver && (
-                                    <div className="text-xs text-gray-900 mb-3 flex items-center gap-2">
-                                        <span className="font-medium">Approved by:</span>
-                                        <span className="text-gray-700 dark:text-gray-300 font-medium">{leave.approver.name}</span>
-                                        <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">
-                                            {leave.approver.role_id === 1 ? 'SuperAdmin' :
-                                                leave.approver.role_id === 2 ? 'Admin' :
-                                                    leave.approver.role_id === 3 ? 'HR' : 'Employee'}
+                                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                                        <Calendar size={12} />
+                                        <span>{formatDate(leave.start_date)} - {formatDate(leave.end_date)}</span>
+                                        <span className="bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded-lg text-[10px] uppercase font-black">
+                                            {Math.round((new Date(leave.end_date) - new Date(leave.start_date)) / (1000 * 60 * 60 * 24)) + 1} Days
                                         </span>
                                     </div>
-                                )}
+                                </div>
+                                <StatusBadge status={leave.status} />
+                            </div>
+
+                            <p className="text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl mb-4 italic leading-relaxed">
+                                "{leave.reason}"
+                            </p>
+
+                            <div className="flex justify-between items-center pt-4 border-t border-slate-900/5 dark:border-white/5">
+                                {leave.approver ? (
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-lg bg-brand-500/20 text-brand-600 flex items-center justify-center text-[10px] font-black">
+                                            {leave.approver.name?.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Approver</p>
+                                            <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400">{leave.approver.name}</p>
+                                        </div>
+                                    </div>
+                                ) : <div />}
 
                                 {leave.status === 'Pending' && canApprove && (
-                                    <div className="flex gap-2 justify-end">
-                                        <button
-                                            onClick={() => onReview(leave)}
-                                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-sm transition-colors flex items-center gap-1"
-                                        >
-                                            Review Request
-                                        </button>
-                                    </div>
+                                    <button
+                                        onClick={() => onReview(leave)}
+                                        className="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md active:translate-y-0.5 transition-all flex items-center gap-2"
+                                    >
+                                        Review Request
+                                        <ChevronRight size={14} strokeWidth={3} />
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -464,70 +485,96 @@ const LeavesPage = () => {
     };
 
     return (
-        <div className="p-8">
-            <div className="mb-6">
-                <h1 className="text-3xl font-extrabold text-black font-paperlogy">Leaves Management</h1>
-                <p className="text-sm text-gray-900 mt-1">Grouped by Employee</p>
+        <div className="p-8 max-w-[1600px] mx-auto min-h-screen">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                <div>
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-3">
+                        <span className="italic">Leave</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
+                    </h1>
+                    <div className="flex items-center gap-3 mt-3">
+                            <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Manage employee leave applications</p>
+                        </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => { loadLeaves(); loadSummary(); }}
+                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
+                    >
+                        <RefreshCw size={16} className={`text-orange-500 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-500`} />
+                        <span className="uppercase tracking-widest">Refresh</span>
+                    </button>
+                    <div className="bg-white dark:bg-slate-900/60 p-3.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.1)]">
+                        <Layers size={20} className="text-brand-500" />
+                    </div>
+                </div>
             </div>
 
             {/* Metrics Row */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="card p-4 text-center">
-                    <div className="text-3xl font-extrabold text-black font-paperlogy">{summary.total}</div>
-                    <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Total Leaves</div>
-                </div>
-                <div className="card p-4 text-center">
-                    <div className="text-3xl font-extrabold text-$3-600$4">{summary.pending}</div>
-                    <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Pending</div>
-                </div>
-                <div className="card p-4 text-center">
-                    <div className="text-3xl font-extrabold text-$3-600$4">{summary.approved}</div>
-                    <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Approved</div>
-                </div>
-                <div className="card p-4 text-center">
-                    <div className="text-3xl font-extrabold text-$3-600$4">{summary.rejected}</div>
-                    <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Rejected</div>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                {[
+                    { label: 'Total Leaves', val: summary.total, icon: <Calendar size={22} />, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+                    { label: 'Pending Request', val: summary.pending, icon: <Clock size={22} />, color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100' },
+                    { label: 'Approved', val: summary.approved, icon: <CheckCircle size={22} />, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100' },
+                    { label: 'Rejected', val: summary.rejected, icon: <XCircle size={22} />, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100' }
+                ].map((s, i) => (
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300 group">
+                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-2xl shadow-sm group-hover:scale-110 transition-transform`}>{s.icon}</div>
+                        <div>
+                            <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{s.val}</div>
+                            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-tight">{s.label}</div>
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* Filters */}
-            <div className="card p-4 mb-6 flex flex-wrap gap-4">
-                <label htmlFor="employee-search" className="sr-only">Search Employee</label>
-                <input
-                    id="employee-search"
-                    name="employee_search"
-                    placeholder="Search employee..."
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    autoComplete="off"
-                    className="p-2 border rounded-lg bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <label htmlFor="department-filter" className="sr-only">Filter by Department</label>
-                <select
-                    id="department-filter"
-                    name="department_filter"
-                    value={departmentId}
-                    onChange={e => setDepartmentId(e.target.value)}
-                    autoComplete="off"
-                    className="p-2 border rounded-lg bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="">All Departments</option>
-                    {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
-                <label htmlFor="status-filter" className="sr-only">Filter by Status</label>
-                <select
-                    id="status-filter"
-                    name="status_filter"
-                    value={status}
-                    onChange={e => setStatus(e.target.value)}
-                    autoComplete="off"
-                    className="p-2 border rounded-lg bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="">All Status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
-                </select>
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] mb-10 flex flex-wrap gap-5 border-2 border-slate-50 dark:border-white/5">
+                <div className="relative flex-1 min-w-[240px] group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Search employee..."
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all font-paperlogy"
+                    />
+                </div>
+                <div className="flex flex-wrap gap-4 flex-1 justify-end">
+                    <div className="relative min-w-[160px]">
+                        <select
+                            value={departmentId}
+                            onChange={e => setDepartmentId(e.target.value)}
+                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                        >
+                            <option value="">All Departments</option>
+                            {departments.map(dept => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
+                        </select>
+                        <Filter className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                    </div>
+                    <div className="relative min-w-[160px]">
+                        <select
+                            value={status}
+                            onChange={e => setStatus(e.target.value)}
+                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                        >
+                            <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                        <CheckCircle className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                    </div>
+                    <div className="relative min-w-[160px]">
+                        <input
+                            type="month"
+                            value={month}
+                            onChange={e => setMonth(e.target.value)}
+                            className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Content Grid */}

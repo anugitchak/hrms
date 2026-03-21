@@ -3,6 +3,26 @@ import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { formatDate } from "../../utils/dateUtils";
 import { useGlobalUI } from "../../context/GlobalUIContext";
+import { 
+    Plus, 
+    Search, 
+    Edit2, 
+    Trash2, 
+    Eye, 
+    X, 
+    CheckCircle, 
+    AlertCircle, 
+    Activity, 
+    Clock, 
+    ShieldCheck, 
+    Briefcase, 
+    Filter,
+    ChevronRight,
+    Layout,
+    CheckSquare,
+    AlertTriangle,
+    Zap
+} from "lucide-react";
 
 const TasksPage = () => {
     const { addToast, confirm } = useGlobalUI();
@@ -246,136 +266,173 @@ const TasksPage = () => {
 
     return (
         <div className="p-8">
-            {/* Standard Header */}
-            <div className="flex justify-between items-center mb-6">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 relative z-10">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-black font-paperlogy">Productivity Management</h1>
-                    <p className="text-sm font-medium text-gray-900">Design workflows and verify employee contributions.</p>
+                    <h1 className="text-5xl md:text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight leading-none">
+                        <span className="italic">Productivity</span> <span className="text-transparent bg-clip-text bg-[#00b9cd] ">Management</span>
+                    </h1>
+                    <div className="flex items-center gap-3 mt-3">
+                        <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Design workflows and verify employee contributions.</p>
+                    </div>
                 </div>
                 <button
                     onClick={() => { resetForm(); setIsModalOpen(true); }}
-                    className="btn-primary"
+                    className="flex items-center gap-2 text-xs font-black text-white bg-teal-600 hover:bg-teal-500 px-6 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md"
                 >
-                    Create New Task
+                    <Plus size={16} strokeWidth={3} />
+                    <span className="uppercase tracking-widest">Create New Task</span>
                 </button>
             </div>
 
-            <div className="flex-1 overflow-auto p-6 space-y-8">
+            {/* Stats Bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                {[
+                    { label: 'Pending Review', val: pendingReviewTasks.length, icon: <Layout size={22} strokeWidth={2.5} />, color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-500/10', border: 'border-orange-100 dark:border-orange-500/20' },
+                    { label: 'Active Tasks', val: tasks.filter(t => t.status === 'in_progress').length, icon: <Activity size={22} strokeWidth={2.5} />, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10', border: 'border-blue-100 dark:border-blue-500/20' },
+                    { label: 'Urgent Tasks', val: tasks.filter(t => t.priority === 'urgent' && t.status !== 'completed').length, icon: <AlertTriangle size={22} strokeWidth={2.5} />, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-500/10', border: 'border-red-100 dark:border-red-500/20' },
+                    { label: 'Completed', val: tasks.filter(t => t.status === 'completed').length, icon: <CheckSquare size={22} strokeWidth={2.5} />, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-500/10', border: 'border-green-100 dark:border-green-500/20' }
+                ].map((s, i) => (
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300">
+                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-2xl shadow-sm`}>{s.icon}</div>
+                        <div>
+                            <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{s.val}</div>
+                            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-tight">{s.label}</div>
+                        </div>
+                    </div>
+                ))}
+            </div>
 
+            <div className="flex-1 space-y-8">
                 {/* ── Filter Bar ── */}
-                <div className="card p-4">
-                    <div className="flex flex-wrap gap-3 items-end">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] mb-10 flex flex-col lg:flex-row gap-5">
+                    <div className="flex flex-wrap gap-4 w-full">
                         {/* Employee name search */}
-                        <div className="flex flex-col gap-1 min-w-[180px] flex-1">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Employee Name</label>
+                        <div className="relative flex-1 group min-w-[250px]">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
                             <input
                                 type="text"
                                 placeholder="Search employee…"
                                 value={filterEmployee}
                                 onChange={e => setFilterEmployee(e.target.value)}
-                                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+                                className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                             />
                         </div>
 
                         {/* Status */}
-                        <div className="flex flex-col gap-1 min-w-[150px]">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</label>
+                        <div className="relative min-w-[180px]">
                             <select
                                 value={filterStatus}
                                 onChange={e => setFilterStatus(e.target.value)}
-                                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+                                className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer w-full transition-all"
                             >
-                                <option value="">All Statuses</option>
-                                <option value="pending">Pending</option>
-                                <option value="accepted">Accepted</option>
-                                <option value="claimed">Claimed</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="on_hold">On Hold</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="completed">Completed</option>
+                                <option value="" className="dark:bg-slate-900">All Statuses</option>
+                                <option value="pending" className="dark:bg-slate-900">Pending</option>
+                                <option value="accepted" className="dark:bg-slate-900">Accepted</option>
+                                <option value="claimed" className="dark:bg-slate-900">Claimed</option>
+                                <option value="in_progress" className="dark:bg-slate-900">In Progress</option>
+                                <option value="rejected" className="dark:bg-slate-900">Rejected</option>
+                                <option value="completed" className="dark:bg-slate-900">Completed</option>
                             </select>
+                            <Activity className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
                         </div>
 
-                        {/* Necessity / Priority */}
-                        <div className="flex flex-col gap-1 min-w-[150px]">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Necessity</label>
+                        {/* Priority */}
+                        <div className="relative min-w-[180px]">
                             <select
                                 value={filterPriority}
                                 onChange={e => setFilterPriority(e.target.value)}
-                                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+                                className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer w-full transition-all"
                             >
-                                <option value="">All Levels</option>
-                                <option value="low">Low (Routine)</option>
-                                <option value="medium">Medium (Standard)</option>
-                                <option value="high">High (Important)</option>
-                                <option value="urgent">Urgent (Immediate)</option>
+                                <option value="" className="dark:bg-slate-900">All Priorities</option>
+                                <option value="low" className="dark:bg-slate-900">Low (Routine)</option>
+                                <option value="medium" className="dark:bg-slate-900">Medium (Standard)</option>
+                                <option value="high" className="dark:bg-slate-900">High (Important)</option>
+                                <option value="urgent" className="dark:bg-slate-900">Urgent (Immediate)</option>
                             </select>
+                            <Zap className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
                         </div>
 
                         {/* Deadline Date */}
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Deadline</label>
+                        <div className="relative min-w-[180px]">
                             <input
                                 type="date"
                                 value={filterDeadline}
                                 onChange={e => setFilterDeadline(e.target.value)}
-                                className="px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-400"
+                                className="pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white w-full transition-all"
                             />
+                            <Clock className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
                         </div>
 
                         {/* Clear button */}
                         {hasActiveFilters && (
                             <button
                                 onClick={clearFilters}
-                                className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-900/30 rounded-lg transition-colors self-end"
+                                className="px-5 py-3 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 border-2 border-red-200 dark:border-red-900/30 rounded-xl transition-all flex items-center gap-2"
                             >
-                                ✕ Clear Filters
+                                <X size={16} strokeWidth={2.5} />
+                                Clear
                             </button>
                         )}
                     </div>
 
                     {/* Result count */}
-                    <div className="mt-3 text-xs text-gray-400 font-medium">
-                        Showing <span className="font-bold text-gray-700 dark:text-gray-200">{filteredCount}</span> of <span className="font-bold">{totalCount}</span> tasks
-                        {hasActiveFilters && <span className="ml-1 text-blue-500">(filtered)</span>}
+                    <div className="mt-3 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <span className="h-1 w-1 bg-slate-400 rounded-full"></span>
+                        Showing <span className="text-slate-900 dark:text-white">{filteredCount}</span> of <span className="text-slate-900 dark:text-white">{totalCount}</span> tasks
                     </div>
                 </div>
                 {/* Pending Verification Table */}
                 {pendingReviewTasks.length > 0 && (
-                    <div className="card overflow-hidden">
-                        <div className="p-4 border-b-2 border-black bg-accent-50">
-                            <h2 className="text-sm font-bold text-black uppercase tracking-wider">Awaiting Verification</h2>
+                    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] overflow-hidden">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2.5 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-500/20 rounded-xl">
+                                <ShieldCheck size={20} strokeWidth={2.5} />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Awaiting Verification</h2>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Review and approve submitted task proofs</p>
+                            </div>
                         </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
+                        <div className="overflow-x-auto rounded-2xl border-2 border-slate-900/10 dark:border-white/10">
+                            <table className="w-full text-left text-sm border-collapse">
                                 <thead>
-                                    <tr className="bg-brand-50 border-b-2 border-black">
-                                        <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Task</th>
-                                        <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Employee</th>
-                                        <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Department</th>
-                                        <th className="px-6 py-3 text-right text-xs font-bold text-black uppercase tracking-wider">Action</th>
+                                    <tr className="bg-slate-50 dark:bg-white/5 border-b-2 border-slate-900/10 dark:border-white/10">
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Task Details</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Employee</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Department</th>
+                                        <th className="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y dark:divide-gray-700">
+                                <tbody className="divide-y divide-slate-900/10 dark:divide-white/10">
                                     {pendingReviewTasks.map((task) => (
-                                        <tr key={task.id} className="hover:bg-brand-50/50 transition-colors border-b-2 border-black/5">
-                                            <td className="px-6 py-4">
-                                                <div className="font-bold text-gray-900 dark:text-white">{task.title}</div>
-                                                <div className="text-xs text-gray-900 line-clamp-1">{task.description}</div>
+                                        <tr key={task.id} className="hover:bg-slate-50/80 dark:hover:bg-white/5 transition-all duration-300 group">
+                                            <td className="px-6 py-5">
+                                                <div className="font-bold text-slate-900 dark:text-white leading-tight">{task.title}</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 italic">"{task.description}"</div>
                                             </td>
-                                            <td className="px-6 py-4 text-gray-700 dark:text-gray-300 font-medium">
-                                                {task.assignee?.user?.name || 'Unassigned'}
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold text-xs border border-teal-200 dark:border-teal-500/30">
+                                                        {task.assignee?.user?.name?.charAt(0).toUpperCase() || '?'}
+                                                    </div>
+                                                    <span className="font-bold text-slate-700 dark:text-slate-300">
+                                                        {task.assignee?.user?.name || 'Unassigned'}
+                                                    </span>
+                                                </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <span className="text-xs font-medium text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">
-                                                    {task.department?.name || 'All'}
+                                            <td className="px-6 py-5">
+                                                <span className="px-3 py-1 text-[10px] font-bold rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 shadow-sm">
+                                                    {task.department?.name || 'Central'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-right">
+                                            <td className="px-6 py-5 text-right">
                                                 <button
                                                     onClick={() => { setSelectedTask(task); setShowApprovalModal(true); }}
-                                                    className="px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded text-xs font-bold transition-colors"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold border-2 border-brand-200 dark:border-brand-500/20 rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-500/20 shadow-sm transition-all focus:ring-2 focus:ring-brand-500/10 active:scale-95"
                                                 >
+                                                    <Eye size={14} strokeWidth={2.5} />
                                                     Review Proof
                                                 </button>
                                             </td>
@@ -388,109 +445,134 @@ const TasksPage = () => {
                 )}
 
                 {/* All Tasks Table */}
-                <div className="card overflow-hidden">
-                    <div className="p-4 border-b-2 border-black">
-                        <h2 className="text-sm font-bold text-black uppercase tracking-wider">All Tasks</h2>
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] overflow-hidden">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-100 dark:border-brand-500/20 rounded-xl">
+                                <Briefcase size={20} strokeWidth={2.5} />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Active Workflows</h2>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Complete overview of all current productivity tasks</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
+                    
+                    <div className="overflow-x-auto rounded-2xl border-2 border-slate-900/10 dark:border-white/10">
+                        <table className="w-full text-left text-sm border-collapse">
                             <thead>
-                                <tr className="bg-brand-50 border-b-2 border-black">
-                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Task Details</th>
-                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider text-center">Necessity</th>
-                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Type</th>
-                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Assignee / Worker</th>
-                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-xs font-bold text-black uppercase tracking-wider">Deadline</th>
-                                    <th className="px-6 py-3 text-right text-xs font-bold text-black uppercase tracking-wider">Actions</th>
+                                <tr className="bg-slate-50 dark:bg-white/5 border-b-2 border-slate-900/10 dark:border-white/10">
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Task Info</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Urgency</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Assignment</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Assigned To</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Current Status</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Deadline</th>
+                                    <th className="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y dark:divide-gray-700">
+                            <tbody className="divide-y divide-slate-900/10 dark:divide-white/10">
                                 {allOtherTasks.map((task) => (
-                                    <tr key={task.id} className="hover:bg-brand-50/50 transition-colors border-b-2 border-black/5">
-                                        <td className="px-6 py-4">
-                                            <div className="font-bold text-gray-900 dark:text-white">{task.title}</div>
-                                            <div className="text-xs text-gray-900 font-mono uppercase tracking-tighter">
-                                                {task.department?.name || 'All Departments'}
-                                                {task.designation && ` • ${task.designation.name}`}
+                                    <tr key={task.id} className="hover:bg-slate-50/80 dark:hover:bg-white/5 transition-all duration-300 group">
+                                        <td className="px-6 py-5">
+                                            <div className="font-bold text-slate-900 dark:text-white leading-tight">{task.title}</div>
+                                            <div className="flex items-center gap-1.5 mt-1">
+                                                <span className="text-[9px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-tighter">
+                                                    {task.department?.name || 'General'}
+                                                </span>
+                                                {task.designation && (
+                                                    <>
+                                                        <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
+                                                            {task.designation.name}
+                                                        </span>
+                                                    </>
+                                                )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-6 py-5 text-center">
                                             {task.priority && (
-                                                <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border shadow-sm
-                                                    ${task.priority === 'urgent' ? 'bg-red-50 text-red-600 border-red-200 shadow-red-100' :
-                                                        task.priority === 'high' ? 'bg-orange-50 text-orange-600 border-orange-200' :
-                                                            task.priority === 'medium' ? 'bg-blue-50 text-blue-600 border-blue-200' :
-                                                                'bg-gray-50 text-gray-900 border-gray-200'}`}>
-                                                    {task.priority}
+                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-xl border shadow-sm
+                                                    ${task.priority === 'urgent' ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-100 dark:border-red-500/20' :
+                                                        task.priority === 'high' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-500/20' :
+                                                            task.priority === 'medium' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-500/20' :
+                                                                'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20'}`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${task.priority === 'urgent' ? 'bg-red-500 animate-pulse outline outline-offset-2 outline-red-500/20' : task.priority === 'high' ? 'bg-orange-500' : 'bg-slate-400'}`}></span>
+                                                    {task.priority.toUpperCase()}
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-5">
                                             {task.is_pool_task ?
-                                                <span className="text-xs font-medium text-purple-600 bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 rounded">Pool</span> :
-                                                <span className="text-xs font-medium text-gray-600 bg-gray-50 dark:bg-gray-700 px-2 py-0.5 rounded">Direct</span>
+                                                <span className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 shadow-sm">
+                                                    <Layout size={12} strokeWidth={2.5} />
+                                                    POOL
+                                                </span> :
+                                                <span className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-xl bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 shadow-sm">
+                                                    <CheckCircle size={12} strokeWidth={2.5} />
+                                                    DIRECT
+                                                </span>
                                             }
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-5">
                                             <div className="flex flex-col">
-                                                <span className="font-medium text-gray-900 dark:text-white">
-                                                    {task.assignee?.user?.name || (task.is_pool_task ? 'Waiting for claim' : 'Unassigned')}
+                                                <span className="font-bold text-slate-900 dark:text-white leading-none">
+                                                    {task.assignee?.user?.name || (task.is_pool_task ? 'Pending Claim' : 'Unassigned')}
                                                 </span>
-                                                {task.is_pool_task && task.assignee && (
-                                                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-tighter">Claimed</span>
-                                                )}
-                                                {!task.is_pool_task && task.assignee && (
-                                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Assigned</span>
-                                                )}
+                                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mt-1">
+                                                    {task.is_pool_task && task.assignee ? 'Claimed' : task.assignee ? 'Assigned' : 'Open'}
+                                                </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col gap-1">
-                                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase text-center w-fit ${getStatusStyle(task.status)}`}>
-                                                    {task.status.replace('_', ' ')}
+                                        <td className="px-6 py-5">
+                                            <div className="flex flex-col gap-1.5 items-start">
+                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold rounded-full border shadow-sm ${getStatusStyle(task.status)}`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full bg-current ${task.status === 'in_progress' ? 'animate-pulse' : ''}`}></span>
+                                                    {task.status.replace('_', ' ').toUpperCase()}
                                                 </span>
                                                 {task.status === 'pending' || task.status === 'claimed' ? (
-                                                    <span className="text-[9px] text-red-500 font-bold uppercase italic">Awaiting Acceptance</span>
+                                                    <span className="text-[9px] text-orange-500 font-black uppercase italic animate-pulse">Awaiting Accept</span>
                                                 ) : task.status === 'rejected' ? (
-                                                    <span className="text-[9px] text-red-600 font-bold uppercase italic flex items-center gap-0.5">
-                                                        <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg> Revision Required
+                                                    <span className="text-[9px] text-red-600 font-black uppercase italic flex items-center gap-1">
+                                                        <AlertTriangle size={8} /> Revision Required
                                                     </span>
-                                                ) : (task.status !== 'completed' && task.status !== 'cancelled' ? (
-                                                    <span className="text-[9px] text-emerald-600 font-bold uppercase italic flex items-center gap-0.5">
-                                                        <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg> Accepted
+                                                ) : (task.status !== 'completed' && task.status !== 'cancelled' && task.status !== 'pending_review' ? (
+                                                    <span className="text-[9px] text-emerald-600 font-black uppercase italic flex items-center gap-1">
+                                                        <CheckCircle size={8} /> Accepted
                                                     </span>
                                                 ) : null)}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-5">
                                             {task.due_date ? (
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">{formatDate(task.due_date)}</span>
+                                                    <span className="text-sm text-slate-700 dark:text-slate-300 font-bold">{formatDate(task.due_date)}</span>
                                                     {task.due_time && (
-                                                        <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-0.5 mt-0.5">
-                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        <span className="text-[10px] text-brand-600 dark:text-brand-400 font-black flex items-center gap-1 mt-1 bg-brand-50 dark:bg-brand-500/10 px-2 py-0.5 rounded-lg w-fit">
+                                                            <Clock size={10} strokeWidth={3} />
                                                             {task.due_time}
                                                         </span>
                                                     )}
                                                 </div>
-                                            ) : '-'}
+                                            ) : (
+                                                <span className="text-slate-300">—</span>
+                                            )}
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2">
+                                        <td className="px-6 py-5 text-right">
+                                            <div className="flex justify-end gap-2.5">
                                                 <button
                                                     onClick={() => handleEdit(task)}
-                                                    className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
+                                                    className="p-2.5 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-white/10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 transition-all shadow-sm active:scale-95"
                                                     title="Edit Task"
                                                 >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                                    <Edit2 size={15} strokeWidth={2.5} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(task.id)}
-                                                    className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                                                    className="p-2.5 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/30 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/20 hover:border-red-300 transition-all shadow-sm active:scale-95"
                                                     title="Delete Task"
                                                 >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                    <Trash2 size={15} strokeWidth={2.5} />
                                                 </button>
                                             </div>
                                         </td>
@@ -500,94 +582,154 @@ const TasksPage = () => {
                         </table>
                     </div>
                     {allOtherTasks.length === 0 && !loading && (
-                        <div className="p-8 text-center text-gray-400 italic">No tasks created yet.</div>
+                        <div className="p-16 text-center flex flex-col items-center gap-4 bg-slate-50 dark:bg-white/5 rounded-2xl mt-4 border-2 border-dashed border-slate-200 dark:border-white/10">
+                            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-md border dark:border-white/10">
+                                <Activity className="text-slate-400" size={32} />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">All Clear!</h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">No tasks match your current workflow filters.</p>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>
 
             {/* Create Task Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg p-6 my-8">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{isEditing ? "Edit Task" : "Create New Task"}</h2>
-                            <button onClick={resetForm && (() => setIsModalOpen(false))} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+                <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-md">
+                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.35)] w-full max-w-lg overflow-hidden transform transition-all duration-300 rounded-3xl">
+                        <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-transparent">
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                                    {isEditing ? "Update Task Details" : "Create New Task"}
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Configure workflow details and assignment.</p>
+                            </div>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-xl transition-all"
+                            >
+                                <X size={20} />
+                            </button>
                         </div>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Title</label>
-                                    <input required type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500" />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Description</label>
-                                    <textarea required rows="3" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"></textarea>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Department</label>
-                                    <select value={formData.department_id} onChange={e => setFormData({ ...formData, department_id: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
-                                        <option value="">All Departments</option>
-                                        {departments.map(dept => (
-                                            <option key={dept.id} value={dept.id}>{dept.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Designation</label>
-                                    <select value={formData.designation_id} onChange={e => setFormData({ ...formData, designation_id: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
-                                        <option value="">All Designations</option>
-                                        {designations.map(desig => (
-                                            <option key={desig.id} value={desig.id}>{desig.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Due Date</label>
-                                    <input type="date" value={formData.due_date} onChange={e => setFormData({ ...formData, due_date: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Deadline Time</label>
-                                    <input
-                                        type="time"
-                                        value={formData.due_time}
-                                        onChange={e => setFormData({ ...formData, due_time: e.target.value })}
-                                        className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                        <form onSubmit={handleSubmit} className="p-8 space-y-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="col-span-2 space-y-2">
+                                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Task Title</label>
+                                    <input required type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} 
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                                        placeholder="e.g. Design System Implementation" 
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Assignment Type</label>
-                                    <select value={formData.is_pool_task} onChange={e => setFormData({ ...formData, is_pool_task: e.target.value === 'true', assigned_to: "" })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
-                                        <option value="false">Direct Assignment</option>
-                                        <option value="true">Post to Pool</option>
-                                    </select>
+                                <div className="col-span-2 space-y-2">
+                                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Task Description</label>
+                                    <textarea required rows="3" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} 
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                                        placeholder="Describe the workflow and requirements..."
+                                    ></textarea>
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Work Necessity / Priority</label>
-                                    <select value={formData.priority} onChange={e => setFormData({ ...formData, priority: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
-                                        <option value="low" className="text-gray-900">Low (Routine)</option>
-                                        <option value="medium" className="text-blue-600">Medium (Standard)</option>
-                                        <option value="high" className="text-orange-600">High (Important)</option>
-                                        <option value="urgent" className="text-red-600">Urgent (Immediate Action)</option>
-                                    </select>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Department</label>
+                                    <div className="relative">
+                                        <select value={formData.department_id} onChange={e => setFormData({ ...formData, department_id: e.target.value })} 
+                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                        >
+                                            <option value="" className="dark:bg-slate-900">All Departments</option>
+                                            {departments.map(dept => (
+                                                <option key={dept.id} value={dept.id} className="dark:bg-slate-900">{dept.name}</option>
+                                            ))}
+                                        </select>
+                                        <Layout className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Designation</label>
+                                    <div className="relative">
+                                        <select value={formData.designation_id} onChange={e => setFormData({ ...formData, designation_id: e.target.value })} 
+                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                        >
+                                            <option value="" className="dark:bg-slate-900">All Levels</option>
+                                            {designations.map(desig => (
+                                                <option key={desig.id} value={desig.id} className="dark:bg-slate-900">{desig.name}</option>
+                                            ))}
+                                        </select>
+                                        <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Due Date</label>
+                                    <div className="relative">
+                                        <input type="date" value={formData.due_date} onChange={e => setFormData({ ...formData, due_date: e.target.value })} 
+                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
+                                        />
+                                        <Clock className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Deadline Time</label>
+                                    <div className="relative">
+                                        <input
+                                            type="time"
+                                            value={formData.due_time}
+                                            onChange={e => setFormData({ ...formData, due_time: e.target.value })}
+                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
+                                        />
+                                        <Zap className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Assignment Type</label>
+                                    <div className="relative">
+                                        <select value={formData.is_pool_task} onChange={e => setFormData({ ...formData, is_pool_task: e.target.value === 'true', assigned_to: "" })} 
+                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                        >
+                                            <option value="false" className="dark:bg-slate-900">Direct Assignment</option>
+                                            <option value="true" className="dark:bg-slate-900">Post to Pool</option>
+                                        </select>
+                                        <Users className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Work Urgency</label>
+                                    <div className="relative">
+                                        <select value={formData.priority} onChange={e => setFormData({ ...formData, priority: e.target.value })} 
+                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                        >
+                                            <option value="low" className="dark:bg-slate-900 text-slate-400">Low (Routine)</option>
+                                            <option value="medium" className="dark:bg-slate-900 text-blue-500">Medium (Standard)</option>
+                                            <option value="high" className="dark:bg-slate-900 text-orange-500">High (Important)</option>
+                                            <option value="urgent" className="dark:bg-slate-900 text-red-500">Urgent (Immediate)</option>
+                                        </select>
+                                        <AlertTriangle className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                                    </div>
                                 </div>
                                 {!formData.is_pool_task && (
-                                    <div className="col-span-2">
-                                        <label className="block text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">Assign To</label>
-                                        <select required value={formData.assigned_to} onChange={e => setFormData({ ...formData, assigned_to: e.target.value })} className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-2 text-sm">
-                                            <option value="">Select Employee</option>
-                                            {filteredEmployees.map(emp => (
-                                                <option key={emp.id} value={emp.id}>{emp.user?.name} ({emp.designation?.name || 'N/A'})</option>
-                                            ))}
-                                            {filteredEmployees.length === 0 && (formData.department_id || formData.designation_id) && (
-                                                <option disabled>No employees match these filters</option>
-                                            )}
-                                        </select>
+                                    <div className="col-span-2 space-y-2">
+                                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Assign To Employee</label>
+                                        <div className="relative">
+                                            <select required value={formData.assigned_to} onChange={e => setFormData({ ...formData, assigned_to: e.target.value })} 
+                                                className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                            >
+                                                <option value="" className="dark:bg-slate-900">Select Member</option>
+                                                {filteredEmployees.map(emp => (
+                                                    <option key={emp.id} value={emp.id} className="dark:bg-slate-900">{emp.user?.name} ({emp.designation?.name || 'Staff'})</option>
+                                                ))}
+                                            </select>
+                                            <Briefcase className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
+                                        </div>
                                     </div>
                                 )}
                             </div>
-                            <div className="flex gap-3 pt-6">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-2 text-sm font-semibold text-gray-900 border rounded hover:bg-gray-50">Cancel</button>
-                                <button disabled={isSubmitting} type="submit" className="flex-1 py-2 bg-blue-600 text-white rounded font-semibold text-sm hover:bg-blue-700 shadow-sm disabled:opacity-50">
+                            <div className="pt-6 flex flex-col sm:flex-row gap-3">
+                                <button type="button" onClick={() => setIsModalOpen(false)} 
+                                    className="flex-1 px-5 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button disabled={isSubmitting} type="submit" 
+                                    className={`flex-[2] px-5 py-3 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-lg shadow-brand-500/20 transition-all ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
+                                >
                                     {isSubmitting ? (isEditing ? "Updating..." : "Creating...") : (isEditing ? "Update Task" : "Create Task")}
                                 </button>
                             </div>
@@ -598,64 +740,94 @@ const TasksPage = () => {
 
             {/* Approval Modal */}
             {showApprovalModal && selectedTask && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-xl p-6 my-8">
-                        <div className="flex justify-between items-center mb-6 pb-4 border-b dark:border-gray-700">
-                            <h2 className="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-tight">Review Task Proof</h2>
-                            <button onClick={() => setShowApprovalModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+                <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-md">
+                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.35)] w-full max-w-xl overflow-hidden transform transition-all duration-300 rounded-3xl">
+                        <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-transparent">
+                            <div>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">
+                                    Review Proof
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Verify evidence and provide feedback.</p>
+                            </div>
+                            <button
+                                onClick={() => setShowApprovalModal(false)}
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-xl transition-all"
+                            >
+                                <X size={20} />
+                            </button>
                         </div>
 
-                        <div className="space-y-6">
-                            <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border dark:border-gray-600">
-                                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">{selectedTask.title}</h3>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">{selectedTask.description}</p>
+                        <div className="p-8 space-y-6">
+                            <div className="bg-slate-50 dark:bg-white/5 p-5 rounded-2xl border-2 border-slate-900/5 dark:border-white/5 shadow-sm">
+                                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">{selectedTask.title}</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium italic">"{selectedTask.description}"</p>
                             </div>
 
-                            <div>
-                                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Submitted Proof</h4>
-                                <div className="p-4 bg-white dark:bg-gray-900 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
-                                    {selectedTask.proof_attachment ? (
-                                        <a href={selectedTask.proof_attachment} download={`Proof_${selectedTask.id}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-blue-600 hover:underline font-semibold text-sm">
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                                            View Evidence File
-                                        </a>
-                                    ) : (
-                                        <span className="text-sm text-gray-400 italic">No attachment provided</span>
-                                    )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <Layout size={12} /> Evidence File
+                                    </h4>
+                                    <div className="p-4 bg-white dark:bg-slate-900/60 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:border-brand-400 transition-all cursor-pointer">
+                                        {selectedTask.proof_attachment ? (
+                                            <a href={selectedTask.proof_attachment} download={`Proof_${selectedTask.id}`} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 text-brand-600 dark:text-brand-400 font-bold text-xs uppercase tracking-tight">
+                                                <div className="p-3 bg-brand-50 dark:bg-brand-500/10 rounded-xl group-hover:scale-110 transition-transform">
+                                                    <Layout size={24} strokeWidth={2.5} />
+                                                </div>
+                                                Download Evidence
+                                            </a>
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-2 text-slate-300">
+                                                <X size={24} />
+                                                <span className="text-[10px] font-bold uppercase">No file</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <Activity size={12} /> Employee Notes
+                                    </h4>
+                                    <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border-2 border-slate-900/5 dark:border-white/5 min-h-[100px] flex items-center justify-center text-center">
+                                        <p className="text-xs text-slate-600 dark:text-slate-400 font-bold italic leading-relaxed">
+                                            {selectedTask.submission_notes ? `"${selectedTask.submission_notes}"` : 'No additional notes provided by worker.'}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Employee Notes</h4>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border dark:border-gray-700 font-medium italic">
-                                    "{selectedTask.submission_notes || 'No notes provided'}"
-                                </p>
-                            </div>
-
-                            <div>
-                                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Reviewer Feedback</h4>
+                            <div className="space-y-3">
+                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 px-1">
+                                    <Edit2 size={12} /> Reviewer Feedback
+                                </h4>
                                 <textarea
                                     value={adminFeedback}
                                     onChange={(e) => setAdminFeedback(e.target.value)}
-                                    placeholder="Provide feedback to the employee (required for rejection)..."
-                                    className="w-full border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded p-3 text-sm outline-none focus:ring-1 focus:ring-blue-500 min-h-[100px]"
+                                    placeholder="Provide detailed feedback (required for rejection)..."
+                                    className="w-full px-4 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/5 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all min-h-[120px]"
                                 />
                             </div>
 
-                            <div className="flex gap-4 pt-6 border-t dark:border-gray-700">
+                            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100 dark:border-white/5">
                                 <button
                                     onClick={() => handleReject(selectedTask.id)}
                                     disabled={isSubmitting}
-                                    className="flex-1 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-900/30 rounded shadow-sm transition-all uppercase tracking-widest text-xs disabled:opacity-50"
+                                    className="flex-1 py-3.5 text-xs font-black uppercase tracking-widest text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 border-2 border-red-100 dark:border-red-900/30 rounded-2xl shadow-sm transition-all disabled:opacity-50"
                                 >
-                                    {isSubmitting ? "..." : "Reject & Revise"}
+                                    {isSubmitting ? "..." : "Reject Details"}
                                 </button>
                                 <button
                                     onClick={() => handleApprove(selectedTask.id)}
                                     disabled={isSubmitting}
-                                    className="flex-[2] bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded shadow transition-all uppercase tracking-widest text-xs disabled:opacity-50"
+                                    className="flex-[2] bg-brand-500 hover:bg-brand-600 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-brand-500/20 transition-all uppercase tracking-widest text-xs disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
-                                    {isSubmitting ? "Processing..." : "Approve & Complete"}
+                                    {isSubmitting ? "Processing..." : (
+                                        <>
+                                            <CheckCircle size={16} strokeWidth={2.5} />
+                                            Approve & Finalize
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>

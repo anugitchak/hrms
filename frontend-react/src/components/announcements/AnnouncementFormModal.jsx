@@ -1,32 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { X, Upload, Check, AlertCircle } from "lucide-react";
+import { X, Type, Megaphone, Target, Briefcase, Upload, Check, AlertCircle, ShieldCheck } from "lucide-react";
 
-const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData = null, isSubmitting }) => {
+const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
     const [formData, setFormData] = useState({
         title: "",
-        message: "",
         category: "General",
+        message: "",
         target_audience: [],
         status: "Active",
         file: null,
     });
+
     const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (initialData) {
             setFormData({
-                title: initialData.title || "",
-                message: initialData.message || "",
-                category: initialData.category || "General",
-                target_audience: Array.isArray(initialData.target_audience) ? initialData.target_audience : [],
-                status: initialData.status || "Active",
-                file: null, // Reset file on edit
+                ...initialData,
+                target_audience: Array.isArray(initialData.target_audience)
+                    ? initialData.target_audience
+                    : initialData.target_audience ? JSON.parse(initialData.target_audience) : [],
+                file: null,
             });
         } else {
             setFormData({
                 title: "",
-                message: "",
                 category: "General",
+                message: "",
                 target_audience: [],
                 status: "Active",
                 file: null,
@@ -37,25 +38,26 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData = null, 
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+        setFormData({ ...formData, [name]: value });
+        if (errors[name]) setErrors({ ...errors, [name]: "" });
     };
 
     const handleAudienceChange = (role) => {
-        setFormData(prev => {
-            const current = prev.target_audience;
-            const updated = current.includes(role)
-                ? current.filter(r => r !== role)
-                : [...current, role];
-            return { ...prev, target_audience: updated };
-        });
+        const newAudience = formData.target_audience.includes(role)
+            ? formData.target_audience.filter((r) => r !== role)
+            : [...formData.target_audience, role];
+        setFormData({ ...formData, target_audience: newAudience });
+        if (errors.target_audience) setErrors({ ...errors, target_audience: "" });
     };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setFormData(prev => ({ ...prev, file }));
+        if (file && file.size > 5 * 1024 * 1024) {
+            setErrors({ ...errors, file: "File size must be less than 5MB" });
+            return;
         }
+        setFormData({ ...formData, file });
+        if (errors.file) setErrors({ ...errors, file: "" });
     };
 
     const validate = () => {
@@ -67,162 +69,171 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData = null, 
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (validate()) {
-            onSubmit(formData);
+        if (!validate()) return;
+
+        setIsSubmitting(true);
+        try {
+            await onSubmit(formData);
+            onClose();
+        } catch (error) {
+            console.error("Submission failed", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transition-colors duration-200">
-                <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                        {initialData ? "Edit Announcement" : "Create Announcement"}
-                    </h2>
-                    <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-md">
+            <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.35)] w-full max-w-lg overflow-hidden transform transition-all duration-300 rounded-3xl flex flex-col max-h-[95vh]">
+                {/* Modal Header */}
+                <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-transparent">
+                    <div>
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                            {initialData ? "Refine Bulletin" : "Create New Dispatch"}
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Configure system access and intelligence details.</p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-xl transition-all"
+                    >
                         <X size={20} />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                    {/* Title */}
-                    <div>
-                        <label htmlFor="announcement_title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
-                        <input
-                            id="announcement_title"
-                            type="text"
-                            name="title"
-                            autoComplete="off"
-                            value={formData.title}
-                            onChange={handleChange}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${errors.title ? "border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-800" : "border-gray-200 dark:border-gray-600"}`}
-                            placeholder="Enter announcement title"
-                        />
-                        {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+                {/* Modal Body */}
+                <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto scrollbar-hide">
+                    <div className="space-y-2">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Subject Heading</label>
+                        <div className="relative group">
+                            <Type className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
+                            <input
+                                type="text"
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                className={`w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-brand-800/20 border ${errors.title ? "border-red-500" : "border-slate-200 dark:border-white/10"} rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all`}
+                                placeholder="e.g. Annual Policy Update"
+                            />
+                        </div>
+                        {errors.title && <p className="text-red-500 text-[10px] font-bold uppercase mt-1 px-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.title}</p>}
                     </div>
 
-                    {/* Category & Status */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label htmlFor="announcement_category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-                            <select
-                                id="announcement_category"
-                                name="category"
-                                autoComplete="off"
-                                value={formData.category}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
-                            >
-                                <option value="General">General</option>
-                                <option value="HR">HR</option>
-                                <option value="Payroll">Payroll</option>
-                                <option value="Events">Events</option>
-                                <option value="Urgent">Urgent</option>
-                            </select>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Category</label>
+                            <div className="relative">
+                                <select
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                >
+                                    <option value="General" className="dark:bg-slate-900">General Notice</option>
+                                    <option value="HR" className="dark:bg-slate-900">Human Resources</option>
+                                    <option value="Payroll" className="dark:bg-slate-900">Finance & Payroll</option>
+                                    <option value="Events" className="dark:bg-slate-900">Corporate Events</option>
+                                    <option value="Urgent" className="dark:bg-slate-900">Urgent Priority</option>
+                                </select>
+                                <Megaphone className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={18} />
+                            </div>
                         </div>
-                        <div>
-                            <label htmlFor="announcement_status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                            <select
-                                id="announcement_status"
-                                name="status"
-                                autoComplete="off"
-                                value={formData.status}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
-                            >
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
-                            </select>
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Status</label>
+                            <div className="relative">
+                                <select
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleChange}
+                                    className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                >
+                                    <option value="Active" className="dark:bg-slate-900">Active / Live</option>
+                                    <option value="Inactive" className="dark:bg-slate-900">Inactive / Draft</option>
+                                </select>
+                                <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={18} />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Target Audience */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Audience</label>
-                        <div className="flex flex-wrap gap-3">
+                    <div className="space-y-3">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                            <Target size={16} className="text-brand-500" /> Target Audience
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
                             {["Employee", "Admin", "HR", "SuperAdmin"].map((role) => (
                                 <button
                                     key={role}
                                     type="button"
                                     onClick={() => handleAudienceChange(role)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${formData.target_audience.includes(role)
-                                        ? "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400"
-                                        : "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${formData.target_audience.includes(role)
+                                            ? "bg-brand-500 text-white border-brand-600 shadow-md shadow-brand-500/20"
+                                            : "bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-slate-50"
                                         }`}
                                 >
                                     {role}
                                 </button>
                             ))}
                         </div>
-                        {errors.target_audience && <p className="text-red-500 text-xs mt-1">{errors.target_audience}</p>}
+                        {errors.target_audience && <p className="text-red-500 text-[10px] font-bold uppercase mt-1 px-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.target_audience}</p>}
                     </div>
 
-                    {/* Message (Custom Textarea) */}
-                    <div>
-                        <label htmlFor="announcement_message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
+                    <div className="space-y-2">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Intelligence Report</label>
                         <textarea
-                            id="announcement_message"
                             name="message"
-                            autoComplete="off"
                             value={formData.message}
                             onChange={handleChange}
-                            rows={6}
-                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${errors.message ? "border-red-300 bg-red-50 dark:bg-red-900/20 dark:border-red-800" : "border-gray-200 dark:border-gray-600"}`}
-                            placeholder="Write your announcement here..."
+                            rows={4}
+                            className={`w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border ${errors.message ? "border-red-500" : "border-slate-200 dark:border-white/10"} rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all resize-none`}
+                            placeholder="Detail the intelligence report here..."
                         />
-                        {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
+                        {errors.message && <p className="text-red-500 text-[10px] font-bold uppercase mt-1 px-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.message}</p>}
                     </div>
 
-                    {/* Attachment */}
-                    <div>
-                        <label htmlFor="announcement_file" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Attachment (Optional)</label>
-                        <div className="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer relative">
-                            <input
-                                id="announcement_file"
-                                name="file"
-                                type="file"
-                                autoComplete="off"
-                                onChange={handleFileChange}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                            />
-                            <div className="flex flex-col items-center gap-2 text-gray-500 dark:text-gray-400">
-                                <Upload size={24} />
-                                <span className="text-sm">
-                                    {formData.file ? formData.file.name : "Click to upload or drag and drop"}
+                    <div className="space-y-2">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Attachments</label>
+                        <div className="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl p-6 text-center hover:bg-slate-50 dark:hover:bg-white/5 transition-all cursor-pointer relative group">
+                            <input type="file" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                            <div className="flex flex-col items-center gap-2">
+                                <Upload className="text-slate-400 group-hover:text-brand-500 transition-colors" size={24} />
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest leading-none">
+                                    {formData.file ? formData.file.name : "Transmit Document"}
                                 </span>
-                                <span className="text-xs text-gray-400 dark:text-gray-500">PDF, DOC, PNG, JPG (Max 5MB)</span>
+                                <span className="text-[10px] font-medium text-slate-400">PDF, IMAGE (MAX 5MB)</span>
                             </div>
                         </div>
+                        {errors.file && <p className="text-red-500 text-[10px] font-bold uppercase mt-1 px-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.file}</p>}
                     </div>
+                </form>
 
-                    {/* Actions */}
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                {/* Modal Actions */}
+                <div className="p-8 space-y-3 bg-slate-50 dark:bg-transparent border-t border-slate-100 dark:border-white/5">
+                    <div className="flex flex-col sm:flex-row gap-3">
                         <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                            type="button" onClick={onClose}
+                            className="flex-1 px-5 py-3 text-sm font-bold text-slate-600 dark:text-slate-400 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-xl transition-all"
                         >
-                            Cancel
+                            Abort
                         </button>
                         <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            onClick={handleSubmit} disabled={isSubmitting}
+                            className="flex-[2] flex items-center justify-center gap-3 px-5 py-3 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98] disabled:opacity-50"
                         >
-                            {isSubmitting ? "Saving..." : (
+                            {isSubmitting ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
                                 <>
-                                    <Check size={16} />
-                                    {initialData ? "Update Announcement" : "Publish Announcement"}
+                                    <Check size={18} strokeWidth={3} />
+                                    <span>{initialData ? "Apply Refinements" : "Engage Broadcast"}</span>
                                 </>
                             )}
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );
