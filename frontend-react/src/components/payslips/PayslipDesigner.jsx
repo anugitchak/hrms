@@ -317,7 +317,7 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
     if (!element) {
         return (
             <div className="flex flex-col items-center justify-center h-full p-8 text-center gap-4">
-                <div className="p-4 rounded-3xl bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 opacity-40">
+                <div className="p-4 rounded-10 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 opacity-40">
                     <Layers size={40} className="text-slate-400" />
                 </div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 max-w-[150px]">Select an element on the canvas to edit its properties</p>
@@ -345,7 +345,7 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
                         rows={4}
                         disabled={!isSuperAdmin}
                         onChange={e => updContent(e.target.value)}
-                        className="w-full text-[11px] font-black leading-relaxed border-2 border-slate-900/10 dark:border-white/10 rounded-2xl p-3 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white resize-y outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all disabled:opacity-50"
+                        className="w-full text-[11px] font-black leading-relaxed border-2 border-slate-900/10 dark:border-white/10 rounded-10 p-3 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white resize-y outline-none focus:ring-4 focus:ring-[#00b9cd]/10 focus:border-[#00b9cd] transition-all disabled:opacity-50"
                     />
                 </div>
             )}
@@ -364,7 +364,7 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
                             reader.onload = (ev) => updContent(ev.target.result);
                             reader.readAsDataURL(file);
                         }}
-                        className="w-full text-[10px] font-black file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-wider file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl p-2 text-slate-900 dark:text-white outline-none cursor-pointer"
+                        className="w-full text-[10px] font-black file:mr-4 file:py-2 file:px-4 file:rounded-10 file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-wider file:bg-[#00b9cd]/10 file:text-[#00b9cd] hover:file:bg-[#00b9cd]/20 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 p-2 text-slate-900 dark:text-white outline-none cursor-pointer"
                     />
                 </div>
             )}
@@ -373,14 +373,14 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
             {element.type === 'quote' && isSuperAdmin && (
                 <div>
                     <button onClick={() => setQuoteOpen(v => !v)}
-                        className="flex items-center gap-2 text-[10px] font-black text-teal-600 dark:text-teal-400 tracking-widest uppercase hover:underline">
+                        className="flex items-center gap-2 text-[10px] font-black text-[#00b9cd] dark:text-[#00b9cd] tracking-widest uppercase hover:underline">
                         <Sparkles size={12} /> Pick from quote bank {quoteOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                     </button>
                     {quoteOpen && (
-                        <div className="mt-2 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl overflow-hidden max-h-48 overflow-y-auto bg-white dark:bg-slate-900 shadow-xl">
+                        <div className="mt-2 border-2 border-slate-900/10 dark:border-white/10 rounded-10 overflow-hidden max-h-48 overflow-y-auto bg-white dark:bg-slate-900 shadow-xl">
                             {MOTIVATIONAL_QUOTES.map((q, i) => (
                                 <div key={i} onClick={() => { updContent(q); setQuoteOpen(false); }}
-                                    className="text-[10px] font-bold px-4 py-3 hover:bg-teal-50 dark:hover:bg-teal-900/20 cursor-pointer border-b-2 border-slate-900/5 dark:border-white/5 last:border-0 text-slate-600 dark:text-slate-300">
+                                    className="text-[10px] font-bold px-4 py-3 hover:bg-[#00b9cd]/10 dark:hover:bg-teal-900/20 cursor-pointer border-b-2 border-slate-900/5 dark:border-white/5 last:border-0 text-slate-600 dark:text-slate-300">
                                     {q.length > 58 ? q.slice(0, 58) + '…' : q}
                                 </div>
                             ))}
@@ -397,13 +397,13 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
                         <Hash size={12} /> Insert data token {tokenOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                     </button>
                     {tokenOpen && (
-                        <div className="mt-2 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl overflow-hidden max-h-48 overflow-y-auto bg-white dark:bg-slate-900 shadow-xl">
+                        <div className="mt-2 border-2 border-slate-900/10 dark:border-white/10 rounded-10 overflow-hidden max-h-48 overflow-y-auto bg-white dark:bg-slate-900 shadow-xl">
                             {DATA_TOKENS.map((t, i) => (
                                 <div key={i}
                                     onClick={() => { updContent((element.content || '') + t.token); setTokenOpen(false); }}
                                     className="flex items-center justify-between text-[10px] font-bold px-4 py-2.5 hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer border-b-2 border-slate-900/5 dark:border-white/5 last:border-0">
                                     <span className="text-slate-600 dark:text-slate-300">{t.label}</span>
-                                    <code className="bg-purple-100 dark:bg-purple-900/40 px-1.5 py-0.5 rounded text-purple-600 dark:text-purple-300 transform scale-90">{t.token}</code>
+                                    <code className="bg-purple-100 dark:bg-purple-900/40 px-1.5 py-0.5 rounded-10 text-purple-600 dark:text-purple-300 transform scale-90">{t.token}</code>
                                 </div>
                             ))}
                         </div>
@@ -419,7 +419,7 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
                         <input type="number" min={7} max={72} value={s.fontSize || 13}
                             disabled={!isSuperAdmin}
                             onChange={e => updStyle('fontSize', parseInt(e.target.value) || 13)}
-                            className="w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl px-3 py-2 text-xs font-black text-slate-900 dark:text-white outline-none focus:border-teal-500 transition-all disabled:opacity-50" />
+                            className="w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 px-3 py-2 text-xs font-black text-slate-900 dark:text-white outline-none focus:border-[#00b9cd] transition-all disabled:opacity-50" />
                     </div>
                 )}
 
@@ -427,11 +427,11 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
                 {!isShape && element.type !== 'image' && (
                     <div className="space-y-1.5">
                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Color</label>
-                        <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl p-1 pr-2">
+                        <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 p-1 pr-2">
                              <input type="color" value={s.color || '#1f2937'}
                                 disabled={!isSuperAdmin}
                                 onChange={e => updStyle('color', e.target.value)}
-                                className="w-8 h-7 rounded-lg cursor-pointer bg-transparent overflow-hidden" />
+                                className="w-8 h-7 rounded-10 cursor-pointer bg-transparent overflow-hidden" />
                              <span className="text-[10px] font-black text-slate-400">{s.color || '#1f2937'}</span>
                         </div>
                     </div>
@@ -442,17 +442,17 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
             <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Background</label>
                 <div className="flex items-center gap-3">
-                    <div className="flex-1 flex items-center gap-2 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl p-1 pr-3">
+                    <div className="flex-1 flex items-center gap-2 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 p-1 pr-3">
                         <input type="color"
                             value={(!s.backgroundColor || s.backgroundColor === 'transparent') ? '#ffffff' : s.backgroundColor}
                             disabled={!isSuperAdmin}
                             onChange={e => updStyle('backgroundColor', e.target.value)}
-                            className="w-10 h-8 rounded-lg cursor-pointer bg-transparent overflow-hidden" />
+                            className="w-10 h-8 rounded-10 cursor-pointer bg-transparent overflow-hidden" />
                         <span className="text-[10px] font-black text-slate-400 truncate">{s.backgroundColor || 'transparent'}</span>
                     </div>
                     {isSuperAdmin && s.backgroundColor && s.backgroundColor !== 'transparent' && (
                         <button onClick={() => updStyle('backgroundColor', 'transparent')}
-                            className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-2 rounded-xl border border-red-200 dark:border-red-800 hover:bg-red-100 transition-colors">
+                            className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-2 rounded-10 border border-red-200 dark:border-red-800 hover:bg-red-100 transition-colors">
                             <Trash2 size={14} />
                         </button>
                     )}
@@ -464,25 +464,25 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
                 <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Typography & Alignment</label>
                     <div className="flex flex-wrap gap-2">
-                        <div className="flex bg-slate-100 dark:bg-white/5 rounded-xl p-1 border-2 border-slate-900/5 dark:border-white/5">
+                        <div className="flex bg-slate-100 dark:bg-white/5 rounded-10 p-1 border-2 border-slate-900/5 dark:border-white/5">
                             <button disabled={!isSuperAdmin}
                                 onClick={() => updStyle('fontWeight', s.fontWeight === 'bold' ? 'normal' : 'bold')}
-                                className={`p-2 rounded-lg transition-all ${s.fontWeight === 'bold' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
+                                className={`p-2 rounded-10 transition-all ${s.fontWeight === 'bold' ? 'bg-[#00b9cd] text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
                                 <Bold size={14} strokeWidth={3} />
                             </button>
                             <button disabled={!isSuperAdmin}
                                 onClick={() => updStyle('fontStyle', s.fontStyle === 'italic' ? 'normal' : 'italic')}
-                                className={`p-2 rounded-lg transition-all ${s.fontStyle === 'italic' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
+                                className={`p-2 rounded-10 transition-all ${s.fontStyle === 'italic' ? 'bg-[#00b9cd] text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
                                 <Italic size={14} strokeWidth={3} />
                             </button>
                         </div>
-                        <div className="flex bg-slate-100 dark:bg-white/5 rounded-xl p-1 border-2 border-slate-900/5 dark:border-white/5">
+                        <div className="flex bg-slate-100 dark:bg-white/5 rounded-10 p-1 border-2 border-slate-900/5 dark:border-white/5">
                             {['left', 'center', 'right'].map(align => {
                                 const Icon = align === 'left' ? AlignLeft : align === 'center' ? AlignCenter : AlignRight;
                                 return (
                                     <button key={align} disabled={!isSuperAdmin}
                                         onClick={() => updStyle('textAlign', align)}
-                                        className={`p-2 rounded-lg transition-all ${s.textAlign === align ? 'bg-teal-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
+                                        className={`p-2 rounded-10 transition-all ${s.textAlign === align ? 'bg-[#00b9cd] text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
                                         <Icon size={14} strokeWidth={3} />
                                     </button>
                                 );
@@ -502,7 +502,7 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
                             <input type="number" value={Math.round(element[key] ?? 0)}
                                 disabled={!isSuperAdmin}
                                 onChange={e => updPos(key, e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl px-3 py-2 text-[11px] font-black text-slate-900 dark:text-white outline-none focus:border-teal-500 transition-all disabled:opacity-50" />
+                                className="w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 px-3 py-2 text-[11px] font-black text-slate-900 dark:text-white outline-none focus:border-[#00b9cd] transition-all disabled:opacity-50" />
                         </div>
                     ))}
                 </div>
@@ -511,7 +511,7 @@ function PropertiesPanel({ element, isSuperAdmin, onChange, onDelete }) {
             {/* Delete */}
             {isSuperAdmin && (
                 <button onClick={onDelete}
-                    className="flex items-center justify-center gap-3 px-6 py-3.5 bg-red-500 hover:bg-red-400 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(239,68,68,0.25)] hover:-translate-y-1 active:translate-y-0 active:shadow-none w-full mt-4">
+                    className="flex items-center justify-center gap-3 px-6 py-3.5 bg-red-500 hover:bg-red-400 text-white rounded-10 text-[10px] font-black uppercase tracking-[0.25em] shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-none w-full mt-4">
                     <Trash2 size={16} strokeWidth={3} /> Delete Element
                 </button>
             )}
@@ -849,7 +849,7 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
         <div className="flex flex-col gap-6" style={{ minHeight: 600 }}>
             {/* Toast */}
             {toast && (
-                <div className={`fixed top-8 right-8 z-50 px-6 py-4 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,0.15)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] text-white text-sm font-black uppercase tracking-widest animate-in slide-in-from-right duration-300 ${toast.type === 'error' ? 'bg-red-500' : 'bg-teal-600'}`}>
+                <div className={`fixed top-8 right-8 z-50 px-6 py-4 rounded-10 shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out text-white text-sm font-black uppercase tracking-widest animate-in slide-in-from-right duration-300 ${toast.type === 'error' ? 'bg-red-500' : 'bg-[#00b9cd]'}`}>
                     <div className="flex items-center gap-3">
                         {toast.type === 'error' ? <Trash2 size={20} /> : <CheckCircle size={20} />}
                         {toast.msg}
@@ -858,23 +858,23 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
             )}
 
             {/* ── Toolbar ── */}
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-4 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.2)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900/10 dark:border-white/10 flex items-center gap-4 flex-wrap shrink-0">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-4 rounded-10 shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900/10 dark:border-white/10 flex items-center gap-4 flex-wrap shrink-0">
                 {/* Template name */}
                 {isSuperAdmin ? (
                     <div className="relative group">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-500 transition-colors">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00b9cd] transition-colors">
                             <FileText size={16} />
                         </div>
                         <input 
                             value={templateName} 
                             onChange={e => setTemplateName(e.target.value)}
                             placeholder="Template Name..."
-                            className="bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm font-black text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 transition-all w-64" 
+                            className="bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 pl-10 pr-4 py-2 text-sm font-black text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-[#00b9cd]/10 focus:border-[#00b9cd] transition-all w-64" 
                         />
                     </div>
                 ) : (
-                    <div className="bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl px-4 py-2 flex items-center gap-2">
-                        <FileText size={16} className="text-teal-500" />
+                    <div className="bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 px-4 py-2 flex items-center gap-2">
+                        <FileText size={16} className="text-[#00b9cd]" />
                         <span className="text-sm font-black text-slate-900 dark:text-white truncate max-w-[200px]">{templateName}</span>
                     </div>
                 )}
@@ -883,29 +883,29 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
 
                 {/* Canvas background UI */}
                 {isSuperAdmin && (
-                    <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl p-1.5 pr-3">
-                        <div className="p-1 px-2.5 rounded-lg bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10">
-                             <Palette size={14} className="text-teal-500" />
+                    <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 p-1.5 pr-3">
+                        <div className="p-1 px-2.5 rounded-10 bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10">
+                             <Palette size={14} className="text-[#00b9cd]" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">BG:</span>
                         <input 
                             type="color" 
                             value={canvasBg} 
                             onChange={e => setCanvasBg(e.target.value)}
-                            className="w-10 h-7 border-2 border-slate-900/10 dark:border-white/10 rounded-lg cursor-pointer bg-transparent overflow-hidden" 
+                            className="w-10 h-7 border-2 border-slate-900/10 dark:border-white/10 rounded-10 cursor-pointer bg-transparent overflow-hidden" 
                         />
                     </div>
                 )}
 
                 {/* Undo / Redo */}
                 {isSuperAdmin && (
-                    <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl p-1">
+                    <div className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 p-1">
                         <button onClick={undo} title="Undo (Ctrl+Z)"
-                            className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-500 hover:text-teal-500 transition-all disabled:opacity-30">
+                            className="p-2 rounded-10 hover:bg-white dark:hover:bg-slate-800 text-slate-500 hover:text-[#00b9cd] transition-all disabled:opacity-30">
                             <RotateCcw size={16} strokeWidth={2.5} />
                         </button>
                         <button onClick={redo} title="Redo"
-                            className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-500 hover:text-teal-500 transition-all disabled:opacity-30">
+                            className="p-2 rounded-10 hover:bg-white dark:hover:bg-slate-800 text-slate-500 hover:text-[#00b9cd] transition-all disabled:opacity-30">
                             <RotateCw size={16} strokeWidth={2.5} />
                         </button>
                     </div>
@@ -926,14 +926,14 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                             <button 
                                 onClick={() => fileInputRef.current?.click()}
                                 title="Import Template (JSON)"
-                                className="group flex items-center justify-center p-2.5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 text-slate-500 hover:text-teal-600 hover:border-teal-500/30 transition-all shadow-sm shadow-[2px_2px_0px_0px_rgba(71,85,105,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(13,148,136,0.15)] hover:-translate-y-0.5"
+                                className="group flex items-center justify-center p-2.5 rounded-10 bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 text-slate-500 hover:text-[#00b9cd] hover:border-[#00b9cd]/30 transition-all shadow-sm shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-0.5"
                             >
                                 <Upload size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
                             </button>
                             <button 
                                 onClick={handleExportTemplate}
                                 title="Export Template (JSON)"
-                                className="group flex items-center justify-center p-2.5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 text-slate-500 hover:text-teal-600 hover:border-teal-500/30 transition-all shadow-sm shadow-[2px_2px_0px_0px_rgba(71,85,105,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(13,148,136,0.15)] hover:-translate-y-0.5"
+                                className="group flex items-center justify-center p-2.5 rounded-10 bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 text-slate-500 hover:text-[#00b9cd] hover:border-[#00b9cd]/30 transition-all shadow-sm shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-0.5"
                             >
                                 <Download size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
                             </button>
@@ -945,10 +945,10 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                     {/* Undo/Redo/Preview Modes */}
                 <button 
                     onClick={() => { setPreviewMode(p => !p); setSelectedId(null); }}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 border-2 
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-10 text-xs font-black uppercase tracking-widest border-2 
                         ${previewMode 
-                            ? 'bg-indigo-600 text-white border-indigo-400 shadow-[4px_4px_0px_0px_rgba(79,70,229,0.3)]' 
-                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-900/10 dark:border-white/10 hover:border-teal-500/50 hover:bg-teal-50 dark:hover:bg-teal-900/10'}`}
+                            ? 'bg-indigo-600 text-white border-indigo-400 shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out' 
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-900/10 dark:border-white/10 hover:border-[#00b9cd]/50 hover:bg-[#00b9cd]/10 dark:hover:bg-teal-900/10'}`}
                 >
                     <Eye size={16} strokeWidth={2.5} /> {previewMode ? 'Exit Preview' : 'Preview'}
                 </button>
@@ -958,15 +958,15 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                     <div className="relative">
                         <button 
                             onClick={() => setLoadOpen(o => !o)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:border-teal-500/50 hover:bg-teal-50 dark:hover:bg-teal-900/10 transition-all"
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-10 bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:border-[#00b9cd]/50 hover:bg-[#00b9cd]/10 dark:hover:bg-teal-900/10 transition-all"
                         >
                             <Layers size={16} strokeWidth={2.5} /> Load
                         </button>
                         {loadOpen && (
-                            <div className="absolute top-14 left-0 z-[60] w-72 bg-white dark:bg-slate-900 border-2 border-slate-900/20 dark:border-white/10 rounded-[2rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                            <div className="absolute top-14 left-0 z-[60] w-72 bg-white dark:bg-slate-900 border-2 border-slate-900/20 dark:border-white/10 rounded-10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                                 <div className="flex items-center justify-between px-5 py-4 bg-slate-50 dark:bg-white/5 border-b border-slate-900/10 dark:border-white/10">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Saved Templates</span>
-                                    <button onClick={handleNew} className="flex items-center gap-1.5 text-xs font-black text-teal-600 dark:text-teal-400 hover:text-teal-500 transition-colors">
+                                    <button onClick={handleNew} className="flex items-center gap-1.5 text-xs font-black text-[#00b9cd] dark:text-[#00b9cd] hover:text-[#00b9cd] transition-colors">
                                         <Plus size={14} strokeWidth={3} /> NEW
                                     </button>
                                 </div>
@@ -978,10 +978,10 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                                         </div>
                                     ) : templates.map(t => (
                                         <div key={t.id} onClick={() => handleLoadTemplate(t)}
-                                            className="group flex items-center justify-between mx-1 px-4 py-3 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-2xl cursor-pointer transition-all border-2 border-transparent hover:border-teal-500/20">
-                                            <span className="text-xs font-black text-slate-700 dark:text-slate-200 truncate group-hover:text-teal-600">{t.name}</span>
+                                            className="group flex items-center justify-between mx-1 px-4 py-3 hover:bg-[#00b9cd]/10 dark:hover:bg-teal-900/20 rounded-10 cursor-pointer transition-all border-2 border-transparent hover:border-[#00b9cd]/20">
+                                            <span className="text-xs font-black text-slate-700 dark:text-slate-200 truncate group-hover:text-[#00b9cd]">{t.name}</span>
                                             {t.is_active && (
-                                                <span className="ml-2 shrink-0 text-[8px] bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-400 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                                                <span className="ml-2 shrink-0 text-[8px] bg-[#00b9cd]/20 dark:bg-teal-900 text-[#00b9cd] dark:text-[#00b9cd] px-2 py-0.5 rounded-10 font-black uppercase tracking-tighter">
                                                     Active
                                                 </span>
                                             )}
@@ -999,7 +999,7 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                         <button 
                             onClick={handleSave} 
                             disabled={saving}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-teal-600 hover:bg-teal-500 disabled:bg-slate-400 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(13,148,136,0.2)] hover:-translate-y-1 active:translate-y-0 disabled:translate-y-0 disabled:shadow-none"
+                            className="flex items-center gap-2 px-6 py-2.5 bg-[#00b9cd] hover:bg-[#00b9cd]/80 disabled:bg-slate-400 text-white rounded-10 text-xs font-black uppercase tracking-widest shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 disabled:translate-y-0 disabled:shadow-none"
                         >
                             <Save size={16} strokeWidth={2.5} /> {saving ? 'Saving…' : 'Save'}
                         </button>
@@ -1009,7 +1009,7 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                         <button 
                             onClick={handleActivate} 
                             disabled={activating}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-400 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(16,185,129,0.2)] hover:-translate-y-1 active:translate-y-0 disabled:translate-y-0 disabled:shadow-none"
+                            className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-400 text-white rounded-10 text-xs font-black uppercase tracking-widest shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 disabled:translate-y-0 disabled:shadow-none"
                         >
                             <CheckCircle size={16} strokeWidth={2.5} /> {activating ? 'Activating…' : 'Activate'}
                         </button>
@@ -1022,7 +1022,7 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
 
                 {/* Left palette */}
                 {!previewMode && (
-                    <div className="w-56 shrink-0 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md border-2 border-slate-900/10 dark:border-white/10 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] overflow-hidden flex flex-col">
+                    <div className="w-56 shrink-0 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md border-2 border-slate-900/10 dark:border-white/10 rounded-10 shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out overflow-hidden flex flex-col">
                         <div className="bg-slate-50 dark:bg-white/5 px-4 py-3 border-b-2 border-slate-900/10 dark:border-white/10">
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Element Palette</p>
                         </div>
@@ -1032,15 +1032,14 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                                     key={item.type}
                                     draggable={isSuperAdmin && !readOnly}
                                     onDragStart={e => onPaletteDragStart(e, item.type)}
-                                    className={`group flex items-center gap-3 px-4 py-3 rounded-2xl border-2 select-none transition-all duration-300
-                                        ${isSuperAdmin && !readOnly
-                                            ? 'border-slate-900/10 dark:border-white/10 bg-white dark:bg-white/5 text-slate-700 dark:text-slate-200 cursor-grab hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:border-teal-500/30 hover:shadow-[4px_4px_0px_0px_rgba(13,148,136,0.1)] hover:-translate-y-0.5 active:cursor-grabbing active:scale-95'
+                                    className={`group flex items-center gap-3 px-4 py-3 rounded-10 border-2 select-none ${isSuperAdmin && !readOnly
+                                            ? 'border-slate-900/10 dark:border-white/10 bg-white dark:bg-white/5 text-slate-700 dark:text-slate-200 cursor-grab hover:bg-[#00b9cd]/10 dark:hover:bg-teal-900/20 hover:border-[#00b9cd]/30 hover:shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-0.5 active:cursor-grabbing active:scale-95'
                                             : 'border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-50'
                                         }`
                                     }
                                 >
-                                    <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 group-hover:border-teal-500/30 group-hover:bg-white transition-colors">
-                                        <span className="text-teal-600 dark:text-teal-400 shrink-0">{item.icon}</span>
+                                    <div className="p-2 rounded-10 bg-slate-50 dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 group-hover:border-[#00b9cd]/30 group-hover:bg-white transition-colors">
+                                        <span className="text-[#00b9cd] dark:text-[#00b9cd] shrink-0">{item.icon}</span>
                                     </div>
                                     <span className="text-[11px] font-black uppercase tracking-wider leading-snug">{item.label}</span>
                                 </div>
@@ -1048,7 +1047,7 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                         </div>
 
                         {!isSuperAdmin && (
-                            <div className="mx-2 mt-1 mb-3 p-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-[11px] text-amber-700 dark:text-amber-400 leading-snug">
+                            <div className="mx-2 mt-1 mb-3 p-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-10 text-[11px] text-amber-700 dark:text-amber-400 leading-snug">
                                 ✦ Template designs are managed by the Super Admin only.
                             </div>
                         )}
@@ -1056,13 +1055,13 @@ export default function PayslipDesigner({ isSuperAdmin = false, readOnly = true 
                 )}
 
                 {/* Center Canvas */}
-                <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900/40 rounded-3xl border-2 border-slate-900/10 dark:border-white/10 shadow-inner flex justify-center p-8 custom-scrollbar">
+                <div className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900/40 rounded-10 border-2 border-slate-900/10 dark:border-white/10 shadow-inner flex justify-center p-8 custom-scrollbar">
                     <div
                         ref={canvasRef}
                         onDragOver={e => e.preventDefault()}
                         onDrop={onCanvasDrop}
                         onMouseDown={() => setSelectedId(null)}
-                        className="relative shrink-0 shadow-2xl transition-all duration-300 ring-2 ring-slate-900/5 dark:ring-white/5"
+                        className="relative shrink-0 shadow-2xl ring-2 ring-slate-900/5 dark:ring-white/5"
                         style={{
                             width: CANVAS_W,
                             height: CANVAS_H,

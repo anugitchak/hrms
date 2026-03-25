@@ -157,7 +157,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-10 shadow-xl w-full max-w-sm overflow-hidden border border-gray-100 dark:border-gray-700">
                 <div className="flex justify-between items-center px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                     <h2 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         <Download className="w-4 h-4 text-blue-600" />
@@ -170,7 +170,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
 
                 <form onSubmit={handleDownload} className="p-5 space-y-4">
                     {error && (
-                        <div className="p-2.5 bg-red-50 text-red-600 text-xs rounded-lg border border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800">
+                        <div className="p-2.5 bg-red-50 text-red-600 text-xs rounded-10 border border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800">
                             {error}
                         </div>
                     )}
@@ -193,7 +193,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
                                     }
                                 }}
                                 onFocus={() => setIsDropdownOpen(true)}
-                                className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                                className="w-full px-3 py-2 rounded-10 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
                             />
                             {formData.employee_id && (
                                 <button
@@ -210,7 +210,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
                         </div>
 
                         {isDropdownOpen && (
-                            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-xl max-h-48 overflow-y-auto">
+                            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-10 shadow-xl max-h-48 overflow-y-auto">
                                 <div
                                     className="px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm font-medium text-blue-600 border-b border-gray-50 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800"
                                     onClick={() => {
@@ -252,7 +252,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
                             name="year"
                             value={formData.year}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                            className="w-full px-3 py-2 rounded-10 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                         >
                             {years.map(y => (
                                 <option key={y} value={y}>{y}</option>
@@ -272,7 +272,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
                                 { val: '6', label: '6 Months' },
                                 { val: 'custom', label: 'Custom' },
                             ].map(opt => (
-                                <label key={opt.val} className={`cursor-pointer border rounded-md p-2 text-center text-xs font-medium transition-all ${formData.rangeType === opt.val
+                                <label key={opt.val} className={`cursor-pointer border rounded-10 p-2 text-center text-xs font-medium transition-all ${formData.rangeType === opt.val
                                     ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400'
                                     : 'border-gray-200 hover:border-gray-300 text-gray-600 dark:border-gray-700 dark:text-gray-400'
                                     }`}>
@@ -299,7 +299,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
                                     name="start_month"
                                     value={formData.start_month}
                                     onChange={handleChange}
-                                    className="w-full px-2 py-1.5 rounded border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
+                                    className="w-full px-2 py-1.5 rounded-10 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
                                     required
                                 >
                                     <option value="">Start</option>
@@ -314,7 +314,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
                                     name="end_month"
                                     value={formData.end_month}
                                     onChange={handleChange}
-                                    className="w-full px-2 py-1.5 rounded border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
+                                    className="w-full px-2 py-1.5 rounded-10 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
                                     required
                                 >
                                     <option value="">End</option>
@@ -331,7 +331,7 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
                                 name="month"
                                 value={formData.month}
                                 onChange={handleChange}
-                                className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
+                                className="w-full px-3 py-2 rounded-10 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
                             >
                                 {months.map(m => (
                                     <option key={m.value} value={m.value}>{m.label}</option>
@@ -351,14 +351,14 @@ const DownloadPayslipModal = ({ onClose, employees }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-medium transition-colors"
+                            className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-10 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-medium transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow hover:shadow-md transition-all text-sm font-medium disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-10 shadow hover:shadow-md transition-all text-sm font-medium disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {isLoading ? 'Processing...' : <><Download size={16} /> Download</>}
                         </button>

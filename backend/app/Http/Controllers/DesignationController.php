@@ -11,13 +11,16 @@ class DesignationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Return sorted by level (hierarchy)
-        $designations = Designation::with(['creator:id,name', 'editor:id,name'])
-            ->orderBy('name', 'asc') // Sorted by Name
-            ->get();
-            
+        $query = Designation::with(['creator:id,name', 'editor:id,name', 'department:id,name']);
+
+        if ($request->has('department_id') && $request->department_id !== '') {
+            $query->where('department_id', $request->department_id);
+        }
+
+        $designations = $query->orderBy('name', 'asc')->get();
+
         return response()->json($designations);
     }
 
@@ -28,15 +31,15 @@ class DesignationController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|unique:designations,name',
-            // 'level' => 'required|integer|min:1', // Removed
+            'department_id' => 'nullable|exists:departments,id',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
 
         $designation = Designation::create([
             'name' => $validated['name'],
-            // 'level' => $validated['level'], // Removed
-            'description' => $validated['description'],
+            'department_id' => $validated['department_id'] ?? null,
+            'description' => $validated['description'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
@@ -63,15 +66,15 @@ class DesignationController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|unique:designations,name,' . $id,
-            // 'level' => 'required|integer|min:1', // Removed
+            'department_id' => 'nullable|exists:departments,id',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
 
         $designation->update([
             'name' => $validated['name'],
-            // 'level' => $validated['level'], // Removed
-            'description' => $validated['description'],
+            'department_id' => $validated['department_id'] ?? null,
+            'description' => $validated['description'] ?? null,
             'is_active' => $validated['is_active'] ?? $designation->is_active,
             'updated_by' => auth()->id(),
         ]);

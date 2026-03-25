@@ -63,43 +63,47 @@ const NotificationDropdown = ({ onClose, onSelect }) => {
     return (
         <div
             ref={dropdownRef}
-            className="absolute top-12 right-0 w-[360px] bg-white dark:bg-gray-800 rounded-xl shadow-[8px_8px_0px_rgba(0,0,0,1)] border-4 border-black z-50 flex flex-col max-h-[480px] transition-colors duration-200 overflow-hidden"
+            className="absolute top-12 right-0 w-[380px] bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border border-slate-200 dark:border-slate-800 z-50 flex flex-col max-h-[520px] transition-all duration-300 overflow-hidden"
         >
             {/* Header */}
-            <div className="p-4 border-b-4 border-black bg-brand-200 flex justify-between items-center">
-                <h3 className="text-lg font-black text-black m-0 uppercase tracking-tight">Notifications</h3>
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center">
+                <h3 className="text-base font-black text-slate-800 dark:text-white m-0 uppercase tracking-wider">Notifications</h3>
                 <button
                     onClick={markAllRead}
-                    className="text-xs font-bold text-black hover:text-blue-700 bg-white border-2 border-black rounded px-2 py-1 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
+                    className="text-[10px] font-black text-black dark:text-white hover:text-white bg-slate-200 dark:bg-slate-700 hover:bg-[#00b9cd] dark:hover:bg-[#00b9cd] border-none rounded-lg px-3 py-1.5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer uppercase tracking-widest shadow-sm"
                 >
                     Mark all read
                 </button>
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50 dark:bg-gray-900">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {loading ? (
-                    <div className="p-8 text-center text-black font-bold animate-pulse">Loading...</div>
+                    <div className="p-12 text-center text-slate-400 font-bold animate-pulse text-sm uppercase tracking-widest">Synchronizing...</div>
                 ) : notifications.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500 font-bold">You're all caught up! 🚀</div>
+                    <div className="p-12 text-center text-slate-400 font-bold text-sm">You're all caught up! 🚀</div>
                 ) : (
                     notifications.slice(0, 10).map((n) => (
                         <div
                             key={n.id}
                             onClick={() => handleItemClick(n)}
                             className={`
-                                p-4 border-b-2 border-black cursor-pointer transition-all duration-200 relative group
-                                ${n.is_read ? 'bg-white opacity-80' : 'bg-white hover:-translate-y-0.5 hover:shadow-[0px_4px_0px_rgba(0,0,0,0.1)]'}
+                                p-5 border-b border-slate-50 dark:border-slate-800/50 cursor-pointer transition-all duration-300 relative group
+                                ${n.is_read ? 'bg-transparent opacity-60' : 'bg-transparent hover:bg-[#00b9cd]/5 dark:hover:bg-[#00b9cd]/10'}
                             `}
                         >
-                            {!n.is_read && <div className="absolute top-5 left-2 w-2 h-2 rounded-full bg-blue-600 animate-pulse border border-black z-10"></div>}
-                            <div className={`flex justify-between items-start mb-2 ${!n.is_read ? 'pl-3' : ''}`}>
-                                <span className={`text-sm tracking-tight pr-2 ${n.is_read ? 'font-bold text-gray-800 dark:text-gray-300' : 'font-black text-black dark:text-white'}`}>
+                            {!n.is_read && (
+                                <div className="absolute top-0 left-0 bottom-0 w-1 bg-[#00b9cd] shadow-[2px_0_12px_rgba(0,185,205,0.6)] group-hover:w-1.5 transition-all duration-300"></div>
+                            )}
+                            <div className="flex justify-between items-start mb-2 group-hover:translate-x-1 transition-transform duration-300">
+                                <span className={`text-sm tracking-tight pr-4 leading-tight ${n.is_read ? 'font-bold text-slate-600 dark:text-slate-400' : 'font-black text-slate-900 dark:text-white'}`}>
                                     {n.title}
                                 </span>
-                                <span className="text-[10px] font-bold text-gray-700 bg-gray-200 px-2 py-0.5 border-2 border-black rounded-full whitespace-nowrap">{timeAgo(n.created_at)}</span>
+                                <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg group-hover:bg-white dark:group-hover:bg-slate-700 transition-colors">
+                                    {timeAgo(n.created_at)}
+                                </span>
                             </div>
-                            <p className={`text-xs m-0 leading-relaxed ${n.is_read ? 'text-gray-500' : 'text-gray-800 font-medium'}`}>
+                            <p className={`text-xs m-0 leading-relaxed line-clamp-2 group-hover:translate-x-1 transition-transform duration-300 ${n.is_read ? 'text-slate-400' : 'text-slate-600 dark:text-slate-300 font-medium'}`}>
                                 {n.message}
                             </p>
                         </div>
@@ -108,10 +112,10 @@ const NotificationDropdown = ({ onClose, onSelect }) => {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t-4 border-black bg-white">
+            <div className="p-5 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800">
                 <button
                     onClick={handleViewAll}
-                    className="w-full py-2.5 bg-blue-100 hover:bg-blue-200 border-2 border-black rounded-lg text-sm font-black text-blue-900 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-all uppercase tracking-widest cursor-pointer"
+                    className="w-full py-3.5 bg-[#00b9cd] hover:bg-[#00a5b9] text-black dark:text-white font-black uppercase tracking-[0.2em] text-xs rounded-12 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-[0_10px_20px_-5px_rgba(0,185,205,0.3)] hover:shadow-[0_15px_25px_-5px_rgba(0,185,205,0.4)] cursor-pointer border-none"
                 >
                     View All Notifications
                 </button>

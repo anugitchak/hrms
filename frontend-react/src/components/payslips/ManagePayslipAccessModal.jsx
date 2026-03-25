@@ -85,7 +85,7 @@ const ManagePayslipAccessModal = ({ onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col max-h-[85vh]">
+            <div className="bg-white dark:bg-gray-800 rounded-10 shadow-xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col max-h-[85vh]">
 
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
@@ -103,7 +103,7 @@ const ManagePayslipAccessModal = ({ onClose }) => {
 
                 {/* Success Message */}
                 {successMessage && (
-                    <div className="mx-6 mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="mx-6 mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-10 flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
                         <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
                         <p className="text-sm text-green-700 dark:text-green-300 font-medium">{successMessage}</p>
                     </div>
@@ -118,7 +118,7 @@ const ManagePayslipAccessModal = ({ onClose }) => {
                             placeholder="Search by name or code..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 rounded-10 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                         />
                     </div>
                 </div>
@@ -156,16 +156,16 @@ const ManagePayslipAccessModal = ({ onClose }) => {
                                                     disabled={processingId === emp.id}
                                                     onChange={() => handleToggle(emp.id, emp.payslip_access)}
                                                 />
-                                                <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 ${processingId === emp.id ? 'opacity-50 cursor-wait' : ''}`}></div>
+                                                <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-10 peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-10 after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 ${processingId === emp.id ? 'opacity-50 cursor-wait' : ''}`}></div>
                                             </label>
                                         </td>
                                         <td className="px-6 py-3 text-center">
                                             {emp.payslip_access ? (
-                                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 text-xs font-medium">
+                                                <span className="inline-flex items-center px-2 py-1 rounded-10 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 text-xs font-medium">
                                                     Allowed
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 text-xs font-medium">
+                                                <span className="inline-flex items-center px-2 py-1 rounded-10 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 text-xs font-medium">
                                                     Restricted
                                                 </span>
                                             )}
@@ -180,7 +180,7 @@ const ManagePayslipAccessModal = ({ onClose }) => {
                 <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-medium"
+                        className="px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-10 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-medium"
                     >
                         Close
                     </button>

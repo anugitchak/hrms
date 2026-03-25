@@ -79,6 +79,16 @@ class Employee extends Model
         return $this->belongsTo(Designation::class);
     }
 
+    // The `designation` string column shadows the relationship, so we override
+    // attribute access to always return the Designation model instead.
+    public function getDesignationAttribute()
+    {
+        if ($this->relationLoaded('designation')) {
+            return $this->getRelation('designation');
+        }
+        return $this->designation_id ? \App\Models\Designation::find($this->designation_id) : null;
+    }
+
     public function salaries()
     {
         return $this->hasMany(Salary::class, 'employee_id');

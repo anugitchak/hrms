@@ -209,16 +209,16 @@ const UserManagementPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 relative z-10">
                 <div>
                     <h1 className="text-5xl md:text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight">
-                        <span className="italic">User</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
+                        User <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                        <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                        <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Manage users and their permissions with ease.</p>
                     </div>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-3 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold tracking-wide rounded-xl shadow-lg shadow-brand-500/25 dark:shadow-brand-500/10 hover:-translate-y-0.5 transition-all group"
+                    className="flex items-center gap-3 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold tracking-wide rounded-10 shadow-lg shadow-brand-500/25 dark:shadow-brand-500/10 hover:-translate-y-0.5 transition-all group"
                 >
                     <Plus size={20} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300" />
                     Create User
@@ -227,7 +227,7 @@ const UserManagementPage = () => {
 
             {/* Error State */}
             {error && (
-                <div className="mb-6 bg-red-50 border-2 border-red-400 rounded-xl p-4 flex items-center gap-3">
+                <div className="mb-6 bg-red-50 border-2 border-red-400 rounded-10 p-4 flex items-center gap-3">
                     <AlertCircle className="text-red-600" size={20} />
                     <p className="text-sm font-bold text-red-700">{error}</p>
                 </div>
@@ -241,8 +241,8 @@ const UserManagementPage = () => {
                     {label:'System Admins', val:users.filter(u=>u.role_id<=2).length, icon:<ShieldCheck size={22} strokeWidth={2.5} />, color:'text-indigo-600 dark:text-indigo-400', bg:'bg-indigo-50 dark:bg-indigo-500/10', border:'border-indigo-100 dark:border-indigo-500/20'},
                     {label:'Staff Members', val:users.filter(u=>u.role_id===4).length, icon:<Briefcase size={22} strokeWidth={2.5} />, color:'text-orange-600 dark:text-orange-400', bg:'bg-orange-50 dark:bg-orange-500/10', border:'border-orange-100 dark:border-orange-500/20'}
                 ].map((s,i)=>(
-                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300">
-                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-2xl shadow-sm`}>{s.icon}</div>
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out ">
+                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-10 shadow-md`}>{s.icon}</div>
                         <div>
                             <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{s.val}</div>
                             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-tight">{s.label}</div>
@@ -252,20 +252,20 @@ const UserManagementPage = () => {
             </div>
 
             {/* Search & Filters */}
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] mb-10 flex flex-col lg:flex-row gap-5">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out mb-10 flex flex-col lg:flex-row gap-5">
                 <div className="relative flex-1 group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
                     <input
                         type="text" id="user_search" name="search" aria-label="Search users" autoComplete="off"
                         placeholder="Search by name or email..."
-                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                         value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="flex flex-wrap gap-4">
                     <div className="relative">
                         <select id="role_filter" name="role" aria-label="Filter by Role"
-                            className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer min-w-[160px] transition-all"
+                            className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer min-w-[160px] transition-all"
                             value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
                             <option value="" className="dark:bg-slate-900">All Roles</option>
                             <option value="1" className="dark:bg-slate-900">Super Admin</option>
@@ -277,7 +277,7 @@ const UserManagementPage = () => {
                     </div>
                     <div className="relative">
                         <select id="status_filter" name="status" aria-label="Filter by Status"
-                            className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer min-w-[160px] transition-all"
+                            className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer min-w-[160px] transition-all"
                             value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                             <option value="" className="dark:bg-slate-900">All Status</option>
                             <option value="active" className="dark:bg-slate-900">Active Only</option>
@@ -293,7 +293,7 @@ const UserManagementPage = () => {
                 <div className="p-16 text-center font-bold text-gray-600">Loading users...</div>
             ) : filteredUsers.length === 0 ? (
                 <div className="card p-16 text-center flex flex-col items-center gap-4">
-                    <div className="bg-gray-100 p-5 rounded-full">
+                    <div className="bg-gray-100 p-5 rounded-10">
                         <UserX size={48} className="text-gray-400" />
                     </div>
                     <h3 className="text-xl font-bold text-black">No users found</h3>
@@ -305,23 +305,23 @@ const UserManagementPage = () => {
                         const hasFaceData = user.face_descriptor || user.employee?.face_descriptor;
                         const isEnrolled = hasFaceData && hasFaceData !== 'null' && hasFaceData.trim() !== '';
                         return (
-                            <div key={user.id} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-xl transition-all duration-300 flex flex-col gap-6 group">
+                            <div key={user.id} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out flex flex-col gap-6 group">
                                 {/* Top: Avatar + Role */}
                                 <div className="flex items-start justify-between">
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold ${getRoleAvatarColor(user.role_id)} border border-white dark:border-slate-800 shadow-md group-hover:scale-110 transition-transform duration-500`}>
+                                    <div className={`w-14 h-14 rounded-10 flex items-center justify-center text-xl font-bold ${getRoleAvatarColor(user.role_id)} border border-white dark:border-slate-800 shadow-md group-hover:scale-110 transition-transform duration-500`}>
                                         {user.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div className="flex flex-col items-end gap-2.5">
-                                        <span className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-xl tracking-wide ${getRoleBadgeColor(user.role_id)} border border-white/30 dark:border-white/10 shadow-sm`}>
-                                            <div className="bg-white/20 dark:bg-black/20 p-1 rounded-md">{getRoleIcon(user.role_id)}</div>
+                                        <span className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-10 tracking-wide ${getRoleBadgeColor(user.role_id)} border border-white/30 dark:border-white/10 shadow-md`}>
+                                            <div className="bg-white/20 dark:bg-black/20 p-1 rounded-10">{getRoleIcon(user.role_id)}</div>
                                             {user.role?.name || getRoleName(user.role_id)}
                                         </span>
-                                        <span className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold rounded-full ${
+                                        <span className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold rounded-10 ${
                                             user.is_active
                                             ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-500/20'
                                             : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-500/20'
-                                        } shadow-sm transition-all`}>
-                                            <span className={`w-2 h-2 rounded-full ${ user.is_active ? 'bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]' : 'bg-red-400'}`}></span>
+                                        } shadow-md transition-all`}>
+                                            <span className={`w-2 h-2 rounded-10 ${ user.is_active ? 'bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]' : 'bg-red-400'}`}></span>
                                             {user.is_active ? 'Active' : 'Inactive'}
                                         </span>
                                     </div>
@@ -330,14 +330,14 @@ const UserManagementPage = () => {
                                 {/* Name + Email */}
                                 <div>
                                     <h3 className="font-extrabold text-slate-900 dark:text-white text-lg leading-tight tracking-tight">{user.name}</h3>
-                                    <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-1 break-all bg-slate-50 dark:bg-brand-800/30 border border-slate-900/10 dark:border-white/5 p-2 rounded-lg">{user.email}</p>
+                                    <p className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-1 break-all bg-slate-50 dark:bg-brand-800/30 border border-slate-900/10 dark:border-white/5 p-2 rounded-10">{user.email}</p>
                                 </div>
 
                                 {/* Face Enrollment Status */}
-                                <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-semibold tracking-tight border ${
+                                <div className={`flex items-center gap-3 px-4 py-3 rounded-10 text-xs font-semibold tracking-tight border ${
                                     isEnrolled ? 'bg-brand-50/30 dark:bg-brand-500/10 border-brand-100 dark:border-brand-500/20 text-slate-700 dark:text-slate-300' : 'bg-orange-50/30 dark:bg-orange-500/10 border-orange-100 dark:border-orange-500/20 text-orange-700 dark:text-orange-400'
-                                } shadow-sm group-hover:shadow-md transition-all`}>
-                                    <div className={`p-1.5 rounded-lg ${isEnrolled ? 'bg-brand-500/10 dark:bg-brand-500/20' : 'bg-orange-500/10 dark:bg-orange-500/20'}`}>
+                                } shadow-md group-hover:shadow-lg transition-all`}>
+                                    <div className={`p-1.5 rounded-10 ${isEnrolled ? 'bg-brand-500/10 dark:bg-brand-500/20' : 'bg-orange-500/10 dark:bg-orange-500/20'}`}>
                                         <ScanFace size={16} strokeWidth={2.5} className={isEnrolled ? 'text-brand-600 dark:text-brand-400' : 'text-orange-600 dark:text-orange-400'} />
                                     </div>
                                     {isEnrolled ? 'Face Enrolled' : 'Face Enrollment Pending'}
@@ -352,14 +352,14 @@ const UserManagementPage = () => {
                                 {/* Actions */}
                                 <div className="flex gap-3 pt-2 mt-auto">
                                     <button onClick={() => handleEdit(user)}
-                                        className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold border-2 border-slate-200 dark:border-white/10 rounded-2xl bg-white dark:bg-brand-800/40 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-brand-800/60 hover:border-slate-300 dark:hover:border-white/20 shadow-sm transition-all focus:ring-2 focus:ring-brand-500/10 active:scale-[0.98]">
-                                        <div className="bg-slate-100 dark:bg-slate-700/50 p-1.5 rounded-lg group-hover:bg-teal-300 dark:group-hover:bg-teal-500/50 transition-colors duration-300">
+                                        className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold border-2 border-slate-200 dark:border-white/10 rounded-10 bg-white dark:bg-brand-800/40 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-brand-800/60 hover:border-slate-300 dark:hover:border-white/20 shadow-md transition-all focus:ring-2 focus:ring-brand-500/10 active:scale-[0.98]">
+                                        <div className="bg-slate-100 dark:bg-slate-700/50 p-1.5 rounded-10 group-hover:bg-[#00b9cd]/30 dark:group-hover:bg-[#00b9cd]/80/50 transition-colors duration-300">
                                             <Edit2 size={13} strokeWidth={2.5} />
                                         </div>
                                         Edit
                                     </button>
                                     <button onClick={() => handleDelete(user.id)}
-                                        className="flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold border border-red-100 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-2xl bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 shadow-sm transition-all focus:ring-2 focus:ring-red-500/10 active:scale-[0.98]">
+                                        className="flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold border border-red-100 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-10 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 shadow-md transition-all focus:ring-2 focus:ring-red-500/10 active:scale-[0.98]">
                                         <Trash2 size={13} strokeWidth={2.5} />
                                     </button>
                                 </div>
@@ -372,7 +372,7 @@ const UserManagementPage = () => {
             {/* Crud Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.35)] w-full max-w-lg overflow-hidden transform transition-all duration-300 rounded-3xl">
+                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out w-full max-w-lg overflow-hidden transform rounded-10">
                         {/* Modal Header */}
                         <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-transparent">
                             <div>
@@ -383,7 +383,7 @@ const UserManagementPage = () => {
                             </div>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-xl transition-all"
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-10 transition-all"
                             >
                                 <X size={20} />
                             </button>
@@ -395,7 +395,7 @@ const UserManagementPage = () => {
                                 <label htmlFor="user_name" className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Full Name</label>
                                 <input
                                     type="text" id="user_name" name="name" autoComplete="name" value={formData.name} onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                                     placeholder="e.g. John Doe" required
                                 />
                             </div>
@@ -404,7 +404,7 @@ const UserManagementPage = () => {
                                 <label htmlFor="user_email" className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Email Address</label>
                                 <input
                                     type="email" id="user_email" name="email" autoComplete="email" value={formData.email} onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                                     placeholder="john@example.com" required
                                 />
                             </div>
@@ -414,7 +414,7 @@ const UserManagementPage = () => {
                                 <div className="relative">
                                     <select
                                         id="user_role" name="role_id" autoComplete="off" value={formData.role_id} onChange={handleInputChange}
-                                        className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                        className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                                     >
                                         <option value={1} className="dark:bg-slate-900">Super Admin</option>
                                         <option value={2} className="dark:bg-slate-900">Admin</option>
@@ -431,7 +431,7 @@ const UserManagementPage = () => {
                                 </label>
                                 <input
                                     type="password" id="user_password" name="temp_password" autoComplete="new-password" value={formData.temp_password} onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                                     placeholder={isEditing ? "Leave blank to keep current" : "Auto-generated if blank"}
                                 />
                             </div>
@@ -439,13 +439,13 @@ const UserManagementPage = () => {
                             <div className="pt-6 flex flex-col sm:flex-row gap-3">
                                 <button
                                     type="button" onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-5 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-all"
+                                    className="flex-1 px-5 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-10 transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit" disabled={isSubmitting}
-                                    className={`flex-[2] px-5 py-3 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-lg shadow-brand-500/20 transition-all ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
+                                    className={`flex-[2] px-5 py-3 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-10 shadow-lg shadow-brand-500/20 transition-all ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
                                 >
                                     {isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create User')}
                                 </button>
@@ -458,17 +458,17 @@ const UserManagementPage = () => {
             {/* Success Modal */}
             {successModal.show && (
                 <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/80 flex items-center justify-center z-[60] p-4 backdrop-blur-xl">
-                    <div className="bg-white dark:bg-slate-900/90 dark:backdrop-blur-2xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.45)] w-full max-sm p-8 text-center transform transition-all duration-300 scale-100 rounded-3xl">
-                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-2xl bg-green-50 dark:bg-green-500/20 text-green-600 dark:text-green-400 mb-6 border border-green-100 dark:border-green-500/30 shadow-sm">
+                    <div className="bg-white dark:bg-slate-900/90 dark:backdrop-blur-2xl shadow-2xl shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out w-full max-sm p-8 text-center transform scale-100 rounded-10">
+                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-10 bg-green-50 dark:bg-green-500/20 text-green-600 dark:text-green-400 mb-6 border border-green-100 dark:border-green-500/30 shadow-md">
                             <CheckCircle className="h-8 w-8" />
                         </div>
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Success!</h3>
-                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-8 bg-slate-50 dark:bg-white/5 p-4 rounded-xl break-all">
+                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-8 bg-slate-50 dark:bg-white/5 p-4 rounded-10 break-all">
                             {successModal.message}
                         </p>
                         <button
                             onClick={() => setSuccessModal({ show: false, message: "" })}
-                            className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/20 transition-all font-paperlogy"
+                            className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-10 shadow-lg shadow-brand-500/20 transition-all font-paperlogy"
                         >
                             Continue
                         </button>

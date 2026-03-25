@@ -217,6 +217,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Employee Face Self-Enrollment
         Route::post('/employee/enroll-face', [UserController::class, 'enrollFace']);
+
+        // Employee Profile Photo
+        Route::post('/employee/profile-photo', [UserController::class, 'updateProfilePhoto']);
+        Route::delete('/employee/profile-photo', [UserController::class, 'deleteProfilePhoto']);
     });
 
     // =====================================
@@ -376,6 +380,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['role:1'])->group(function () {
         Route::put('/settings', [SettingController::class, 'update']);
         Route::post('/settings/logo', [SettingController::class, 'uploadLogo']);
+        Route::get('/settings/email-template', [SettingController::class, 'getEmailTemplate']);
+        Route::put('/settings/email-template', [SettingController::class, 'updateEmailTemplate']);
+        Route::get('/settings/mail', [SettingController::class, 'getMailSettings']);
+        Route::put('/settings/mail', [SettingController::class, 'updateMailSettings']);
+        Route::post('/settings/mail/test', [SettingController::class, 'sendTestMail']);
     });
 
 });
@@ -430,6 +439,16 @@ Route::middleware("auth:sanctum")->group(function () {
     // Admin + SuperAdmin only
     Route::post("/notifications/send", [App\Http\Controllers\NotificationController::class, "send"])
         ->middleware("role:1,2");
+});
+
+// Messages (internal mail) Routes
+Route::middleware("auth:sanctum")->prefix("messages")->group(function () {
+    Route::get("/users", [App\Http\Controllers\MessageController::class, "getUsers"]);
+    Route::get("/inbox", [App\Http\Controllers\MessageController::class, "inbox"]);
+    Route::get("/sent", [App\Http\Controllers\MessageController::class, "sent"]);
+    Route::post("/compose", [App\Http\Controllers\MessageController::class, "compose"]);
+    Route::get("/{id}", [App\Http\Controllers\MessageController::class, "show"]);
+    Route::delete("/{id}", [App\Http\Controllers\MessageController::class, "destroy"]);
 });
 
 // Permission Management

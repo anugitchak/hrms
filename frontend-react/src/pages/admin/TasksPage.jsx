@@ -21,7 +21,8 @@ import {
     Layout,
     CheckSquare,
     AlertTriangle,
-    Zap
+    Zap,
+    Users
 } from "lucide-react";
 
 const TasksPage = () => {
@@ -270,16 +271,16 @@ const TasksPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 relative z-10">
                 <div>
                     <h1 className="text-5xl md:text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight leading-none">
-                        <span className="italic">Productivity</span> <span className="text-transparent bg-clip-text bg-[#00b9cd] ">Management</span>
+                        Productivity <span className="text-transparent bg-clip-text bg-[#00b9cd] ">Management</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                        <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                        <span className="h-1.5 w-12 bg-[#f06464] rounded-10  /20 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"></span>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Design workflows and verify employee contributions.</p>
                     </div>
                 </div>
                 <button
                     onClick={() => { resetForm(); setIsModalOpen(true); }}
-                    className="flex items-center gap-2 text-xs font-black text-white bg-teal-600 hover:bg-teal-500 px-6 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md"
+                    className="flex items-center gap-2 text-xs font-black text-white bg-[#00b9cd] hover:bg-[#00b9cd]/80 px-6 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:-2xl dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:-md"
                 >
                     <Plus size={16} strokeWidth={3} />
                     <span className="uppercase tracking-widest">Create New Task</span>
@@ -294,8 +295,8 @@ const TasksPage = () => {
                     { label: 'Urgent Tasks', val: tasks.filter(t => t.priority === 'urgent' && t.status !== 'completed').length, icon: <AlertTriangle size={22} strokeWidth={2.5} />, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-500/10', border: 'border-red-100 dark:border-red-500/20' },
                     { label: 'Completed', val: tasks.filter(t => t.status === 'completed').length, icon: <CheckSquare size={22} strokeWidth={2.5} />, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-500/10', border: 'border-green-100 dark:border-green-500/20' }
                 ].map((s, i) => (
-                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300">
-                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-2xl shadow-sm`}>{s.icon}</div>
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:-2xl dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out ">
+                        <div className="${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-10  shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">{s.icon}</div>
                         <div>
                             <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{s.val}</div>
                             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-tight">{s.label}</div>
@@ -306,7 +307,7 @@ const TasksPage = () => {
 
             <div className="flex-1 space-y-8">
                 {/* ── Filter Bar ── */}
-                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] mb-10 flex flex-col lg:flex-row gap-5">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:-2xl dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out mb-10 flex flex-col lg:flex-row gap-5">
                     <div className="flex flex-wrap gap-4 w-full">
                         {/* Employee name search */}
                         <div className="relative flex-1 group min-w-[250px]">
@@ -316,7 +317,7 @@ const TasksPage = () => {
                                 placeholder="Search employee…"
                                 value={filterEmployee}
                                 onChange={e => setFilterEmployee(e.target.value)}
-                                className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                                className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                             />
                         </div>
 
@@ -325,7 +326,7 @@ const TasksPage = () => {
                             <select
                                 value={filterStatus}
                                 onChange={e => setFilterStatus(e.target.value)}
-                                className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer w-full transition-all"
+                                className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer w-full transition-all"
                             >
                                 <option value="" className="dark:bg-slate-900">All Statuses</option>
                                 <option value="pending" className="dark:bg-slate-900">Pending</option>
@@ -343,7 +344,7 @@ const TasksPage = () => {
                             <select
                                 value={filterPriority}
                                 onChange={e => setFilterPriority(e.target.value)}
-                                className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer w-full transition-all"
+                                className="appearance-none pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer w-full transition-all"
                             >
                                 <option value="" className="dark:bg-slate-900">All Priorities</option>
                                 <option value="low" className="dark:bg-slate-900">Low (Routine)</option>
@@ -360,7 +361,7 @@ const TasksPage = () => {
                                 type="date"
                                 value={filterDeadline}
                                 onChange={e => setFilterDeadline(e.target.value)}
-                                className="pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white w-full transition-all"
+                                className="pl-5 pr-12 py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white w-full transition-all"
                             />
                             <Clock className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
                         </div>
@@ -369,7 +370,7 @@ const TasksPage = () => {
                         {hasActiveFilters && (
                             <button
                                 onClick={clearFilters}
-                                className="px-5 py-3 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 border-2 border-red-200 dark:border-red-900/30 rounded-xl transition-all flex items-center gap-2"
+                                className="px-5 py-3 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 border-2 border-red-200 dark:border-red-900/30 rounded-10 transition-all flex items-center gap-2"
                             >
                                 <X size={16} strokeWidth={2.5} />
                                 Clear
@@ -379,15 +380,15 @@ const TasksPage = () => {
 
                     {/* Result count */}
                     <div className="mt-3 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <span className="h-1 w-1 bg-slate-400 rounded-full"></span>
+                        <span className="h-1 w-1 bg-slate-400 rounded-10"></span>
                         Showing <span className="text-slate-900 dark:text-white">{filteredCount}</span> of <span className="text-slate-900 dark:text-white">{totalCount}</span> tasks
                     </div>
                 </div>
                 {/* Pending Verification Table */}
                 {pendingReviewTasks.length > 0 && (
-                    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:-2xl dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out overflow-hidden">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2.5 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-500/20 rounded-xl">
+                            <div className="p-2.5 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-500/20 rounded-10">
                                 <ShieldCheck size={20} strokeWidth={2.5} />
                             </div>
                             <div>
@@ -395,7 +396,7 @@ const TasksPage = () => {
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Review and approve submitted task proofs</p>
                             </div>
                         </div>
-                        <div className="overflow-x-auto rounded-2xl border-2 border-slate-900/10 dark:border-white/10">
+                        <div className="overflow-x-auto rounded-10 border-2 border-slate-900/10 dark:border-white/10">
                             <table className="w-full text-left text-sm border-collapse">
                                 <thead>
                                     <tr className="bg-slate-50 dark:bg-white/5 border-b-2 border-slate-900/10 dark:border-white/10">
@@ -407,14 +408,14 @@ const TasksPage = () => {
                                 </thead>
                                 <tbody className="divide-y divide-slate-900/10 dark:divide-white/10">
                                     {pendingReviewTasks.map((task) => (
-                                        <tr key={task.id} className="hover:bg-slate-50/80 dark:hover:bg-white/5 transition-all duration-300 group">
+                                        <tr key={task.id} className="hover:bg-slate-50/80 dark:hover:bg-white/5 group">
                                             <td className="px-6 py-5">
                                                 <div className="font-bold text-slate-900 dark:text-white leading-tight">{task.title}</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 italic">"{task.description}"</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">"{task.description}"</div>
                                             </td>
                                             <td className="px-6 py-5">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-400 flex items-center justify-center font-bold text-xs border border-teal-200 dark:border-teal-500/30">
+                                                    <div className="w-8 h-8 rounded-10 bg-[#00b9cd]/20 dark:bg-[#00b9cd]/20 text-[#00b9cd] dark:text-[#00b9cd] flex items-center justify-center font-bold text-xs border border-[#00b9cd]/30 dark:border-[#00b9cd]/30">
                                                         {task.assignee?.user?.name?.charAt(0).toUpperCase() || '?'}
                                                     </div>
                                                     <span className="font-bold text-slate-700 dark:text-slate-300">
@@ -423,14 +424,14 @@ const TasksPage = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-5">
-                                                <span className="px-3 py-1 text-[10px] font-bold rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 shadow-sm">
+                                                <span className="px-3 py-1 text-[10px] font-bold rounded-10 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20  shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
                                                     {task.department?.name || 'Central'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-5 text-right">
                                                 <button
                                                     onClick={() => { setSelectedTask(task); setShowApprovalModal(true); }}
-                                                    className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold border-2 border-brand-200 dark:border-brand-500/20 rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-500/20 shadow-sm transition-all focus:ring-2 focus:ring-brand-500/10 active:scale-95"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold border-2 border-brand-200 dark:border-brand-500/20 rounded-10 bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-500/20  transition-all focus:ring-2 focus:ring-brand-500/10 active:scale-95 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"
                                                 >
                                                     <Eye size={14} strokeWidth={2.5} />
                                                     Review Proof
@@ -445,10 +446,10 @@ const TasksPage = () => {
                 )}
 
                 {/* All Tasks Table */}
-                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] overflow-hidden">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:-2xl dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out overflow-hidden">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-100 dark:border-brand-500/20 rounded-xl">
+                            <div className="p-2.5 bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-100 dark:border-brand-500/20 rounded-10">
                                 <Briefcase size={20} strokeWidth={2.5} />
                             </div>
                             <div>
@@ -458,7 +459,7 @@ const TasksPage = () => {
                         </div>
                     </div>
                     
-                    <div className="overflow-x-auto rounded-2xl border-2 border-slate-900/10 dark:border-white/10">
+                    <div className="overflow-x-auto rounded-10 border-2 border-slate-900/10 dark:border-white/10">
                         <table className="w-full text-left text-sm border-collapse">
                             <thead>
                                 <tr className="bg-slate-50 dark:bg-white/5 border-b-2 border-slate-900/10 dark:border-white/10">
@@ -473,7 +474,7 @@ const TasksPage = () => {
                             </thead>
                             <tbody className="divide-y divide-slate-900/10 dark:divide-white/10">
                                 {allOtherTasks.map((task) => (
-                                    <tr key={task.id} className="hover:bg-slate-50/80 dark:hover:bg-white/5 transition-all duration-300 group">
+                                    <tr key={task.id} className="hover:bg-slate-50/80 dark:hover:bg-white/5 group">
                                         <td className="px-6 py-5">
                                             <div className="font-bold text-slate-900 dark:text-white leading-tight">{task.title}</div>
                                             <div className="flex items-center gap-1.5 mt-1">
@@ -482,7 +483,7 @@ const TasksPage = () => {
                                                 </span>
                                                 {task.designation && (
                                                     <>
-                                                        <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                                                        <span className="w-1 h-1 bg-slate-300 rounded-10"></span>
                                                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
                                                             {task.designation.name}
                                                         </span>
@@ -492,23 +493,23 @@ const TasksPage = () => {
                                         </td>
                                         <td className="px-6 py-5 text-center">
                                             {task.priority && (
-                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-xl border shadow-sm
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-10 border 
                                                     ${task.priority === 'urgent' ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-100 dark:border-red-500/20' :
                                                         task.priority === 'high' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-500/20' :
                                                             task.priority === 'medium' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-500/20' :
-                                                                'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20'}`}>
-                                                    <span className={`w-1.5 h-1.5 rounded-full ${task.priority === 'urgent' ? 'bg-red-500 animate-pulse outline outline-offset-2 outline-red-500/20' : task.priority === 'high' ? 'bg-orange-500' : 'bg-slate-400'}`}></span>
+                                                                'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20'} shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
+                                                    <span className={`w-1.5 h-1.5 rounded-10 ${task.priority === 'urgent' ? 'bg-red-500 animate-pulse outline outline-offset-2 outline-red-500/20' : task.priority === 'high' ? 'bg-orange-500' : 'bg-slate-400'}`}></span>
                                                     {task.priority.toUpperCase()}
                                                 </span>
                                             )}
                                         </td>
                                         <td className="px-6 py-5">
                                             {task.is_pool_task ?
-                                                <span className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 shadow-sm">
+                                                <span className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-10 bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20  shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
                                                     <Layout size={12} strokeWidth={2.5} />
                                                     POOL
                                                 </span> :
-                                                <span className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-xl bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 shadow-sm">
+                                                <span className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10  shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
                                                     <CheckCircle size={12} strokeWidth={2.5} />
                                                     DIRECT
                                                 </span>
@@ -526,18 +527,18 @@ const TasksPage = () => {
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col gap-1.5 items-start">
-                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold rounded-full border shadow-sm ${getStatusStyle(task.status)}`}>
-                                                    <span className={`w-1.5 h-1.5 rounded-full bg-current ${task.status === 'in_progress' ? 'animate-pulse' : ''}`}></span>
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold rounded-10 border  ${getStatusStyle(task.status)} shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
+                                                    <span className={`w-1.5 h-1.5 rounded-10 bg-current ${task.status === 'in_progress' ? 'animate-pulse' : ''}`}></span>
                                                     {task.status.replace('_', ' ').toUpperCase()}
                                                 </span>
                                                 {task.status === 'pending' || task.status === 'claimed' ? (
-                                                    <span className="text-[9px] text-orange-500 font-black uppercase italic animate-pulse">Awaiting Accept</span>
+                                                    <span className="text-[9px] text-orange-500 font-black uppercase animate-pulse">Awaiting Accept</span>
                                                 ) : task.status === 'rejected' ? (
-                                                    <span className="text-[9px] text-red-600 font-black uppercase italic flex items-center gap-1">
+                                                    <span className="text-[9px] text-red-600 font-black uppercase flex items-center gap-1">
                                                         <AlertTriangle size={8} /> Revision Required
                                                     </span>
                                                 ) : (task.status !== 'completed' && task.status !== 'cancelled' && task.status !== 'pending_review' ? (
-                                                    <span className="text-[9px] text-emerald-600 font-black uppercase italic flex items-center gap-1">
+                                                    <span className="text-[9px] text-emerald-600 font-black uppercase flex items-center gap-1">
                                                         <CheckCircle size={8} /> Accepted
                                                     </span>
                                                 ) : null)}
@@ -548,7 +549,7 @@ const TasksPage = () => {
                                                 <div className="flex flex-col">
                                                     <span className="text-sm text-slate-700 dark:text-slate-300 font-bold">{formatDate(task.due_date)}</span>
                                                     {task.due_time && (
-                                                        <span className="text-[10px] text-brand-600 dark:text-brand-400 font-black flex items-center gap-1 mt-1 bg-brand-50 dark:bg-brand-500/10 px-2 py-0.5 rounded-lg w-fit">
+                                                        <span className="text-[10px] text-brand-600 dark:text-brand-400 font-black flex items-center gap-1 mt-1 bg-brand-50 dark:bg-brand-500/10 px-2 py-0.5 rounded-10 w-fit">
                                                             <Clock size={10} strokeWidth={3} />
                                                             {task.due_time}
                                                         </span>
@@ -562,14 +563,14 @@ const TasksPage = () => {
                                             <div className="flex justify-end gap-2.5">
                                                 <button
                                                     onClick={() => handleEdit(task)}
-                                                    className="p-2.5 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-white/10 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 transition-all shadow-sm active:scale-95"
+                                                    className="p-2.5 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-white/10 rounded-10 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 transition-all  active:scale-95 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"
                                                     title="Edit Task"
                                                 >
                                                     <Edit2 size={15} strokeWidth={2.5} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(task.id)}
-                                                    className="p-2.5 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/30 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/20 hover:border-red-300 transition-all shadow-sm active:scale-95"
+                                                    className="p-2.5 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/30 rounded-10 hover:bg-red-100 dark:hover:bg-red-900/20 hover:border-red-300 transition-all  active:scale-95 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"
                                                     title="Delete Task"
                                                 >
                                                     <Trash2 size={15} strokeWidth={2.5} />
@@ -582,8 +583,8 @@ const TasksPage = () => {
                         </table>
                     </div>
                     {allOtherTasks.length === 0 && !loading && (
-                        <div className="p-16 text-center flex flex-col items-center gap-4 bg-slate-50 dark:bg-white/5 rounded-2xl mt-4 border-2 border-dashed border-slate-200 dark:border-white/10">
-                            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-md border dark:border-white/10">
+                        <div className="p-16 text-center flex flex-col items-center gap-4 bg-slate-50 dark:bg-white/5 rounded-10 mt-4 border-2 border-dashed border-slate-200 dark:border-white/10">
+                            <div className="bg-white dark:bg-slate-800 p-4 rounded-10  border dark:border-white/10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
                                 <Activity className="text-slate-400" size={32} />
                             </div>
                             <div>
@@ -598,7 +599,7 @@ const TasksPage = () => {
             {/* Create Task Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.35)] w-full max-w-lg overflow-hidden transform transition-all duration-300 rounded-3xl">
+                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl -2xl shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:-2xl dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out w-full max-w-lg overflow-hidden transform rounded-10">
                         <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-transparent">
                             <div>
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">
@@ -608,7 +609,7 @@ const TasksPage = () => {
                             </div>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-xl transition-all"
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-10 transition-all"
                             >
                                 <X size={20} />
                             </button>
@@ -618,14 +619,14 @@ const TasksPage = () => {
                                 <div className="col-span-2 space-y-2">
                                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Task Title</label>
                                     <input required type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} 
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                                         placeholder="e.g. Design System Implementation" 
                                     />
                                 </div>
                                 <div className="col-span-2 space-y-2">
                                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Task Description</label>
                                     <textarea required rows="3" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all"
                                         placeholder="Describe the workflow and requirements..."
                                     ></textarea>
                                 </div>
@@ -633,7 +634,7 @@ const TasksPage = () => {
                                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Department</label>
                                     <div className="relative">
                                         <select value={formData.department_id} onChange={e => setFormData({ ...formData, department_id: e.target.value })} 
-                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                                         >
                                             <option value="" className="dark:bg-slate-900">All Departments</option>
                                             {departments.map(dept => (
@@ -647,7 +648,7 @@ const TasksPage = () => {
                                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Designation</label>
                                     <div className="relative">
                                         <select value={formData.designation_id} onChange={e => setFormData({ ...formData, designation_id: e.target.value })} 
-                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                                         >
                                             <option value="" className="dark:bg-slate-900">All Levels</option>
                                             {designations.map(desig => (
@@ -661,7 +662,7 @@ const TasksPage = () => {
                                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Due Date</label>
                                     <div className="relative">
                                         <input type="date" value={formData.due_date} onChange={e => setFormData({ ...formData, due_date: e.target.value })} 
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
+                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
                                         />
                                         <Clock className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
                                     </div>
@@ -673,7 +674,7 @@ const TasksPage = () => {
                                             type="time"
                                             value={formData.due_time}
                                             onChange={e => setFormData({ ...formData, due_time: e.target.value })}
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
+                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
                                         />
                                         <Zap className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400" size={16} />
                                     </div>
@@ -682,7 +683,7 @@ const TasksPage = () => {
                                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Assignment Type</label>
                                     <div className="relative">
                                         <select value={formData.is_pool_task} onChange={e => setFormData({ ...formData, is_pool_task: e.target.value === 'true', assigned_to: "" })} 
-                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                                         >
                                             <option value="false" className="dark:bg-slate-900">Direct Assignment</option>
                                             <option value="true" className="dark:bg-slate-900">Post to Pool</option>
@@ -694,7 +695,7 @@ const TasksPage = () => {
                                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Work Urgency</label>
                                     <div className="relative">
                                         <select value={formData.priority} onChange={e => setFormData({ ...formData, priority: e.target.value })} 
-                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                            className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                                         >
                                             <option value="low" className="dark:bg-slate-900 text-slate-400">Low (Routine)</option>
                                             <option value="medium" className="dark:bg-slate-900 text-blue-500">Medium (Standard)</option>
@@ -709,7 +710,7 @@ const TasksPage = () => {
                                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Assign To Employee</label>
                                         <div className="relative">
                                             <select required value={formData.assigned_to} onChange={e => setFormData({ ...formData, assigned_to: e.target.value })} 
-                                                className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                                className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                                             >
                                                 <option value="" className="dark:bg-slate-900">Select Member</option>
                                                 {filteredEmployees.map(emp => (
@@ -723,12 +724,12 @@ const TasksPage = () => {
                             </div>
                             <div className="pt-6 flex flex-col sm:flex-row gap-3">
                                 <button type="button" onClick={() => setIsModalOpen(false)} 
-                                    className="flex-1 px-5 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-all"
+                                    className="flex-1 px-5 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-10 transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button disabled={isSubmitting} type="submit" 
-                                    className={`flex-[2] px-5 py-3 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-lg shadow-brand-500/20 transition-all ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
+                                    className="flex-[2] px-5 py-3 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-10  /20 transition-all ${isSubmitting ? 'opacity-70 cursor-wait' : ''} shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"
                                 >
                                     {isSubmitting ? (isEditing ? "Updating..." : "Creating...") : (isEditing ? "Update Task" : "Create Task")}
                                 </button>
@@ -741,7 +742,7 @@ const TasksPage = () => {
             {/* Approval Modal */}
             {showApprovalModal && selectedTask && (
                 <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.35)] w-full max-w-xl overflow-hidden transform transition-all duration-300 rounded-3xl">
+                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl -2xl shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:-2xl dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out w-full max-w-xl overflow-hidden transform rounded-10">
                         <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-transparent">
                             <div>
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">
@@ -751,16 +752,16 @@ const TasksPage = () => {
                             </div>
                             <button
                                 onClick={() => setShowApprovalModal(false)}
-                                className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-xl transition-all"
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-10 transition-all"
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
                         <div className="p-8 space-y-6">
-                            <div className="bg-slate-50 dark:bg-white/5 p-5 rounded-2xl border-2 border-slate-900/5 dark:border-white/5 shadow-sm">
+                            <div className="bg-slate-50 dark:bg-white/5 p-5 rounded-10 border-2 border-slate-900/5 dark:border-white/5  shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
                                 <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">{selectedTask.title}</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium italic">"{selectedTask.description}"</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">"{selectedTask.description}"</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -768,10 +769,10 @@ const TasksPage = () => {
                                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                                         <Layout size={12} /> Evidence File
                                     </h4>
-                                    <div className="p-4 bg-white dark:bg-slate-900/60 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:border-brand-400 transition-all cursor-pointer">
+                                    <div className="p-4 bg-white dark:bg-slate-900/60 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-10 flex flex-col items-center justify-center gap-3 group hover:border-brand-400 transition-all cursor-pointer">
                                         {selectedTask.proof_attachment ? (
                                             <a href={selectedTask.proof_attachment} download={`Proof_${selectedTask.id}`} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 text-brand-600 dark:text-brand-400 font-bold text-xs uppercase tracking-tight">
-                                                <div className="p-3 bg-brand-50 dark:bg-brand-500/10 rounded-xl group-hover:scale-110 transition-transform">
+                                                <div className="p-3 bg-brand-50 dark:bg-brand-500/10 rounded-10 group-hover:scale-110 transition-transform">
                                                     <Layout size={24} strokeWidth={2.5} />
                                                 </div>
                                                 Download Evidence
@@ -789,8 +790,8 @@ const TasksPage = () => {
                                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                                         <Activity size={12} /> Employee Notes
                                     </h4>
-                                    <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border-2 border-slate-900/5 dark:border-white/5 min-h-[100px] flex items-center justify-center text-center">
-                                        <p className="text-xs text-slate-600 dark:text-slate-400 font-bold italic leading-relaxed">
+                                    <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-10 border-2 border-slate-900/5 dark:border-white/5 min-h-[100px] flex items-center justify-center text-center">
+                                        <p className="text-xs text-slate-600 dark:text-slate-400 font-bold leading-relaxed">
                                             {selectedTask.submission_notes ? `"${selectedTask.submission_notes}"` : 'No additional notes provided by worker.'}
                                         </p>
                                     </div>
@@ -805,7 +806,7 @@ const TasksPage = () => {
                                     value={adminFeedback}
                                     onChange={(e) => setAdminFeedback(e.target.value)}
                                     placeholder="Provide detailed feedback (required for rejection)..."
-                                    className="w-full px-4 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/5 dark:border-white/5 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all min-h-[120px]"
+                                    className="w-full px-4 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/5 dark:border-white/5 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white placeholder-slate-400 transition-all min-h-[120px]"
                                 />
                             </div>
 
@@ -813,14 +814,14 @@ const TasksPage = () => {
                                 <button
                                     onClick={() => handleReject(selectedTask.id)}
                                     disabled={isSubmitting}
-                                    className="flex-1 py-3.5 text-xs font-black uppercase tracking-widest text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 border-2 border-red-100 dark:border-red-900/30 rounded-2xl shadow-sm transition-all disabled:opacity-50"
+                                    className="flex-1 py-3.5 text-xs font-black uppercase tracking-widest text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 border-2 border-red-100 dark:border-red-900/30 rounded-10  transition-all disabled:opacity-50 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"
                                 >
                                     {isSubmitting ? "..." : "Reject Details"}
                                 </button>
                                 <button
                                     onClick={() => handleApprove(selectedTask.id)}
                                     disabled={isSubmitting}
-                                    className="flex-[2] bg-brand-500 hover:bg-brand-600 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-brand-500/20 transition-all uppercase tracking-widest text-xs disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-[2] bg-brand-500 hover:bg-brand-600 text-white font-black py-3.5 rounded-10  /20 transition-all uppercase tracking-widest text-xs disabled:opacity-50 flex items-center justify-center gap-2 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"
                                 >
                                     {isSubmitting ? "Processing..." : (
                                         <>

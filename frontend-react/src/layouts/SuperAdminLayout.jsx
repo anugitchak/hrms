@@ -33,7 +33,7 @@ const SuperAdminLayout = ({ children }) => {
                         <NotificationBell />
                         <button
                             onClick={handleLogout}
-                            className="btn-accent"
+                            className="inline-flex items-center justify-center px-4 py-2 font-bold bg-accent-500 text-white rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
                         >
                             Logout
                         </button>

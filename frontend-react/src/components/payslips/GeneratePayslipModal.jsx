@@ -73,7 +73,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-gray-800 rounded-10 shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -88,7 +88,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                 {/* Body */}
                 <div className="p-6 overflow-y-auto custom-scrollbar">
                     {error && (
-                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-lg text-sm">
+                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-10 text-sm">
                             {error}
                         </div>
                     )}
@@ -102,7 +102,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                                     required
                                     value={formData.employee_id}
                                     onChange={(e) => setFormData({ ...formData, employee_id: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-10 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 >
                                     <option value="">Select Employee</option>
                                     {employees.map(emp => (
@@ -118,7 +118,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                                     required
                                     value={formData.month}
                                     onChange={(e) => setFormData({ ...formData, month: parseInt(e.target.value) })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-10 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 >
                                     {months.map(m => (
                                         <option key={m.value} value={m.value}>{m.label}</option>
@@ -133,7 +133,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                                     required
                                     value={formData.year}
                                     onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-10 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 >
                                     {years.map(y => (
                                         <option key={y} value={y}>{y}</option>
@@ -148,7 +148,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                                 <Loader2 className="animate-spin mr-2" /> Fetching salary details...
                             </div>
                         ) : salaryData ? (
-                            <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                            <div className="bg-gray-50 dark:bg-gray-700/30 rounded-10 p-4 border border-gray-200 dark:border-gray-700">
                                 <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3 border-b border-gray-200 dark:border-gray-700 pb-2">Payslip Preview</h4>
                                 <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                                     <div className="flex justify-between">
@@ -177,7 +177,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-10 border border-dashed border-gray-300 dark:border-gray-700">
                                 Select an employee to view salary structure preview.
                             </div>
                         )}
@@ -189,7 +189,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-10 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                         Cancel
                     </button>
@@ -197,7 +197,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                         type="submit"
                         form="generate-form"
                         disabled={loading || !salaryData}
-                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-10 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
                     >
                         {loading && <Loader2 size={16} className="animate-spin" />}
                         Generate Payslip

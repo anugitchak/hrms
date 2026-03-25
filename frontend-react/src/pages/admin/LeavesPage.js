@@ -18,7 +18,7 @@ const StatusBadge = ({ status }) => {
         }
     };
     return (
-        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusStyle(status)}`}>
+        <span className={`px-2 py-1 rounded-10 text-xs font-semibold ${getStatusStyle(status)}`}>
             {status}
         </span>
     );
@@ -57,10 +57,10 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
+            <div className="bg-white dark:bg-gray-800 rounded-10 max-w-md w-full p-6 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]">
                 <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Review Leave Request</h3>
                 <div className="space-y-4">
-                    <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-sm dark:text-gray-300">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-10 text-sm dark:text-gray-300">
                         <p><strong>Employee:</strong> {leave.employee?.user?.name}</p>
                         <p><strong>Type:</strong> {leave.leave_type?.name}</p>
                         <p><strong>Reason:</strong> {leave.reason}</p>
@@ -74,7 +74,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                             name="action"
                             value={action}
                             onChange={(e) => setAction(e.target.value)}
-                            className="w-full p-2 rounded border dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-white"
+                            className="w-full p-2 rounded-10 border dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-white"
                         >
                             <option value="approve">Approve Full Leave</option>
                             <option value="partial">Approve Partial Leave</option>
@@ -83,7 +83,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                     </div>
 
                     {action === "partial" && (
-                        <div className="grid grid-cols-2 gap-3 p-3 border border-blue-200 rounded-lg bg-blue-50 dark:bg-blue-900/10 dark:border-blue-800">
+                        <div className="grid grid-cols-2 gap-3 p-3 border border-blue-200 rounded-10 bg-blue-50 dark:bg-blue-900/10 dark:border-blue-800">
                             <div>
                                 <label htmlFor="start-date" className="text-xs font-bold text-blue-800 dark:text-blue-300">Start</label>
                                 <input
@@ -94,7 +94,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                                     min={leave.start_date}
                                     max={leave.end_date}
                                     onChange={(e) => handleDateChange("start", e.target.value)}
-                                    className="w-full text-sm p-1 mt-1 rounded border dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                    className="w-full text-sm p-1 mt-1 rounded-10 border dark:bg-gray-700 dark:text-white dark:border-gray-600"
                                 />
                             </div>
                             <div>
@@ -107,7 +107,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                                     min={dates.start}
                                     max={leave.end_date}
                                     onChange={(e) => handleDateChange("end", e.target.value)}
-                                    className="w-full text-sm p-1 mt-1 rounded border dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                    className="w-full text-sm p-1 mt-1 rounded-10 border dark:bg-gray-700 dark:text-white dark:border-gray-600"
                                 />
                             </div>
                             <div className="col-span-2 text-xs text-right font-medium text-blue-600 dark:text-blue-400">
@@ -117,10 +117,10 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                     )}
 
                     <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
-                        <button onClick={onClose} className="px-4 py-2 text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
+                        <button onClick={onClose} className="px-4 py-2 text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-10">Cancel</button>
                         <button
                             onClick={handleSubmit}
-                            className={`px-4 py-2 rounded-lg text-white font-medium ${action === 'reject' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                            className={`px-4 py-2 rounded-10 text-white font-medium ${action === 'reject' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                         >
                             Confirm
                         </button>
@@ -141,13 +141,10 @@ const EmployeeSummaryCard = ({ group, isSelected, onClick }) => {
     return (
         <div
             onClick={onClick}
-            className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 mb-3 ${isSelected
-                ? 'bg-blue-50 border-blue-500 shadow-md dark:bg-blue-900/20 dark:border-blue-500'
-                : 'bg-white border-gray-100 hover:border-blue-300 hover:shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600'
-                }`}
+            className={`p-4 rounded-10 border cursor-pointer transition-all duration-200 mb-3 ${isSelected ? 'bg-blue-50 border-blue-500 dark:bg-blue-900/20 dark:border-blue-500' : 'bg-white border-gray-100 hover:border-blue-300 dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600' } shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]`}
         >
             <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${isSelected
+                <div className={`h-10 w-10 rounded-10 flex items-center justify-center font-bold text-sm ${isSelected
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-400'
                     }`}>
@@ -164,13 +161,13 @@ const EmployeeSummaryCard = ({ group, isSelected, onClick }) => {
             </div>
 
             <div className="mt-3 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-2 py-1 rounded">
+                <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-2 py-1 rounded-10">
                     <svg className="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span className="font-medium">{employee?.total_approved_days || 0}</span> Approved Days
                 </div>
 
                 {pendingCount > 0 && (
-                    <div className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-full font-bold animate-pulse">
+                    <div className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-10 font-bold animate-pulse">
                         {pendingCount} Pending
                     </div>
                 )}
@@ -214,7 +211,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
 
     if (!employeeId) {
         return (
-            <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-900 p-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+            <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-900 p-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-10">
                 <svg className="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 <p>Select an employee to view leave history</p>
             </div>
@@ -222,14 +219,14 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
     }
 
     return (
-        <div className="card h-[calc(100vh-200px)] overflow-hidden flex flex-col">
+        <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] h-[calc(100vh-200px)] overflow-hidden flex flex-col">
             <div className="p-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex justify-between items-center">
                 <h3 className="font-bold text-gray-900 dark:text-white">Leave History</h3>
                 <div className="flex items-center gap-1">
-                    <button onClick={fetchHistory} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-900 transition-colors" title="Refresh">
+                    <button onClick={fetchHistory} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-10 text-gray-900 transition-colors" title="Refresh">
                         <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     </button>
-                    <button onClick={onClose} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg text-gray-900 transition-colors" title="Close">
+                    <button onClick={onClose} className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-10 text-gray-900 transition-colors" title="Close">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
@@ -238,16 +235,16 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
             <div className="overflow-y-auto flex-1 p-4 space-y-3">
                 {loading ? (
                     <div className="space-y-3">
-                        {[1, 2, 3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-gray-700/50 rounded-lg animate-pulse"></div>)}
+                        {[1, 2, 3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-gray-700/50 rounded-10 animate-pulse"></div>)}
                     </div>
                 ) : history.length === 0 ? (
                     <div className="text-center py-10 text-gray-900">No leave history found.</div>
                 ) : (
                     history.map(leave => (
-                        <div key={leave.id} className="relative bg-white dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div key={leave.id} className="relative bg-white dark:bg-gray-700/30 border border-gray-100 dark:border-gray-700 rounded-10 p-4 transition- shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]">
 
                             {/* Status Stripe */}
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-lg ${leave.status === 'Approved' ? 'bg-green-500' :
+                            <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-10-lg ${leave.status === 'Approved' ? 'bg-green-500' :
                                 leave.status === 'Rejected' ? 'bg-red-500' :
                                     leave.status === 'Pending' ? 'bg-orange-500' :
                                         'bg-gray-300'
@@ -261,7 +258,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {leave.status === 'Partially Approved' && leave.approved_start_date && leave.approved_end_date && (
-                                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">
+                                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-10">
                                                 {Math.round((new Date(leave.approved_end_date) - new Date(leave.approved_start_date)) / (1000 * 60 * 60 * 24)) + 1} Days
                                             </span>
                                         )}
@@ -269,7 +266,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                                     </div>
                                 </div>
 
-                                <p className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-2 rounded mb-2">
+                                <p className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-2 rounded-10 mb-2">
                                     {leave.reason}
                                 </p>
 
@@ -277,7 +274,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                                     <div className="text-xs text-gray-900 mb-3 flex items-center gap-2">
                                         <span className="font-medium">Approved by:</span>
                                         <span className="text-gray-700 dark:text-gray-300 font-medium">{leave.approver.name}</span>
-                                        <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+                                        <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-10 text-xs">
                                             {leave.approver.role_id === 1 ? 'SuperAdmin' :
                                                 leave.approver.role_id === 2 ? 'Admin' :
                                                     leave.approver.role_id === 3 ? 'HR' : 'Employee'}
@@ -289,7 +286,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                                     <div className="flex gap-2 justify-end">
                                         <button
                                             onClick={() => onReview(leave)}
-                                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-sm transition-colors flex items-center gap-1"
+                                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-10 transition-colors flex items-center gap-1 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]"
                                         >
                                             Review Request
                                         </button>
@@ -470,26 +467,26 @@ const LeavesPage = () => {
 
             {/* Metrics Row */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="card p-4 text-center">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] p-4 text-center">
                     <div className="text-2xl font-bold text-gray-900 dark:text-white">{summary.total}</div>
                     <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Total Leaves</div>
                 </div>
-                <div className="card p-4 text-center">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] p-4 text-center">
                     <div className="text-2xl font-bold text-orange-600">{summary.pending}</div>
                     <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Pending</div>
                 </div>
-                <div className="card p-4 text-center">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] p-4 text-center">
                     <div className="text-2xl font-bold text-green-600">{summary.approved}</div>
                     <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Approved</div>
                 </div>
-                <div className="card p-4 text-center">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] p-4 text-center">
                     <div className="text-2xl font-bold text-red-600">{summary.rejected}</div>
                     <div className="text-xs text-gray-900 uppercase tracking-widest mt-1">Rejected</div>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="card p-4 mb-6 flex flex-wrap gap-4">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] p-4 mb-6 flex flex-wrap gap-4">
                 <label htmlFor="employee-search" className="sr-only">Search Employee</label>
                 <input
                     id="employee-search"
@@ -497,7 +494,7 @@ const LeavesPage = () => {
                     placeholder="Search employee..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="p-2 border rounded-lg bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
+                    className="p-2 border rounded-10 bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <label htmlFor="department-filter" className="sr-only">Filter by Department</label>
                 <select
@@ -505,7 +502,7 @@ const LeavesPage = () => {
                     name="department_filter"
                     value={departmentId}
                     onChange={e => setDepartmentId(e.target.value)}
-                    className="p-2 border rounded-lg bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
+                    className="p-2 border rounded-10 bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="">All Departments</option>
                     {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -516,7 +513,7 @@ const LeavesPage = () => {
                     name="status_filter"
                     value={status}
                     onChange={e => setStatus(e.target.value)}
-                    className="p-2 border rounded-lg bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
+                    className="p-2 border rounded-10 bg-transparent dark:text-white dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="">All Status</option>
                     <option value="Pending">Pending</option>
@@ -560,7 +557,7 @@ const LeavesPage = () => {
                             <button
                                 onClick={() => setPageInfo(p => ({ ...p, current_page: Math.max(1, p.current_page - 1) }))}
                                 disabled={pageInfo.current_page === 1}
-                                className="px-3 py-1 text-xs border rounded bg-white dark:bg-gray-800 dark:text-white disabled:opacity-50"
+                                className="px-3 py-1 text-xs border rounded-10 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-50"
                             >
                                 Prev
                             </button>
@@ -570,7 +567,7 @@ const LeavesPage = () => {
                             <button
                                 onClick={() => setPageInfo(p => ({ ...p, current_page: Math.min(pageInfo.last_page, p.current_page + 1) }))}
                                 disabled={pageInfo.current_page === pageInfo.last_page}
-                                className="px-3 py-1 text-xs border rounded bg-white dark:bg-gray-800 dark:text-white disabled:opacity-50"
+                                className="px-3 py-1 text-xs border rounded-10 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-50"
                             >
                                 Next
                             </button>

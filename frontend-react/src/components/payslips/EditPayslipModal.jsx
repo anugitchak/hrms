@@ -62,7 +62,7 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-gray-800 rounded-10 shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -77,12 +77,12 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
                 {/* Body */}
                 <div className="p-6 overflow-y-auto custom-scrollbar">
                     {error && (
-                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-lg text-sm">
+                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-10 text-sm">
                             {error}
                         </div>
                     )}
 
-                    <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+                    <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-10 border border-blue-100 dark:border-blue-800">
                         <div className="flex justify-between items-center">
                             <div>
                                 <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Employee</p>
@@ -105,7 +105,7 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
                                     name="basic_salary"
                                     value={formData.basic_salary}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-10 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 />
                             </div>
                             <div>
@@ -116,7 +116,7 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
                                     name="hra"
                                     value={formData.hra}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-10 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 />
                             </div>
                             <div>
@@ -127,7 +127,7 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
                                     name="allowances"
                                     value={formData.allowances}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-10 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 />
                             </div>
                             <div>
@@ -138,7 +138,7 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
                                     name="deductions"
                                     value={formData.deductions}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-10 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 />
                             </div>
                         </div>
@@ -151,12 +151,12 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
                                 value={formData.remarks}
                                 onChange={handleChange}
                                 rows="3"
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-10 focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 placeholder="Optional remarks..."
                             ></textarea>
                         </div>
 
-                        <div className="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg flex justify-between items-center border border-gray-200 dark:border-gray-700">
+                        <div className="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-10 flex justify-between items-center border border-gray-200 dark:border-gray-700">
                             <span className="font-semibold text-gray-700 dark:text-gray-300">Net Pay (Calculated):</span>
                             <span className="text-xl font-bold text-blue-600 dark:text-blue-400">{calculateNetPay()}</span>
                         </div>
@@ -168,7 +168,7 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-10 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                         Cancel
                     </button>
@@ -176,7 +176,7 @@ const EditPayslipModal = ({ payslip, onClose, onSuccess }) => {
                         type="submit"
                         form="edit-form"
                         disabled={loading}
-                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-10 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
                     >
                         {loading && <Loader2 size={16} className="animate-spin" />}
                         Save Changes

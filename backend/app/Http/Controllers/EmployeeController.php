@@ -316,9 +316,14 @@ class EmployeeController extends Controller
             "/hr/employees"
         );
 
-        // Send Welcome Email
+        // Send Welcome Email (if enabled in settings)
         try {
-            Mail::to($user->email)->send(new WelcomeEmployeeMail($employee->load('user', 'department', 'designation'), $plainPassword));
+            $emailEnabled = \App\Models\Setting::where('key', 'welcome_email_active')->value('value');
+            if ($emailEnabled === null || $emailEnabled === '1') {
+                // Apply SMTP config from superadmin settings (overrides .env at runtime)
+                \App\Http\Controllers\SettingController::applyMailConfig();
+                Mail::to($user->email)->send(new WelcomeEmployeeMail($employee->load('user', 'department', 'designation'), $plainPassword));
+            }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Failed to send welcome email: " . $e->getMessage());
         }

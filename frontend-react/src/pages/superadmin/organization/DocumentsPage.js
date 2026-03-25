@@ -170,17 +170,17 @@ const DocumentsPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                 <div>
                     <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-3">
-                        <span className="italic">Employee</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Documents</span>
+                        Employee <span className="text-transparent bg-clip-text bg-[#00b9cd]">Documents</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                            <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                            <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Secure Management of Personal Files</p>
                         </div>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="flex items-center gap-2 text-xs font-black text-white bg-teal-600 hover:bg-teal-500 px-6 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md"
+                        className="flex items-center gap-2 text-xs font-black text-white bg-[#00b9cd] hover:bg-[#00b9cd]/80 px-6 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
                     >
                         <FileUp size={16} strokeWidth={3} />
                         <span className="uppercase tracking-widest text-nowrap">Upload Document</span>
@@ -190,7 +190,7 @@ const DocumentsPage = () => {
 
             {/* Filters Section (Admin/HR Only) */}
             {!isEmployee && (
-                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] mb-10 border-2 border-slate-50 dark:border-white/5">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out mb-10 border-2 border-slate-50 dark:border-white/5">
                     <div className="flex flex-col lg:flex-row items-end gap-6">
                         <div className="flex-1 w-full space-y-2">
                             <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Filter by Employee</label>
@@ -199,7 +199,7 @@ const DocumentsPage = () => {
                                 <select
                                     id="filter_employee"
                                     name="filter_employee"
-                                    className="pl-12 pr-10 w-full py-3.5 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
+                                    className="pl-12 pr-10 w-full py-3.5 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                     value={filters.employee_id}
                                     onChange={(e) => setFilters({ ...filters, employee_id: e.target.value })}
                                 >
@@ -219,7 +219,7 @@ const DocumentsPage = () => {
                                 <select
                                     id="filter_document_type"
                                     name="filter_document_type"
-                                    className="pl-12 pr-10 w-full py-3.5 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
+                                    className="pl-12 pr-10 w-full py-3.5 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                     value={filters.document_type}
                                     onChange={(e) => setFilters({ ...filters, document_type: e.target.value })}
                                 >
@@ -233,7 +233,7 @@ const DocumentsPage = () => {
                         {(filters.employee_id || filters.document_type) && (
                             <button
                                 onClick={() => setFilters({ employee_id: "", document_type: "" })}
-                                className="flex items-center gap-2 text-xs font-black text-red-600 bg-red-50 dark:bg-red-500/10 px-6 py-4 rounded-2xl border-2 border-red-100 dark:border-red-500/20 hover:bg-red-600 hover:text-white transition-all duration-300 uppercase tracking-widest"
+                                className="flex items-center gap-2 text-xs font-black text-red-600 bg-red-50 dark:bg-red-500/10 px-6 py-4 rounded-10 border-2 border-red-100 dark:border-red-500/20 hover:bg-red-600 hover:text-white uppercase tracking-widest"
                             >
                                 <X size={16} strokeWidth={3} /> Clear Filters
                             </button>
@@ -243,20 +243,20 @@ const DocumentsPage = () => {
             )}
 
             {/* Document List Section */}
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-[2rem] shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] overflow-hidden border-2 border-slate-50 dark:border-white/5">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out overflow-hidden border-2 border-slate-50 dark:border-white/5">
                 {loading ? (
                     <div className="p-20 text-center">
-                        <div className="w-16 h-16 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+                        <div className="w-16 h-16 border-4 border-blue-600/20 border-t-blue-600 rounded-10 animate-spin mx-auto mb-4"></div>
                         <p className="text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">Synchronizing documents...</p>
                     </div>
                 ) : documents.length === 0 ? (
                     <div className="p-32 flex flex-col items-center justify-center text-center">
-                        <div className="w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-[2.5rem] flex items-center justify-center text-slate-300 mb-6 border-2 border-dashed border-slate-200 dark:border-white/10">
+                        <div className="w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-10 flex items-center justify-center text-slate-300 mb-6 border-2 border-dashed border-slate-200 dark:border-white/10">
                             <FileText size={48} className="opacity-50" />
                         </div>
                         <h3 className="text-2xl font-black text-slate-400 uppercase tracking-widest mb-2">Archive Empty</h3>
                         <p className="text-slate-400 dark:text-slate-500 font-bold max-w-xs">Start building your secure digital repository by uploading your first document.</p>
-                        <button onClick={() => setIsUploadModalOpen(true)} className="mt-8 text-xs font-black text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-8 py-3 rounded-2xl border-2 border-blue-100 dark:border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">
+                        <button onClick={() => setIsUploadModalOpen(true)} className="mt-8 text-xs font-black text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-8 py-3 rounded-10 border-2 border-blue-100 dark:border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">
                             Initialize Upload
                         </button>
                     </div>
@@ -279,7 +279,7 @@ const DocumentsPage = () => {
                                         {!isEmployee && (
                                             <td className="p-6">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-slate-500 font-black text-sm border border-white/20">
+                                                    <div className="w-10 h-10 rounded-10 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-slate-500 font-black text-sm border border-white/20">
                                                         {doc.employee?.user?.name?.charAt(0).toUpperCase() || "?"}
                                                     </div>
                                                     <div>
@@ -290,13 +290,13 @@ const DocumentsPage = () => {
                                             </td>
                                         )}
                                         <td className="p-6">
-                                            <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest border border-slate-200 dark:border-white/10">
+                                            <span className="px-3 py-1 rounded-10 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest border border-slate-200 dark:border-white/10">
                                                 {doc.document_type}
                                             </span>
                                         </td>
                                         <td className="p-6">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                                                <div className="w-8 h-8 rounded-10 bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                                                     <FileText size={16} strokeWidth={2.5} />
                                                 </div>
                                                 <span className="text-sm font-bold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 transition-colors">{doc.document_title}</span>
@@ -310,7 +310,7 @@ const DocumentsPage = () => {
                                             <td className="p-6">
                                                 {doc.uploader ? (
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 rounded-full bg-blue-500" />
+                                                        <div className="w-2 h-2 rounded-10 bg-blue-500" />
                                                         <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{doc.uploader.name}</span>
                                                     </div>
                                                 ) : (
@@ -321,20 +321,20 @@ const DocumentsPage = () => {
                                         <td className="p-6 text-right">
                                             <div className="flex justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
                                                 <button onClick={() => handleView(doc)}
-                                                    className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all active:scale-95"
+                                                    className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-10 transition-all active:scale-95"
                                                     title="Quick View"
                                                 >
                                                     <Eye size={18} strokeWidth={2.5} />
                                                 </button>
                                                 <button onClick={() => handleDownload(doc)}
-                                                    className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-500/10 rounded-xl transition-all active:scale-95"
+                                                    className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-[#00b9cd] dark:hover:text-[#00b9cd] hover:bg-[#00b9cd]/10 dark:hover:bg-[#00b9cd]/80/10 rounded-10 transition-all active:scale-95"
                                                     title="Download"
                                                 >
                                                     <Download size={18} strokeWidth={2.5} />
                                                 </button>
                                                 {!isEmployee && (
                                                     <button onClick={() => handleDelete(doc.id)}
-                                                        className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all active:scale-95"
+                                                        className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-10 transition-all active:scale-95"
                                                         title="Revoke Permission"
                                                     >
                                                         <Trash2 size={18} strokeWidth={2.5} />
@@ -352,14 +352,14 @@ const DocumentsPage = () => {
 
             {/* Upload Modal Section */}
             {isUploadModalOpen && (
-                <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-[100] p-4 border-none backdrop-blur-md transition-all duration-300">
-                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)] w-full max-w-lg overflow-hidden transform transition-all duration-300 rounded-3xl">
+                <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-[100] p-4 border-none backdrop-blur-md ">
+                    <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out w-full max-w-lg overflow-hidden transform rounded-10">
                         <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-transparent">
                             <div>
                                 <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Upload Document</h2>
                                 <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Add new verified registry entry</p>
                             </div>
-                            <button onClick={() => setIsUploadModalOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-colors text-slate-400 dark:text-slate-500">
+                            <button onClick={() => setIsUploadModalOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-10 transition-colors text-slate-400 dark:text-slate-500">
                                 <Plus className="rotate-45" size={24} />
                             </button>
                         </div>
@@ -371,7 +371,7 @@ const DocumentsPage = () => {
                                     <div className="relative group/select">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/select:text-blue-500 transition-colors" size={18} />
                                         <select
-                                            className="pl-12 pr-10 w-full py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
+                                            className="pl-12 pr-10 w-full py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                             value={uploadData.employee_id}
                                             onChange={(e) => setUploadData({ ...uploadData, employee_id: e.target.value })}
                                             required
@@ -391,7 +391,7 @@ const DocumentsPage = () => {
                                 <div className="relative group/select">
                                     <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/select:text-blue-500 transition-colors" size={18} />
                                     <select
-                                        className="pl-12 pr-10 w-full py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
+                                        className="pl-12 pr-10 w-full py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                         value={uploadData.document_type}
                                         onChange={(e) => setUploadData({ ...uploadData, document_type: e.target.value })}
                                         required
@@ -409,7 +409,7 @@ const DocumentsPage = () => {
                                     <FileText className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-blue-500 transition-colors" size={18} />
                                     <input
                                         type="text"
-                                        className="pl-12 pr-6 w-full py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white placeholder-slate-400 transition-all font-paperlogy"
+                                        className="pl-12 pr-6 w-full py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 font-bold text-slate-900 dark:text-white placeholder-slate-400 transition-all font-paperlogy"
                                         placeholder="e.g. Q4 Performance Assessment"
                                         value={uploadData.document_title}
                                         onChange={(e) => setUploadData({ ...uploadData, document_title: e.target.value })}
@@ -420,7 +420,7 @@ const DocumentsPage = () => {
 
                             <div>
                                 <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 ml-1">Payload Upload *</label>
-                                <div className="border-4 border-dashed border-slate-100 dark:border-white/5 rounded-3xl p-8 text-center hover:bg-slate-50 dark:hover:bg-white/5 transition-all group/file relative">
+                                <div className="border-4 border-dashed border-slate-100 dark:border-white/5 rounded-10 p-8 text-center hover:bg-slate-50 dark:hover:bg-white/5 transition-all group/file relative">
                                     <div className="absolute inset-0 z-0">
                                         <input
                                             type="file"
@@ -431,7 +431,7 @@ const DocumentsPage = () => {
                                         />
                                     </div>
                                     <div className="relative z-10 pointer-events-none">
-                                        <div className="w-16 h-16 bg-blue-50 dark:bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-4 group-hover/file:scale-110 transition-transform">
+                                        <div className="w-16 h-16 bg-blue-50 dark:bg-blue-500/10 rounded-10 flex items-center justify-center text-blue-600 mx-auto mb-4 group-hover/file:scale-110 transition-transform">
                                             <Upload size={32} strokeWidth={2.5} />
                                         </div>
                                         <p className="text-sm font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest mb-1">
@@ -446,14 +446,14 @@ const DocumentsPage = () => {
                                 <button
                                     type="button"
                                     onClick={() => setIsUploadModalOpen(false)}
-                                    className="flex-1 py-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-2xl text-slate-600 dark:text-slate-300 font-black text-xs uppercase tracking-widest transition-all"
+                                    className="flex-1 py-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-10 text-slate-600 dark:text-slate-300 font-black text-xs uppercase tracking-widest transition-all"
                                 >
                                     Abort
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className={`flex-1 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(37,99,235,0.3)] transition-all flex items-center justify-center gap-2 ${uploading ? 'opacity-70 animate-pulse' : 'hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md'}`}
+                                    className={`flex-1 py-4 bg-blue-600 hover:bg-blue-500 rounded-10 text-white font-black text-xs uppercase tracking-widest shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-500 ease-out transition-all flex items-center justify-center gap-2 ${uploading ? 'opacity-70 animate-pulse' : 'hover:-translate-y-1 active:translate-y-0 active:shadow-md'}`}
                                 >
                                     {uploading ? "Uploading..." : (<><FileUp size={16} strokeWidth={3} /> Commit Archive</>)}
                                 </button>

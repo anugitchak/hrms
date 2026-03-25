@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -16,42 +17,65 @@ class WelcomeEmployeeMail extends Mailable
     public $employee;
     public $password;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct($employee, $password)
     {
         $this->employee = $employee;
         $this->password = $password;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Welcome to the Team! - ' . config('app.name'),
-        );
+        $customSubject = Setting::where('key', 'welcome_email_subject')->value('value');
+        $subject = $customSubject
+            ? $this->replacePlaceholders($customSubject)
+            : 'Welcome to the Team! - ' . config('app.name');
+
+        return new Envelope(subject: $subject);
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
+        $customBody = Setting::where('key', 'welcome_email_body')->value('value');
+
+        if ($customBody) {
+            return new Content(
+                view: 'emails.welcome_employee_custom',
+                with: ['emailBody' => $this->replacePlaceholders($customBody)],
+            );
+        }
+
         return new Content(
             view: 'emails.welcome_employee',
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];
+    }
+
+    private function replacePlaceholders(string $text): string
+    {
+        $emp = $this->employee;
+
+        return str_replace(
+            [
+                '{EmployeeName}', '{Email}', '{Password}', '{EmployeeCode}',
+                '{Department}', '{Designation}', '{JoiningDate}',
+                '{CompanyName}', '{PortalURL}',
+            ],
+            [
+                $emp->user->name ?? '',
+                $emp->user->email ?? '',
+                $this->password,
+                $emp->employee_code ?? '',
+                $emp->department->name ?? 'N/A',
+                ($emp->designation instanceof \App\Models\Designation ? $emp->designation->name : null) ?? 'N/A',
+                $emp->date_of_joining ? $emp->date_of_joining->format('d M, Y') : 'N/A',
+                config('app.name'),
+                config('app.url'),
+            ],
+            $text
+        );
     }
 }

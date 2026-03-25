@@ -10,16 +10,16 @@ import { formatDate } from "../../../utils/dateUtils";
 const StatusBadge = ({ status }) => {
     const getStatusStyle = (status) => {
         switch (status) {
-            case "Approved": return "bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-100 dark:border-green-500/20 shadow-sm";
-            case "Partially Approved": return "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-500/20 shadow-sm";
-            case "Rejected": return "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-100 dark:border-red-500/20 shadow-sm";
-            case "Pending": return "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-100 dark:border-orange-500/20 shadow-sm";
-            case "Withdrawn": return "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 shadow-sm";
-            default: return "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 shadow-sm";
+            case "Approved": return "bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-100 dark:border-green-500/20 shadow-md";
+            case "Partially Approved": return "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-500/20 shadow-md";
+            case "Rejected": return "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-100 dark:border-red-500/20 shadow-md";
+            case "Pending": return "bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-100 dark:border-orange-500/20 shadow-md";
+            case "Withdrawn": return "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 shadow-md";
+            default: return "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 shadow-md";
         }
     };
     return (
-        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusStyle(status)}`}>
+        <span className={`px-2 py-1 rounded-10 text-xs font-semibold ${getStatusStyle(status)}`}>
             {status}
         </span>
     );
@@ -58,13 +58,13 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] max-w-md w-full p-8 shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-500 to-teal-500"></div>
+            <div className="bg-white dark:bg-slate-900 rounded-10 max-w-md w-full p-8 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-500 to-[#00b9cd]"></div>
 
                 <h3 className="text-2xl font-black mb-6 text-slate-900 dark:text-white uppercase tracking-tight">Review Leave Request</h3>
 
                 <div className="space-y-6">
-                    <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-2xl border-2 border-slate-900/5 dark:border-white/5 space-y-2">
+                    <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border-2 border-slate-900/5 dark:border-white/5 space-y-2">
                         <div className="flex justify-between">
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Employee</span>
                             <span className="text-xs font-bold text-slate-900 dark:text-white">{leave.employee?.user?.name}</span>
@@ -84,7 +84,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                         <select
                             value={action}
                             onChange={(e) => setAction(e.target.value)}
-                            className="w-full p-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white cursor-pointer transition-all appearance-none"
+                            className="w-full p-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white cursor-pointer transition-all appearance-none"
                         >
                             <option value="approve">Approve Full Leave</option>
                             <option value="partial">Approve Partial Leave</option>
@@ -93,7 +93,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                     </div>
 
                     {action === "partial" && (
-                        <div className="grid grid-cols-2 gap-4 p-5 bg-blue-50/50 dark:bg-brand-500/5 border-2 border-brand-500/20 rounded-2xl">
+                        <div className="grid grid-cols-2 gap-4 p-5 bg-blue-50/50 dark:bg-brand-500/5 border-2 border-brand-500/20 rounded-10">
                             <div>
                                 <label className="text-[10px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest block mb-2 px-1">Start Date</label>
                                 <input
@@ -102,7 +102,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                                     min={leave.start_date}
                                     max={leave.end_date}
                                     onChange={(e) => handleDateChange("start", e.target.value)}
-                                    className="w-full text-xs p-3 rounded-xl border-2 border-slate-900/10 dark:border-white/10 dark:bg-slate-800 font-bold text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-all"
+                                    className="w-full text-xs p-3 rounded-10 border-2 border-slate-900/10 dark:border-white/10 dark:bg-slate-800 font-bold text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-all"
                                 />
                             </div>
                             <div>
@@ -113,7 +113,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                                     min={dates.start}
                                     max={leave.end_date}
                                     onChange={(e) => handleDateChange("end", e.target.value)}
-                                    className="w-full text-xs p-3 rounded-xl border-2 border-slate-900/10 dark:border-white/10 dark:bg-slate-800 font-bold text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-all"
+                                    className="w-full text-xs p-3 rounded-10 border-2 border-slate-900/10 dark:border-white/10 dark:bg-slate-800 font-bold text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-all"
                                 />
                             </div>
                             <div className="col-span-2 flex justify-end items-center gap-2 mt-2 pt-2 border-t border-brand-500/10">
@@ -132,7 +132,7 @@ const ApprovalModal = ({ leave, isOpen, onClose, onAction }) => {
                         </button>
                         <button
                             onClick={handleSubmit}
-                            className={`px-8 py-3 rounded-xl text-white text-xs font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:translate-y-0.5 active:shadow-none transition-all ${action === 'reject' ? 'bg-red-500 hover:bg-red-600' : 'bg-brand-500 hover:bg-brand-600'
+                            className={`px-8 py-3 rounded-10 text-white text-xs font-black uppercase tracking-widest shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out active:translate-y-0.5 active:shadow-none transition-all ${action === 'reject' ? 'bg-red-500 hover:bg-red-600' : 'bg-brand-500 hover:bg-brand-600'
                                 }`}
                         >
                             Confirm Action
@@ -151,13 +151,13 @@ const EmployeeSummaryCard = ({ group, isSelected, onClick }) => {
     return (
         <div
             onClick={onClick}
-            className={`p-5 rounded-3xl border-2 cursor-pointer transition-all duration-300 relative overflow-hidden group mb-4 ${isSelected
-                ? 'bg-white dark:bg-brand-500/10 border-brand-500 shadow-[6px_6px_0px_0px_rgba(0,185,205,0.2)] dark:shadow-[6px_6px_0px_0px_rgba(0,185,205,0.1)] -translate-y-1'
-                : 'bg-white/60 dark:bg-slate-900/40 border-slate-900/5 dark:border-white/5 shadow-[4px_4px_0px_0px_rgba(71,85,105,0.1)] hover:border-slate-300 dark:hover:border-white/10 hover:shadow-lg'
+            className={`p-5 rounded-10 border-2 cursor-pointer relative overflow-hidden group mb-4 ${isSelected
+                ? 'bg-white dark:bg-brand-500/10 border-brand-500 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out -translate-y-1'
+                : 'bg-white/60 dark:bg-slate-900/40 border-slate-900/5 dark:border-white/5 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:border-slate-300 dark:hover:border-white/10 '
                 }`}
         >
             <div className="flex items-center gap-4">
-                <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-black text-xs border shadow-sm transition-all duration-500 ${isSelected
+                <div className={`h-12 w-12 rounded-10 flex items-center justify-center font-black text-xs border shadow-md transition-all duration-500 ${isSelected
                     ? 'bg-brand-500 text-white border-white dark:border-slate-800 scale-110 shadow-md'
                     : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10'
                     }`}>
@@ -172,21 +172,21 @@ const EmployeeSummaryCard = ({ group, isSelected, onClick }) => {
                     </p>
                 </div>
                 {isSelected && (
-                    <div className="bg-brand-500 rounded-full p-1 text-white shadow-sm">
+                    <div className="bg-brand-500 rounded-10 p-1 text-white shadow-md">
                         <ChevronRight size={14} strokeWidth={3} />
                     </div>
                 )}
             </div>
 
             <div className="mt-4 flex items-center justify-between">
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border font-black text-[10px] uppercase tracking-widest transition-colors ${isSelected ? 'bg-green-500/10 text-green-600 border-green-500/20' : 'bg-slate-50 dark:bg-white/5 text-slate-400 border-slate-900/5'
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-10 border font-black text-[10px] uppercase tracking-widest transition-colors ${isSelected ? 'bg-green-500/10 text-green-600 border-green-500/20' : 'bg-slate-50 dark:bg-white/5 text-slate-400 border-slate-900/5'
                     }`}>
                     <CheckCircle size={12} className={isSelected ? 'text-green-500' : 'text-slate-300'} />
                     <span>{employee?.total_approved_days || 0} Days</span>
                 </div>
 
                 {pendingCount > 0 && (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm animate-pulse">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 text-white rounded-10 text-[10px] font-black uppercase tracking-widest shadow-md animate-pulse">
                         <Clock size={12} strokeWidth={3} />
                         <span>{pendingCount} Pending</span>
                     </div>
@@ -227,8 +227,8 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
 
     if (!employeeId) {
         return (
-            <div className="h-[calc(100vh-320px)] flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 p-12 bg-white/40 dark:bg-slate-900/20 backdrop-blur-sm border-2 border-dashed border-slate-200 dark:border-white/5 rounded-[3rem] transition-all duration-500">
-                <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-[2.5rem] mb-6 shadow-inner border border-slate-100 dark:border-white/5 group-hover:scale-110 transition-transform">
+            <div className="h-[calc(100vh-320px)] flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 p-12 bg-white/40 dark:bg-slate-900/20 backdrop-blur-sm border-2 border-dashed border-slate-200 dark:border-white/5 rounded-10 transition-all duration-500">
+                <div className="bg-slate-50 dark:bg-white/5 p-8 rounded-10 mb-6 shadow-inner border border-slate-100 dark:border-white/5 group-hover:scale-110 transition-transform">
                     <Users className="w-20 h-20 opacity-30" strokeWidth={1.5} />
                 </div>
                 <h4 className="text-xl font-black uppercase tracking-widest text-slate-300 dark:text-slate-700">Selection Required</h4>
@@ -238,10 +238,10 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
     }
 
     return (
-        <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] border-2 border-slate-900/5 dark:border-white/5 h-[calc(100vh-320px)] overflow-hidden flex flex-col group">
+        <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900/5 dark:border-white/5 h-[calc(100vh-320px)] overflow-hidden flex flex-col group">
             <div className="p-6 border-b-2 border-slate-900/5 dark:border-white/5 bg-slate-50/50 dark:bg-brand-500/5 flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                    <div className="bg-brand-500 p-2 rounded-xl text-white shadow-sm">
+                    <div className="bg-brand-500 p-2 rounded-10 text-white shadow-md">
                         <Clock size={18} strokeWidth={3} />
                     </div>
                     <div>
@@ -250,10 +250,10 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button onClick={fetchHistory} className="p-2.5 hover:bg-white dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-brand-500 transition-all shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-white/5" title="Refresh">
+                    <button onClick={fetchHistory} className="p-2.5 hover:bg-white dark:hover:bg-slate-800 rounded-10 text-slate-400 hover:text-brand-500 transition-all shadow-md border border-transparent hover:border-slate-100 dark:hover:border-white/5" title="Refresh">
                         <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                     </button>
-                    <button onClick={onClose} className="p-2.5 hover:bg-white dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-red-500 transition-all shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-white/5" title="Close Panel">
+                    <button onClick={onClose} className="p-2.5 hover:bg-white dark:hover:bg-slate-800 rounded-10 text-slate-400 hover:text-red-500 transition-all shadow-md border border-transparent hover:border-slate-100 dark:hover:border-white/5" title="Close Panel">
                         <XCircle size={18} />
                     </button>
                 </div>
@@ -263,7 +263,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map(i => (
-                            <div key={i} className="h-32 bg-slate-50 dark:bg-white/5 rounded-3xl animate-pulse"></div>
+                            <div key={i} className="h-32 bg-slate-50 dark:bg-white/5 rounded-10 animate-pulse"></div>
                         ))}
                     </div>
                 ) : history.length === 0 ? (
@@ -273,18 +273,18 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                     </div>
                 ) : (
                     history.map(leave => (
-                        <div key={leave.id} className="relative bg-white dark:bg-white/5 border-2 border-slate-900/5 dark:border-white/5 rounded-[2rem] p-6 hover:shadow-lg hover:border-brand-500/10 transition-all duration-300">
+                        <div key={leave.id} className="relative bg-white dark:bg-white/5 border-2 border-slate-900/5 dark:border-white/5 rounded-10 p-6 hover:border-brand-500/10 ">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
                                         <h4 className="font-black text-slate-900 dark:text-white uppercase tracking-tight">{leave.leave_type?.name}</h4>
-                                        <div className="h-1 w-1 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+                                        <div className="h-1 w-1 rounded-10 bg-slate-200 dark:bg-slate-700"></div>
                                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{formatDate(leave.created_at)}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
                                         <Calendar size={12} />
                                         <span>{formatDate(leave.start_date)} - {formatDate(leave.end_date)}</span>
-                                        <span className="bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded-lg text-[10px] uppercase font-black">
+                                        <span className="bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded-10 text-[10px] uppercase font-black">
                                             {Math.round((new Date(leave.end_date) - new Date(leave.start_date)) / (1000 * 60 * 60 * 24)) + 1} Days
                                         </span>
                                     </div>
@@ -292,14 +292,14 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                                 <StatusBadge status={leave.status} />
                             </div>
 
-                            <p className="text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl mb-4 italic leading-relaxed">
+                            <p className="text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-10 mb-4 italic leading-relaxed">
                                 "{leave.reason}"
                             </p>
 
                             <div className="flex justify-between items-center pt-4 border-t border-slate-900/5 dark:border-white/5">
                                 {leave.approver ? (
                                     <div className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-lg bg-brand-500/20 text-brand-600 flex items-center justify-center text-[10px] font-black">
+                                        <div className="w-6 h-6 rounded-10 bg-brand-500/20 text-brand-600 flex items-center justify-center text-[10px] font-black">
                                             {leave.approver.name?.charAt(0)}
                                         </div>
                                         <div>
@@ -312,7 +312,7 @@ const EmployeeDetailPanel = ({ employeeId, onReview, onClose }) => {
                                 {leave.status === 'Pending' && canApprove && (
                                     <button
                                         onClick={() => onReview(leave)}
-                                        className="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md active:translate-y-0.5 transition-all flex items-center gap-2"
+                                        className="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-[10px] font-black uppercase tracking-widest rounded-10 shadow-md active:translate-y-0.5 transition-all flex items-center gap-2"
                                     >
                                         Review Request
                                         <ChevronRight size={14} strokeWidth={3} />
@@ -490,22 +490,22 @@ const LeavesPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
                     <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-3">
-                        <span className="italic">Leave</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
+                        Leave <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                            <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                            <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Manage employee leave applications</p>
                         </div>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => { loadLeaves(); loadSummary(); }}
-                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
+                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 group"
                     >
                         <RefreshCw size={16} className={`text-orange-500 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-500`} />
                         <span className="uppercase tracking-widest">Refresh</span>
                     </button>
-                    <div className="bg-white dark:bg-slate-900/60 p-3.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.1)]">
+                    <div className="bg-white dark:bg-slate-900/60 p-3.5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out">
                         <Layers size={20} className="text-brand-500" />
                     </div>
                 </div>
@@ -519,8 +519,8 @@ const LeavesPage = () => {
                     { label: 'Approved', val: summary.approved, icon: <CheckCircle size={22} />, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100' },
                     { label: 'Rejected', val: summary.rejected, icon: <XCircle size={22} />, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100' }
                 ].map((s, i) => (
-                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300 group">
-                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-2xl shadow-sm group-hover:scale-110 transition-transform`}>{s.icon}</div>
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out group">
+                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-10 shadow-md group-hover:scale-110 transition-transform`}>{s.icon}</div>
                         <div>
                             <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{s.val}</div>
                             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-tight">{s.label}</div>
@@ -530,7 +530,7 @@ const LeavesPage = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] mb-10 flex flex-wrap gap-5 border-2 border-slate-50 dark:border-white/5">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out mb-10 flex flex-wrap gap-5 border-2 border-slate-50 dark:border-white/5">
                 <div className="relative flex-1 min-w-[240px] group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
                     <input
@@ -538,7 +538,7 @@ const LeavesPage = () => {
                         placeholder="Search employee..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all font-paperlogy"
+                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all font-paperlogy"
                     />
                 </div>
                 <div className="flex flex-wrap gap-4 flex-1 justify-end">
@@ -546,7 +546,7 @@ const LeavesPage = () => {
                         <select
                             value={departmentId}
                             onChange={e => setDepartmentId(e.target.value)}
-                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                         >
                             <option value="">All Departments</option>
                             {departments.map(dept => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
@@ -557,7 +557,7 @@ const LeavesPage = () => {
                         <select
                             value={status}
                             onChange={e => setStatus(e.target.value)}
-                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                         >
                             <option value="">All Status</option>
                             <option value="Pending">Pending</option>
@@ -571,7 +571,7 @@ const LeavesPage = () => {
                             type="month"
                             value={month}
                             onChange={e => setMonth(e.target.value)}
-                            className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
+                            className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
                         />
                     </div>
                 </div>
@@ -613,7 +613,7 @@ const LeavesPage = () => {
                             <button
                                 onClick={() => setPageInfo(p => ({ ...p, current_page: Math.max(1, p.current_page - 1) }))}
                                 disabled={pageInfo.current_page === 1}
-                                className="px-3 py-1 text-xs border rounded bg-white dark:bg-gray-800 dark:text-white disabled:opacity-50"
+                                className="px-3 py-1 text-xs border rounded-10 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-50"
                             >
                                 Prev
                             </button>
@@ -623,7 +623,7 @@ const LeavesPage = () => {
                             <button
                                 onClick={() => setPageInfo(p => ({ ...p, current_page: Math.min(pageInfo.last_page, p.current_page + 1) }))}
                                 disabled={pageInfo.current_page === pageInfo.last_page}
-                                className="px-3 py-1 text-xs border rounded bg-white dark:bg-gray-800 dark:text-white disabled:opacity-50"
+                                className="px-3 py-1 text-xs border rounded-10 bg-white dark:bg-gray-800 dark:text-white disabled:opacity-50"
                             >
                                 Next
                             </button>

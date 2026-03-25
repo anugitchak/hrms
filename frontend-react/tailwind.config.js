@@ -38,6 +38,10 @@ module.exports = {
                     950: '#180a0a',
                 }
             },
+            borderRadius: {
+                'DEFAULT': '10px',
+                '10': '10px',
+            },
             boxShadow: {
                 'card': '4px 4px 0px 0px rgba(0, 0, 0, 1)',
                 'card-hover': '8px 8px 0px 0px rgba(0, 0, 0, 1)',

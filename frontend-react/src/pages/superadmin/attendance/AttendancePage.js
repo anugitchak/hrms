@@ -110,27 +110,27 @@ const SuperAdminAttendancePage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
                     <h1 className="text-5xl md:text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight">
-                        <span className="italic">Attendance</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
+                        Attendance <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                            <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                            <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Track, Manage, and Optimize Employee Attendance</p>
                         </div>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => fetchSummary()}
-                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
+                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 group"
                     >
                         <RefreshCw size={16} className={`text-orange-500 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-500`} />
                         <span className="uppercase tracking-widest">Refresh</span>
                     </button>
-                    <div className="flex bg-white dark:bg-slate-900/60 p-1 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.1)]">
+                    <div className="flex bg-white dark:bg-slate-900/60 p-1 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out">
                         {['monthly', 'weekly'].map((type) => (
                             <button
                                 key={type}
                                 onClick={() => { setViewType(type); setPage(1); }}
-                                className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${viewType === type ? 'bg-brand-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                                className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-10 transition-all ${viewType === type ? 'bg-brand-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
                             >
                                 {type}
                             </button>
@@ -147,8 +147,8 @@ const SuperAdminAttendancePage = () => {
                     { label: 'Absent Today', val: summary.filter(s => s.today_status === 'Absent').length, icon: <XCircle size={22} />, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100' },
                     { label: 'Work Hours', val: '---', icon: <Timer size={22} />, color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100' }
                 ].map((s, i) => (
-                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300">
-                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-2xl shadow-sm`}>{s.icon}</div>
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out ">
+                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-10 shadow-md`}>{s.icon}</div>
                         <div>
                             <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{s.val}</div>
                             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-tight">{s.label}</div>
@@ -158,7 +158,7 @@ const SuperAdminAttendancePage = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] mb-10 flex flex-wrap gap-5">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out mb-10 flex flex-wrap gap-5">
                 <div className="relative flex-1 min-w-[240px] group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
                     <input
@@ -166,7 +166,7 @@ const SuperAdminAttendancePage = () => {
                         placeholder="Search employee..."
                         value={searchTerm}
                         onChange={handleSearchChange}
-                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all font-paperlogy"
+                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all font-paperlogy"
                     />
                 </div>
                 <div className="flex flex-wrap gap-4 flex-1 justify-end">
@@ -174,7 +174,7 @@ const SuperAdminAttendancePage = () => {
                         <select
                             value={departmentId}
                             onChange={handleDepartmentChange}
-                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                         >
                             <option value="">All Departments</option>
                             {departments.map(dept => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
@@ -185,7 +185,7 @@ const SuperAdminAttendancePage = () => {
                         <select
                             value={statusFilter}
                             onChange={handleStatusChange}
-                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                         >
                             <option value="">All Status (Today)</option>
                             <option value="Present">Present</option>
@@ -199,7 +199,7 @@ const SuperAdminAttendancePage = () => {
                                 type="month"
                                 value={monthFilter}
                                 onChange={handleMonthChange}
-                                className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
+                                className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
                             />
                         </div>
                     ) : (
@@ -208,7 +208,7 @@ const SuperAdminAttendancePage = () => {
                                 type="date"
                                 value={weekDate}
                                 onChange={(e) => { setWeekDate(e.target.value); setPage(1); }}
-                                className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
+                                className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all"
                             />
                         </div>
                     )}
@@ -217,7 +217,7 @@ const SuperAdminAttendancePage = () => {
 
             {/* Error Area */}
             {error && (
-                <div className="mb-6 bg-red-50 border-2 border-red-400 rounded-xl p-4 flex items-center justify-between gap-3">
+                <div className="mb-6 bg-red-50 border-2 border-red-400 rounded-10 p-4 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                         <XCircle className="text-red-600" size={20} />
                         <p className="text-sm font-bold text-red-700">{error}</p>
@@ -235,7 +235,7 @@ const SuperAdminAttendancePage = () => {
 
             {/* Pagination Placeholder Integration */}
             {!loading && summary.length > 0 && pagination.last_page > 1 && (
-                <div className="mt-10 flex flex-col sm:flex-row justify-between items-center gap-6 p-6 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]">
+                <div className="mt-10 flex flex-col sm:flex-row justify-between items-center gap-6 p-6 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out">
                     <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
                         Showing <span className="text-slate-900 dark:text-white">{pagination.from || 0}</span> to <span className="text-slate-900 dark:text-white">{pagination.to || 0}</span> of <span className="text-slate-900 dark:text-white">{pagination.total}</span> employees
                     </p>
@@ -243,17 +243,17 @@ const SuperAdminAttendancePage = () => {
                         <button
                             onClick={() => setPage(p => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="px-6 py-2 text-[10px] font-black uppercase tracking-widest border-2 border-slate-200 dark:border-white/10 rounded-xl bg-white dark:bg-brand-800/20 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-brand-800/40 disabled:opacity-50 transition-all"
+                            className="px-6 py-2 text-[10px] font-black uppercase tracking-widest border-2 border-slate-200 dark:border-white/10 rounded-10 bg-white dark:bg-brand-800/20 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-brand-800/40 disabled:opacity-50 transition-all"
                         >
                             Previous
                         </button>
-                        <div className="px-4 py-2 text-[10px] font-black bg-brand-500 text-white rounded-xl shadow-md">
+                        <div className="px-4 py-2 text-[10px] font-black bg-brand-500 text-white rounded-10 shadow-md">
                             Page {page} of {pagination.last_page}
                         </div>
                         <button
                             onClick={() => setPage(p => Math.min(pagination.last_page, p + 1))}
                             disabled={page === pagination.last_page}
-                            className="px-6 py-2 text-[10px] font-black uppercase tracking-widest border-2 border-slate-200 dark:border-white/10 rounded-xl bg-white dark:bg-brand-800/20 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-brand-800/40 disabled:opacity-50 transition-all"
+                            className="px-6 py-2 text-[10px] font-black uppercase tracking-widest border-2 border-slate-200 dark:border-white/10 rounded-10 bg-white dark:bg-brand-800/20 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-brand-800/40 disabled:opacity-50 transition-all"
                         >
                             Next
                         </button>

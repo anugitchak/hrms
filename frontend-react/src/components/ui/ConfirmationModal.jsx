@@ -56,11 +56,11 @@ const ConfirmationModal = ({
                     initial={{ scale: 0.95, opacity: 0, y: 10 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                    className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden"
+                    className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-10 shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden"
                 >
                     <div className="p-6">
                         <div className="flex items-start gap-4">
-                            <div className={`p-3 rounded-full flex-shrink-0 ${style.iconBg}`}>
+                            <div className={`p-3 rounded-10 flex-shrink-0 ${style.iconBg}`}>
                                 {style.icon}
                             </div>
                             <div className="flex-1">
@@ -82,7 +82,7 @@ const ConfirmationModal = ({
                         <div className="mt-8 flex items-center justify-end gap-3">
                             <button
                                 onClick={onClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-10 transition-colors"
                             >
                                 {cancelText}
                             </button>
@@ -91,7 +91,7 @@ const ConfirmationModal = ({
                                     onConfirm();
                                     onClose();
                                 }}
-                                className={`px-4 py-2 text-sm font-medium text-white rounded-lg shadow-sm transition-all shadow-md active:scale-95 ${style.buttonBg}`}
+                                className={`px-4 py-2 text-sm font-medium text-white rounded-10 shadow-sm transition-all shadow-md active:scale-95 ${style.buttonBg}`}
                             >
                                 {confirmText}
                             </button>

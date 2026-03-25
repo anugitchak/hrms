@@ -2,30 +2,33 @@ const NotificationDetailModal = ({ isOpen, onClose, notification }) => {
     if (!isOpen || !notification) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-[100] backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md shadow-2xl transform transition-all border border-gray-200 dark:border-gray-700">
-                <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Notification Details</h3>
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[100] backdrop-blur-md p-4 animate-in fade-in duration-300">
+            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl w-full max-w-lg shadow-2xl border border-white/20 dark:border-slate-800/50 overflow-hidden transform transition-all">
+                <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
+                    <h3 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-wider">Notification Details</h3>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors bg-transparent border-none cursor-pointer text-2xl leading-none"
+                        className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
                     >
-                        &times;
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                     </button>
                 </div>
-                <div className="p-6">
-                    <div className="mb-4">
-                        <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-2">{notification.title}</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{notification.message}</p>
+                <div className="p-8">
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-4">
+                             <div className="w-2 h-2 rounded-10 bg-[#00b9cd]"></div>
+                             <h4 className="text-lg font-black text-slate-900 dark:text-white leading-tight">{notification.title}</h4>
+                        </div>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed font-medium">{notification.message}</p>
                     </div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500 mb-6">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest bg-slate-50 dark:bg-slate-800/50 w-fit px-3 py-1.5 rounded-lg">
                         Received: {new Date(notification.created_at).toLocaleString()}
                     </div>
                 </div>
-                <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl flex justify-end gap-3">
+                <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-end">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                        className="px-10 py-3 bg-[#00b9cd] hover:bg-[#00a5b9] text-black dark:text-white font-black uppercase tracking-widest text-xs rounded-12 transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_10px_20px_-5px_rgba(0,185,205,0.3)] hover:shadow-[0_15px_25px_-5px_rgba(0,185,205,0.4)] cursor-pointer border-none"
                     >
                         Close
                     </button>

@@ -1,16 +1,62 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-
 import api from "../../api/axios";
-import ConfirmationModal from "../../components/ui/ConfirmationModal";
+import {
+    Calendar, Clock, CheckCircle, AlertTriangle,
+    Plus, Search, RefreshCw, FileText, Briefcase,
+    ShieldCheck, TrendingUp, History, Info, X, Check,
+    Filter, Send, Activity, Trash2, ArrowRight, ChevronRight
+} from 'lucide-react';
+import { useGlobalUI } from "../../context/GlobalUIContext";
 
-// --- UI Components ---
+// --- Premium Standard Components ---
 
-const Button = ({ children, onClick, disabled, variant = "primary", className, type = "button" }) => {
+const Card = ({ children, className, icon: Icon, title, actions }) => (
+    <div className={`bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out flex flex-col ${className}`}>
+        {(title || Icon) && (
+            <div className="p-8 border-b border-slate-100 dark:border-white/5 flex justify-between items-center group">
+                <div className="flex items-center gap-4">
+                    {Icon && <div className="p-3 bg-[#00b9cd]/10 rounded-10 text-[#00b9cd] group-hover:bg-[#00b9cd] group-hover:text-white transition-all duration-500"><Icon size={20} /></div>}
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">{title}</h3>
+                </div>
+                {actions}
+            </div>
+        )}
+        <div className="p-8 flex-1 flex flex-col">{children}</div>
+    </div>
+);
+
+const StatCard = ({ title, value, subValue, icon: Icon, color = "teal" }) => {
+    const colors = {
+        teal: "text-[#00b9cd] bg-[#00b9cd]/10",
+        amber: "text-amber-500 bg-amber-500/10",
+        blue: "text-blue-500 bg-blue-500/10",
+        rose: "text-rose-500 bg-rose-500/10",
+        emerald: "text-emerald-500 bg-emerald-500/10",
+    };
+
+    return (
+        <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-8 rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] transition-all duration-500 group relative overflow-hidden">
+            <div className="flex justify-between items-start mb-6 relative z-10">
+                <div className={`p-4 ${colors[color]} rounded-10 group-hover:rotate-12 transition-transform duration-500`}>
+                    <Icon size={24} strokeWidth={2.5} />
+                </div>
+                {subValue && <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#00b9cd] underline decoration-2 underline-offset-4">{subValue}</span>}
+            </div>
+            <div className="relative z-10">
+                <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-1 uppercase">{value || "0"}</div>
+                <div className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 dark:text-slate-500">{title}</div>
+            </div>
+        </div>
+    );
+};
+
+const Button = ({ children, onClick, disabled, variant = "primary", className, icon: Icon, type = "button" }) => {
     const variants = {
-        primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg disabled:bg-blue-300 disabled:shadow-none",
-        secondary: "bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50",
-        destructive: "bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg disabled:bg-red-300 disabled:shadow-none"
+        primary: "bg-[#00b9cd] text-white hover:bg-blue-600 shadow-md",
+        success: "bg-emerald-500 text-white hover:bg-emerald-600",
+        outline: "bg-transparent border-2 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:border-[#00b9cd] hover:text-[#00b9cd]",
+        destructive: "bg-rose-500 text-white hover:bg-rose-600"
     };
 
     return (
@@ -18,258 +64,94 @@ const Button = ({ children, onClick, disabled, variant = "primary", className, t
             type={type}
             onClick={onClick}
             disabled={disabled}
-            className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center ${variants[variant]} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} ${className}`}
+            className={`px-8 py-4 rounded-10 font-black text-[10px] uppercase tracking-[0.3em] transition-all duration-300 flex items-center justify-center gap-3 ${variants[variant]} ${disabled ? 'opacity-30 cursor-not-allowed grayscale' : 'cursor-pointer hover:-translate-y-1 shadow-lg'} ${className}`}
         >
+            {Icon && <Icon size={16} />}
             {children}
         </button>
     );
 };
 
-const Card = ({ children, className }) => (
-    <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200 ${className}`}>
-        {children}
-    </div>
-);
-
-const Alert = ({ children, variant = "error" }) => (
-    <div className={`p-4 rounded-lg mb-4 text-sm border ${variant === "error"
-        ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
-        : "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400"
-        }`}>
-        {children}
-    </div>
-);
-
 const Badge = ({ children, variant = "default" }) => {
     const styles = {
-        default: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
-        Approved: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
-        Rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-        Pending: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-        Withdrawn: "bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300",
-        "Partially Approved": "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+        default: "bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400 border-slate-200/50",
+        Approved: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]",
+        Rejected: "bg-rose-500/10 text-rose-500 border-rose-500/20",
+        Pending: "bg-amber-500/10 text-amber-500 border-amber-500/20 animate-pulse",
+        "On Leave": "bg-blue-500/10 text-blue-500 border-blue-500/20"
     };
 
     const current = styles[variant] || styles.default;
 
     return (
-        <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${current}`}>
+        <span className={`inline-flex px-4 py-1.5 rounded-10 text-[9px] font-black uppercase tracking-[0.2em] border-2 ${current}`}>
             {children}
         </span>
-    );
-};
-
-const Modal = ({ isOpen, onClose, title, children }) => {
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg shadow-2xl transform transition-all border border-gray-200 dark:border-gray-700">
-                <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors bg-transparent border-none cursor-pointer text-2xl leading-none"
-                    >
-                        &times;
-                    </button>
-                </div>
-                <div className="p-6">
-                    {children}
-                </div>
-            </div>
-        </div>
     );
 };
 
 // --- Main Page Component ---
 
 const LeavesPage = () => {
+    const { addToast } = useGlobalUI();
     const navigate = useNavigate();
     const [leaves, setLeaves] = useState([]);
+    const [balances, setBalances] = useState([]);
     const [leaveTypes, setLeaveTypes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    // Modal & Form State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formError, setFormError] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(null);
-    const [formData, setFormData] = useState({
-        leave_type_id: "",
-        start_date: "",
-        end_date: "",
-        reason: "",
-    });
+    const [formData, setFormData] = useState({ leave_type_id: "", start_date: "", end_date: "", reason: "" });
 
-
-
-    const [balances, setBalances] = useState([]);
-
-    // Fetch Data
-    const fetchBalances = async () => {
+    const fetchLeavesData = async () => {
         try {
-            const response = await api.get("/my-leaves/balances");
-            setBalances(response.data || []);
-        } catch (err) {
-            console.error("Fetch balances error:", err);
-        }
-    };
-
-    // Fetch User Profile for Manager Details
-    const [userProfile, setUserProfile] = useState(null);
-    const fetchProfile = async () => {
-        try {
-            const response = await api.get("/user"); // Hits UserController::me
-            setUserProfile(response.data);
-        } catch (err) {
-            console.error("Fetch profile error:", err);
-        }
-    };
-
-    const fetchLeaves = async () => {
-        try {
-            // Using /my-leaves as verified in backend
-            const response = await api.get("/my-leaves");
-            const data = response.data.data || response.data;
-            setLeaves(Array.isArray(data) ? data : []);
+            const [leavesRes, balancesRes, typesRes] = await Promise.all([
+                api.get("/my-leaves"),
+                api.get("/my-leaves/balances"),
+                api.get("/my-leaves/types")
+            ]);
+            setLeaves(Array.isArray(leavesRes.data.data) ? leavesRes.data.data : leavesRes.data || []);
+            setBalances(balancesRes.data || []);
+            setLeaveTypes(typesRes.data || []);
         } catch (err) {
             console.error("Fetch leaves error:", err);
-            setError("Failed to load leave history.");
+            addToast("Failed to sync mission archives.", "error");
+        } finally {
+            setIsLoading(false);
         }
-    };
-
-    const fetchLeaveTypes = async () => {
-        try {
-            const response = await api.get("/my-leaves/types");
-            setLeaveTypes(response.data || []);
-        } catch (err) {
-            console.error("Fetch leave types error:", err);
-            // Fallback only if API fails completely, but API should work now.
-            // setLeaveTypes([]); 
-        }
-    };
-
-    // Modal State
-    const [confirmModal, setConfirmModal] = useState({
-        isOpen: false,
-        title: "",
-        message: "",
-        onConfirm: () => { },
-        variant: "warning"
-    });
-
-    const openConfirm = (title, message, onConfirm, variant = "warning") => {
-        setConfirmModal({ isOpen: true, title, message, onConfirm, variant });
-    };
-
-    const closeConfirm = () => {
-        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
     };
 
     useEffect(() => {
-        const loadData = async () => {
-            setIsLoading(true);
-            await Promise.all([fetchLeaves(), fetchBalances(), fetchLeaveTypes()]);
-            await fetchProfile();
-            setIsLoading(false);
-        };
-        loadData();
-
-        // Poll for updates every 10 seconds
-        const interval = setInterval(() => {
-            fetchLeaves();
-            fetchBalances();
-        }, 10000);
-
-        return () => clearInterval(interval);
+        fetchLeavesData();
     }, []);
 
-    // Form Handlers
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleWithdraw = async (id) => {
-        openConfirm(
-            "Withdraw Leave Request",
-            "Are you sure you want to withdraw this leave request? This action cannot be undone.",
-            async () => {
-                try {
-                    await api.put(`/leaves/${id}/withdraw`);
-                    setSuccessMessage("Leave withdrawn successfully.");
-                    fetchLeaves();
-                    fetchBalances();
-                    setTimeout(() => setSuccessMessage(null), 3000);
-                } catch (err) {
-                    console.error("Withdraw error:", err);
-                    setError(err?.response?.data?.message || "Failed to withdraw leave.");
-                    setTimeout(() => setError(null), 3000);
-                }
-            },
-            "danger"
-        );
-    };
-
-    const validateForm = () => {
-        if (!formData.leave_type_id) return "Please select a leave type.";
-        if (!formData.start_date) return "Start date is required.";
-        if (!formData.end_date) return "End date is required.";
-
-        // Past date validation
-        // Parse the input date string (YYYY-MM-DD) as a local date
-        const [sy, sm, sd] = formData.start_date.split('-').map(Number);
-        const startDate = new Date(sy, sm - 1, sd); // Local midnight
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Local midnight today
-
-        if (startDate < today) {
-            return "Start date cannot be in the past. Please select today or a future date.";
+        if (!window.confirm("Abort this mission request?")) return;
+        try {
+            await api.put(`/leaves/${id}/withdraw`);
+            addToast("Mission request aborted.", "success");
+            fetchLeavesData();
+        } catch (err) {
+            addToast("Failed to abort request.", "error");
         }
-
-        if (new Date(formData.end_date) < new Date(formData.start_date)) {
-            return "End date cannot be before start date.";
-        }
-        if (!formData.reason.trim()) return "Please provide a reason.";
-        return null;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setFormError(null);
-
-        const validationError = validateForm();
-        if (validationError) {
-            setFormError(validationError);
-            return;
-        }
-
-
-
         setIsSubmitting(true);
-
         try {
-            // Updated to use /leaves (standard store endpoint) or /employee/apply-leave if alias exists
-            // Using /leaves to be safe with standard REST
             await api.post("/leaves", formData);
-
-            setSuccessMessage("Leave application submitted successfully. Email notification sent.");
-
-
-
+            addToast("Mission request transmitted to command.", "success");
             setIsModalOpen(false);
             setFormData({ leave_type_id: "", start_date: "", end_date: "", reason: "" });
-            await fetchLeaves(); // Reload list
-            await fetchBalances(); // Reload balances
-
-            // Clear success message after 3s
-            setTimeout(() => setSuccessMessage(null), 3000);
+            fetchLeavesData();
         } catch (err) {
-            console.error("Apply leave error:", err);
-            setFormError(err?.response?.data?.message || "Failed to submit leave application.");
+            addToast(err?.response?.data?.message || "Transmission failure.", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -277,143 +159,120 @@ const LeavesPage = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 transition-colors">
-                <div className="text-xl font-medium animate-pulse">Loading leaves...</div>
+            <div className="flex flex-col justify-center items-center h-screen bg-white dark:bg-slate-950 font-paperlogy">
+                <div className="w-12 h-12 border-4 border-[#00b9cd]/20 border-t-[#00b9cd] rounded-10 animate-spin mb-4"></div>
+                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00b9cd]">Decrypting Leave Ledger...</div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 max-w-[1200px] mx-auto bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
+        <div className="p-10 max-w-[1700px] mx-auto min-h-screen font-paperlogy mesh-bg">
 
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+            {/* Tactical Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12 relative z-10 px-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Leaves</h1>
-                    <p className="text-gray-900 mt-1">Manage your leave applications</p>
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none mb-3">
+                        Leave <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
+                    </h1>
+                    <div className="flex items-center gap-3 mt-4">
+                        <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
+                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Operational Withdrawal Scheduling</p>
+                    </div>
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="secondary" onClick={() => navigate("/employee/dashboard")}>
-                        Back to Dashboard
-                    </Button>
-                    <Button onClick={() => setIsModalOpen(true)}>
-                        Apply Leave
-                    </Button>
+                <div className="flex gap-6">
+                    <Button variant="outline" onClick={() => navigate("/employee/dashboard")} icon={History}>Archive Ops</Button>
+                    <Button onClick={() => setIsModalOpen(true)} icon={Plus}>Request Withdrawal</Button>
                 </div>
             </div>
 
-            {/* Balances Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {/* Quota Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 {balances.map((balance) => (
-                    <div key={balance.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                        <div className="text-sm text-gray-900 font-medium mb-1">
-                            {balance.leave_type?.name || "Leave"}
-                        </div>
-                        <div className="flex items-baseline gap-1 mt-1">
-                            <span className={`text-2xl font-bold ${balance.remaining_days > 0 ? 'text-gray-900 dark:text-white' : 'text-red-600 dark:text-red-400'}`}>
-                                {balance.remaining_days}
-                            </span>
-                            <span className="text-sm text-gray-900">days available</span>
-                        </div>
-                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 text-xs flex justify-between text-gray-400 dark:text-gray-900">
-                            <span>Allocated: {balance.allocated_days}</span>
-                            <span>Used: {balance.used_days}</span>
-                        </div>
-                    </div>
+                    <StatCard 
+                        key={balance.id}
+                        title={`${balance.leave_type?.name || "LEAVE"} QUOTA`}
+                        value={balance.remaining_days}
+                        subValue={`USED: ${balance.used_days}`}
+                        icon={Briefcase}
+                        color={balance.remaining_days > 0 ? "teal" : "rose"}
+                    />
                 ))}
             </div>
 
-            {/* Messages */}
-            {error && <Alert variant="error">{error}</Alert>}
-            {successMessage && <Alert variant="success"><strong>Success:</strong> {successMessage}</Alert>}
-
-            {/* Leaves List */}
-            <Card className="overflow-hidden">
+            {/* Requests Ledger */}
+            <Card title="Operational Registry" icon={History}>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead className="bg-gray-50 dark:bg-gray-700/50">
-                            <tr>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Type</th>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Dates & Duration</th>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Reason</th>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Status</th>
-                                <th className="p-4 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-900 uppercase tracking-wider">Approved By</th>
+                    <table className="w-full text-left border-separate border-spacing-y-4">
+                        <thead className="hidden sm:table-header-group">
+                            <tr className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                                <th className="px-8 pb-4">Nature of Leave</th>
+                                <th className="px-8 pb-4">Temporal Range</th>
+                                <th className="px-8 pb-4">Operational Reason</th>
+                                <th className="px-8 pb-4">Protocol Status</th>
+                                <th className="px-8 pb-4 text-right">Command Intel</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody>
                             {leaves.length > 0 ? (
-                                leaves.map((leave) => {
-                                    const start = new Date(leave.start_date);
-                                    const end = new Date(leave.end_date);
-                                    // Use backend days if available, else naive calculation (fallback)
-                                    const days = leave.days ? parseFloat(leave.days) : ((end - start) / (1000 * 60 * 60 * 24) + 1);
-                                    const returnedDays = leave.approved_days ? days - leave.approved_days : 0;
-
-                                    return (
-                                        <tr key={leave.id} className="hover:bg-brand-50/50 transition-colors border-b-2 border-black/5">
-                                            <td className="p-4 text-sm font-medium text-gray-900 dark:text-white">
-                                                {leave.leave_type?.name || "Leave"}
-                                            </td>
-                                            <td className="p-4 text-sm text-gray-700 dark:text-gray-300">
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium">
-                                                        {new Date(leave.start_date).toLocaleDateString()} - {new Date(leave.end_date).toLocaleDateString()}
-                                                    </span>
-                                                    <span className="text-xs text-gray-900 mb-1">
-                                                        Requested: {days} days
-                                                    </span>
-
-                                                    {leave.status === 'Partially Approved' && leave.approved_days && (
-                                                        <div className="flex flex-col gap-0.5 mt-1 border-l-2 border-blue-200 pl-2">
-                                                            <span className="text-xs text-green-600 dark:text-green-400 font-medium">
-                                                                Approved: {leave.approved_days} days
-                                                            </span>
-                                                            <span className="text-xs text-blue-600 dark:text-blue-400">
-                                                                Returned: {returnedDays} days
-                                                            </span>
-                                                        </div>
-                                                    )}
+                                leaves.map((leave) => (
+                                    <tr key={leave.id} className="group transition-all duration-300">
+                                        <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 rounded-10-[2rem] border-y-2 border-l-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all shadow-sm">
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-3 bg-white dark:bg-slate-900 rounded-10 shadow-sm text-[#00b9cd]">
+                                                    <FileText size={18} />
                                                 </div>
-                                            </td>
-                                            <td className="p-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
-                                                {leave.reason}
-                                            </td>
-                                            <td className="p-4 text-sm">
-                                                <div className="flex items-center gap-3">
-                                                    <Badge variant={leave.status}>
-                                                        {leave.status}
-                                                    </Badge>
-                                                    {(leave.status === 'Pending' || leave.status === 'Pending_Email_Failed') && leave.start_date >= new Date().toISOString().split('T')[0] && (
-                                                        <button
-                                                            onClick={() => handleWithdraw(leave.id)}
-                                                            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition-colors shadow-sm font-medium"
-                                                        >
-                                                            Withdraw
-                                                        </button>
-                                                    )}
+                                                <div className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tighter">
+                                                    {leave.leave_type?.name || "GENERAL"}
                                                 </div>
-                                            </td>
-                                            <td className="p-4 text-sm text-gray-700 dark:text-gray-300">
-                                                {leave.approver ? (
-                                                    <div>
-                                                        <div className="font-medium">{leave.approver.name}</div>
-                                                        <div className="text-xs text-gray-900">
-                                                            {leave.approver.role_id === 1 ? 'SuperAdmin' :
-                                                                leave.approver.role_id === 2 ? 'Admin' :
-                                                                    leave.approver.role_id === 3 ? 'HR' : 'Employee'}
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-gray-400 dark:text-gray-900 text-xs">-</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 border-y-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all shadow-sm">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-xs font-black text-slate-700 dark:text-slate-300 tracking-widest uppercase">
+                                                    {new Date(leave.start_date).toLocaleDateString()}
+                                                </span>
+                                                <div className="flex items-center gap-2 text-[8px] font-black text-[#00b9cd] uppercase tracking-widest">
+                                                    <ArrowRight size={10} /> {leave.days || "X"} DAYS UPTIME
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 border-y-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all shadow-sm">
+                                            <p className="text-xs font-bold text-slate-400 max-w-xs truncate uppercase tracking-widest">
+                                                {leave.reason || "REDACTED"}
+                                            </p>
+                                        </td>
+                                        <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 border-y-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all shadow-sm">
+                                            <div className="flex items-center gap-4">
+                                                <Badge variant={leave.status}>{leave.status}</Badge>
+                                                {(leave.status === 'Pending' || leave.status === 'Pending_Email_Failed') && (
+                                                    <button onClick={() => handleWithdraw(leave.id)} className="p-2 hover:bg-rose-500/10 text-rose-500 rounded-10 transition-all border border-transparent hover:border-rose-500/20 shadow-sm" title="Abort Protocol">
+                                                        <Trash2 size={16} />
+                                                    </button>
                                                 )}
-                                            </td>
-                                        </tr>
-                                    );
-                                })
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 rounded-10-[2rem] border-y-2 border-r-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all text-right shadow-sm">
+                                            {leave.approver ? (
+                                                <div className="flex flex-col items-end gap-1">
+                                                    <div className="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-tighter flex items-center gap-2">
+                                                        <ShieldCheck size={12} className="text-emerald-500" /> {leave.approver.name}
+                                                    </div>
+                                                    <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{leave.approver.role?.name || "COMMAND"}</div>
+                                                </div>
+                                            ) : (
+                                                <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Awaiting Intel</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
                             ) : (
                                 <tr>
-                                    <td colSpan="5" className="p-8 text-center text-gray-900">
-                                        No leave applications found.
+                                    <td colSpan="5" className="py-24 text-center">
+                                        <div className="flex flex-col items-center justify-center opacity-20">
+                                            <RefreshCw size={64} className="mb-6 animate-spin-slow text-[#00b9cd]" />
+                                            <p className="text-sm font-black uppercase tracking-[0.5em] text-slate-400">No Operational Disruptions Logged</p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}
@@ -422,97 +281,82 @@ const LeavesPage = () => {
                 </div>
             </Card>
 
-            {/* Apply Leave Modal */}
-            <Modal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title="Apply for Leave"
-            >
-                {formError && <Alert variant="error">{formError}</Alert>}
-
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <div>
-                        <label htmlFor="leave_type_id" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Leave Type</label>
-                        <select
-                            id="leave_type_id"
-                            name="leave_type_id"
-                            value={formData.leave_type_id}
-                            onChange={handleInputChange}
-                            required
-                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">Select Type</option>
-                            {leaveTypes.map(type => (
-                                <option key={type.id} value={type.id}>{type.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label htmlFor="start_date" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Start Date</label>
-                            <input
-                                type="date"
-                                id="start_date"
-                                name="start_date"
-                                value={formData.start_date}
-                                onChange={handleInputChange}
-                                required
-                                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+            {/* Request Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center z-[100] p-6 font-paperlogy">
+                    <div className="bg-white dark:bg-slate-900 rounded-10 max-w-2xl w-full shadow-[0_0_100px_rgba(0,0,0,0.5)] border-2 border-[#00b9cd]/30 overflow-hidden animate-in fade-in zoom-in duration-300">
+                        <div className="p-10 bg-slate-50 dark:bg-white/5 border-b border-slate-100 dark:border-white/5 flex justify-between items-center group">
+                            <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-4 tracking-tighter uppercase">
+                                <Send className="text-[#00b9cd] -rotate-12" /> Mission Withdrawal Request
+                            </h3>
+                            <button onClick={() => setIsModalOpen(false)} className="p-3 hover:bg-rose-500 hover:text-white rounded-10 transition-all text-slate-400"><X size={24} /></button>
                         </div>
-                        <div>
-                            <label htmlFor="end_date" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">End Date</label>
-                            <input
-                                type="date"
-                                id="end_date"
-                                name="end_date"
-                                value={formData.end_date}
-                                onChange={handleInputChange}
-                                required
-                                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
+
+                        <form onSubmit={handleSubmit} className="p-10 space-y-8">
+                            <div>
+                                <label className="block text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-3 italic">Withdrawal Nature</label>
+                                <select 
+                                    name="leave_type_id" 
+                                    value={formData.leave_type_id} 
+                                    onChange={handleInputChange} 
+                                    required
+                                    className="w-full px-8 py-5 bg-slate-50 dark:bg-white/5 border-2 border-slate-100 dark:border-white/5 rounded-10 text-sm font-black text-slate-700 dark:text-white focus:outline-none focus:border-[#00b9cd]/50 transition-all uppercase tracking-widest cursor-pointer"
+                                >
+                                    <option value="">Select Operational Type</option>
+                                    {leaveTypes.map(type => (
+                                        <option key={type.id} value={type.id}>{type.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-8">
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-3 italic">Temporal Start</label>
+                                    <input 
+                                        type="date" 
+                                        name="start_date" 
+                                        value={formData.start_date} 
+                                        onChange={handleInputChange} 
+                                        required
+                                        className="w-full px-8 py-5 bg-slate-50 dark:bg-white/5 border-2 border-slate-100 dark:border-white/5 rounded-10 text-sm font-black text-slate-700 dark:text-white focus:outline-none focus:border-[#00b9cd]/50 transition-all uppercase tracking-widest"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-3 italic">Temporal End</label>
+                                    <input 
+                                        type="date" 
+                                        name="end_date" 
+                                        value={formData.end_date} 
+                                        onChange={handleInputChange} 
+                                        required
+                                        className="w-full px-8 py-5 bg-slate-50 dark:bg-white/5 border-2 border-slate-100 dark:border-white/5 rounded-10 text-sm font-black text-slate-700 dark:text-white focus:outline-none focus:border-[#00b9cd]/50 transition-all uppercase tracking-widest"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-3 italic">Mission Context / Reason</label>
+                                <textarea 
+                                    name="reason" 
+                                    value={formData.reason} 
+                                    onChange={handleInputChange} 
+                                    rows="4" 
+                                    required
+                                    placeholder="PROVIDE TACTICAL CONTEXT FOR THIS WITHDRAWAL..."
+                                    className="w-full px-8 py-6 bg-slate-50 dark:bg-white/5 border-2 border-slate-100 dark:border-white/5 rounded-10 text-sm font-black text-slate-700 dark:text-white focus:outline-none focus:border-[#00b9cd]/50 transition-all uppercase tracking-widest resize-none placeholder:text-slate-300 dark:placeholder:text-slate-600"
+                                ></textarea>
+                            </div>
+
+                            <div className="flex gap-6 pt-4">
+                                <Button variant="outline" className="flex-1" onClick={() => setIsModalOpen(false)}>Abort Input</Button>
+                                <Button type="submit" disabled={isSubmitting} variant="primary" className="flex-1 shadow-[0_20px_40px_-10px_rgba(0,185,205,0.4)]" icon={Send}>
+                                    {isSubmitting ? "TRANSMITTING..." : "LOG REQUEST"}
+                                </Button>
+                            </div>
+                        </form>
                     </div>
-
-                    <div>
-                        <label htmlFor="reason" className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Reason</label>
-                        <textarea
-                            id="reason"
-                            name="reason"
-                            value={formData.reason}
-                            onChange={handleInputChange}
-                            rows="3"
-                            required
-                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Please provide a reason for your leave..."
-                        ></textarea>
-                    </div>
-
-
-
-                    <div className="flex justify-end gap-3 mt-4">
-                        <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? "Applying..." : "Apply Leave"}
-                        </Button>
-                    </div>
-                </form>
-            </Modal>
-
-            {/* Confirmation Modal */}
-            <ConfirmationModal
-                isOpen={confirmModal.isOpen}
-                onClose={closeConfirm}
-                onConfirm={confirmModal.onConfirm}
-                title={confirmModal.title}
-                message={confirmModal.message}
-                variant={confirmModal.variant}
-                confirmText="Yes, Proceed"
-                cancelText="Cancel"
-            />
+                </div>
+            )}
         </div>
     );
 };

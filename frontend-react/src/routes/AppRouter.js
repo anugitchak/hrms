@@ -52,6 +52,8 @@ import HRPerformanceReviews from "../pages/hr/PerformanceReviewsPage";
 // SUPERADMIN PAGES
 import SuperAdminDashboard from "../pages/superadmin/dashboard/DashboardPage";
 import SuperAdminSettings from "../pages/superadmin/system/SettingsPage";
+import SuperAdminEmailTemplate from "../pages/superadmin/system/EmailTemplatePage";
+import SuperAdminMailSettings from "../pages/superadmin/system/MailSettingsPage";
 import SuperAdminEmployees from "../pages/superadmin/employees/EmployeesPage";
 import SuperAdminEmployeeAttendance from "../pages/superadmin/employees/EmployeeAttendancePage";
 import SuperAdminDepartments from "../pages/superadmin/organization/DepartmentsPage";
@@ -111,7 +113,7 @@ const SuperAdminDesignations = lazy(() => import("../pages/superadmin/organizati
 const LoadingFallback = () => (
   <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900">
     <div className="flex flex-col items-center">
-      <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-10 animate-spin mb-4"></div>
       <p className="text-gray-500 dark:text-gray-400 font-medium animate-pulse">Loading...</p>
     </div>
   </div>
@@ -981,6 +983,28 @@ const AppRouter = () => (
             <ProtectedRoute roles={[1]}>
               <SuperAdminLayout>
                 <SuperAdminSettings />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/superadmin/email-template"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <SuperAdminEmailTemplate />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/superadmin/mail-settings"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <SuperAdminMailSettings />
               </SuperAdminLayout>
             </ProtectedRoute>
           }

@@ -88,11 +88,11 @@ const PermissionModal = ({ user, onClose, onUpdate }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl overflow-hidden transform transition-all">
+            <div className="bg-white dark:bg-gray-800 rounded-10 shadow-xl w-full max-w-2xl overflow-hidden transform transition-all">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50">
                     <div className="flex items-center gap-2">
-                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-10 text-blue-600 dark:text-blue-400">
                             <Shield size={20} />
                         </div>
                         <div>
@@ -117,7 +117,7 @@ const PermissionModal = ({ user, onClose, onUpdate }) => {
                                         {group.title}
                                     </h4>
                                     {group.items.map((item) => (
-                                        <div key={item.key} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <div key={item.key} className="flex items-center justify-between p-3 rounded-10 border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.label}</span>
                                             <button
                                                 type="button"
@@ -125,14 +125,14 @@ const PermissionModal = ({ user, onClose, onUpdate }) => {
                                                 aria-checked={permissions[item.key]}
                                                 onClick={() => handleChange(item.key)}
                                                 className={`
-                                                    relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                                                    relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-10 border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                                                     ${permissions[item.key] ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'}
                                                 `}
                                             >
                                                 <span
                                                     aria-hidden="true"
                                                     className={`
-                                                        pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
+                                                        pointer-events-none inline-block h-5 w-5 transform rounded-10 bg-white shadow ring-0 transition duration-200 ease-in-out
                                                         ${permissions[item.key] ? 'translate-x-5' : 'translate-x-0'}
                                                     `}
                                                 />
@@ -149,14 +149,14 @@ const PermissionModal = ({ user, onClose, onUpdate }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
+                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-10 hover:bg-gray-50 dark:hover:bg-gray-600"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={saving}
-                            className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 shadow-sm flex items-center gap-2 ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-10 hover:bg-blue-700 shadow-sm flex items-center gap-2 ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {saving && <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>}
                             Save Changes

@@ -8,48 +8,56 @@
     font-weight: 100;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Paperlogy';
     src: url('./assets/fonts/Paperlogy-2ExtraLight.ttf') format('truetype');
     font-weight: 200;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Paperlogy';
     src: url('./assets/fonts/Paperlogy-3Light.ttf') format('truetype');
     font-weight: 300;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Paperlogy';
     src: url('./assets/fonts/Paperlogy-4Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Paperlogy';
     src: url('./assets/fonts/Paperlogy-5Medium.ttf') format('truetype');
     font-weight: 500;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Paperlogy';
     src: url('./assets/fonts/Paperlogy-6SemiBold.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Paperlogy';
     src: url('./assets/fonts/Paperlogy-7Bold.ttf') format('truetype');
     font-weight: 700;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Paperlogy';
     src: url('./assets/fonts/Paperlogy-8ExtraBold.ttf') format('truetype');
     font-weight: 800;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'Paperlogy';
     src: url('./assets/fonts/Paperlogy-9Black.ttf') format('truetype');
@@ -60,37 +68,38 @@
 @layer base {
     body {
         @apply bg-brand-50 text-black antialiased transition-colors duration-300 font-paperlogy;
-        background-color: #e0f8fb;
-        background-image: radial-gradient(rgba(0, 185, 205, 0.2) 1.5px, transparent 1.5px);
+        background-color: #f8fdff;
+        background-image: radial-gradient(rgba(0, 185, 205, 0.1) 1.5px, transparent 1.5px);
         background-size: 24px 24px;
     }
 
     html.dark body {
         @apply bg-brand-950 text-white;
         background-color: #001314;
-        background-image: radial-gradient(rgba(0, 185, 205, 0.2) 1.5px, transparent 1.5px);
+        background-image: radial-gradient(rgba(0, 185, 205, 0.1) 1.5px, transparent 1.5px);
     }
 }
 
 @layer utilities {
+
     /* Bold, high-contrast patterned background */
     .mesh-bg {
         @apply relative overflow-hidden bg-brand-50 dark:bg-brand-950 transition-colors duration-300;
-        background-color: #e0f8fb;
-        background-image: radial-gradient(rgba(0, 185, 205, 0.2) 1.5px, transparent 1.5px);
+        background-color: #f8fdff;
+        background-image: radial-gradient(rgba(0, 185, 205, 0.1) 1.5px, transparent 1.5px);
         background-size: 24px 24px;
     }
 
     .dark .mesh-bg {
         background-color: #001314;
-        background-image: radial-gradient(rgba(0, 185, 205, 0.2) 1.5px, transparent 1.5px);
+        background-image: radial-gradient(rgba(0, 185, 205, 0.1) 1.5px, transparent 1.5px);
     }
 
     /* Replace old glass with solid, bold style to avoid breaking layout */
     .glass {
         @apply bg-white border-2 border-black shadow-card;
     }
-    
+
     .glass-dark {
         @apply bg-brand-950 border-2 border-brand-500 shadow-card;
     }
@@ -100,19 +109,19 @@
     }
 
     .card {
-        @apply bg-white dark:bg-brand-900 rounded-xl border-2 border-black dark:border-white shadow-card hover:-translate-y-1 hover:-translate-x-1 hover:shadow-card-hover transition-all duration-300;
+        @apply bg-white dark:bg-brand-900 rounded-10 border-2 border-black dark:border-white shadow-card hover:-translate-y-1 hover:-translate-x-1 hover:shadow-card-hover transition-all duration-300;
     }
 
     .btn-primary {
-        @apply inline-flex items-center justify-center px-4 py-2 font-bold text-black dark:text-white bg-brand-500 hover:bg-brand-400 rounded-lg border-2 border-black dark:border-white active:translate-y-1 active:translate-x-1 active:shadow-none transition-all focus-ring shadow-button;
+        @apply inline-flex items-center justify-center px-4 py-2 font-bold text-black dark:text-white bg-brand-500 hover:bg-brand-400 rounded-10 border-2 border-black dark:border-white active:translate-y-1 active:translate-x-1 active:shadow-none transition-all focus-ring shadow-button;
     }
 
     .btn-secondary {
-        @apply inline-flex items-center justify-center px-4 py-2 font-bold text-black dark:text-white bg-white dark:bg-brand-900 border-2 border-black dark:border-white rounded-lg hover:bg-brand-100 dark:hover:bg-brand-800 active:translate-y-1 active:translate-x-1 active:shadow-none transition-all focus-ring shadow-button;
+        @apply inline-flex items-center justify-center px-4 py-2 font-bold text-black dark:text-white bg-white dark:bg-brand-900 border-2 border-black dark:border-white rounded-10 hover:bg-brand-100 dark:hover:bg-brand-800 active:translate-y-1 active:translate-x-1 active:shadow-none transition-all focus-ring shadow-button;
     }
-    
+
     .btn-accent {
-        @apply inline-flex items-center justify-center px-4 py-2 font-bold text-black dark:text-white bg-accent-500 hover:bg-accent-400 rounded-lg border-2 border-black dark:border-white active:translate-y-1 active:translate-x-1 active:shadow-none transition-all focus-ring shadow-button;
+        @apply inline-flex items-center justify-center px-4 py-2 font-bold text-black dark:text-white bg-accent-500 hover:bg-accent-400 rounded-10 border-2 border-black dark:border-white active:translate-y-1 active:translate-x-1 active:shadow-none transition-all focus-ring shadow-button;
     }
 
     /* Chunky, bold scrollbar */
@@ -120,10 +129,12 @@
         width: 14px;
         height: 14px;
     }
+
     ::-webkit-scrollbar-track {
         @apply bg-white dark:bg-brand-950 border-l-2 border-black dark:border-white;
     }
+
     ::-webkit-scrollbar-thumb {
-        @apply bg-brand-500 border-2 border-black rounded hover:bg-brand-400;
+        @apply bg-brand-500 border-2 border-black rounded-10 hover:bg-brand-400;
     }
 }

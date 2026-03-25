@@ -47,7 +47,7 @@ const Sidebar = () => {
             key={item.key}
             to={item.to}
             className={({ isActive }) => `
-              px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200
+              px-3 py-2 rounded-10 text-sm font-medium transition-colors duration-200
               ${isActive
                 ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
                 : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"}

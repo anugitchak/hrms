@@ -6,7 +6,7 @@ import {
   Banknote, FileText, File, UserPlus, Star, Megaphone, Settings,
   Sliders, Bell, Activity, UserCog, BarChart, User, LogOut,
   Menu, ChevronLeft, ChevronRight, Briefcase, CalendarDays,
-  ShieldCheck, CheckSquare, PenTool, Settings2, Presentation
+  ShieldCheck, CheckSquare, PenTool, Settings2, Presentation, MapIcon
 } from "lucide-react";
 import Tooltip from "./Tooltip";
 
@@ -32,6 +32,7 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
       departments: Building2,
       designations: BadgeCheck,
       "sub-companies": Briefcase,
+      countries: MapIcon,
       attendance: Clock,
       leaves: Calendar,
       holidays: CalendarDays,
@@ -59,8 +60,8 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
   };
 
   const sidebarVariants = {
-    open: { width: "250px", transition: { type: "spring", stiffness: 300, damping: 30 } },
-    closed: { width: "70px", transition: { type: "spring", stiffness: 300, damping: 30 } },
+    open: { width: "260px", transition: { type: "spring", stiffness: 300, damping: 30 } },
+    closed: { width: "84px", transition: { type: "spring", stiffness: 300, damping: 30 } },
   };
 
   return (
@@ -68,16 +69,16 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
       initial={false}
       animate={isOpen ? "open" : "closed"}
       variants={sidebarVariants}
-      className="bg-white dark:bg-brand-900 border-r-2 border-black dark:border-white h-screen sticky top-0 flex flex-col shadow-sm z-20"
+      className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl h-screen sticky top-0 flex flex-col shadow-xl z-20 transition-colors duration-300 border-r border-slate-200 dark:border-slate-800 overflow-x-hidden"
     >
       {/* Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b-2 border-black dark:border-white">
+      <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800/50">
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
               className="overflow-hidden whitespace-nowrap"
             >
               <img src="/logo-light.png" alt="HRMS Logo" className="h-8 object-contain dark:hidden" />
@@ -87,14 +88,14 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
         </AnimatePresence>
         <button
           onClick={toggleSidebar}
-          className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
+          className="p-1.5 rounded-10 hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-400 dark:text-slate-500 ml-auto"
         >
           {isOpen ? <ChevronLeft size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
+      <nav className={`flex-1 overflow-y-auto py-6 space-y-3 custom-scrollbar ${isOpen ? 'px-4' : 'px-3'}`}>
         {menuItems.map((item) => {
           const Icon = getIcon(item.key);
           const isActive = location.pathname.startsWith(item.to);
@@ -103,25 +104,28 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
             <NavLink
               to={item.to}
               className={({ isActive }) => `
-                flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group border-2
+                relative flex items-center rounded-10 group
+                border border-slate-200 dark:border-slate-800
+                ${isOpen ? 'gap-4 px-4 py-3 w-full' : 'justify-center p-3.5 w-full mx-auto'}
                 ${isActive
-                  ? "bg-brand-500 text-black border-black shadow-button translate-x-1"
-                  : "border-transparent text-black dark:text-white hover:border-black dark:hover:border-white hover:bg-brand-50 dark:hover:bg-brand-800 hover:shadow-button hover:translate-x-1"}
+                  ? "bg-[#00b9cd]/15 dark:bg-[#00b9cd]/20 text-black dark:text-white translate-x-[1px] translate-y-[1px] shadow-none border-[#00b9cd] dark:border-[#00b9cd]"
+                  : "text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900/50 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)] font-bold"}
               `}
             >
               <div className={`
-                flex-shrink-0 transition-colors duration-200 text-black dark:text-white
+                flex-shrink-0 transition-all duration-200 
+                ${isActive ? "scale-110 text-black dark:text-white" : "text-slate-500 dark:text-slate-400 group-hover:text-black dark:group-hover:text-white"}
               `}>
-                <Icon size={20} />
+                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               </div>
 
-              <AnimatePresence>
+              <AnimatePresence mode="wait">
                 {isOpen && (
                   <motion.span
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
-                    className="whitespace-nowrap overflow-hidden"
+                    className="whitespace-nowrap overflow-hidden font-black text-[11px] tracking-[0.1em] uppercase"
                   >
                     {item.label}
                   </motion.span>
@@ -132,7 +136,7 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
               {isActive && isOpen && (
                 <motion.div
                   layoutId="activeIndicator"
-                  className="absolute right-0 w-1.5 h-8 bg-black dark:bg-white rounded-l-full"
+                  className="absolute right-2 w-1.5 h-6 bg-[#f06464] dark:bg-white rounded-10"
                 />
               )}
             </NavLink>
@@ -151,22 +155,22 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
       </nav>
 
       {/* Footer / Logout */}
-      <div className="p-3 border-t-2 border-black dark:border-white">
+      <div className="p-4 mt-auto border-t border-slate-100 dark:border-slate-800/50">
         {isOpen ? (
           <button
             onClick={onLogout}
-            className="w-full btn-accent flex items-center justify-center gap-3"
+            className="w-full py-4 rounded-10 flex items-center justify-center gap-3 bg-accent-500 text-white font-black tracking-widest text-xs shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
           >
-            <LogOut size={20} />
-            <span>Logout</span>
+            <LogOut size={20} strokeWidth={3} />
+            <span className="">Logout</span>
           </button>
         ) : (
           <Tooltip text="Logout">
             <button
               onClick={onLogout}
-              className="w-full btn-accent flex items-center justify-center p-2.5"
+              className="w-full p-4 rounded-10 flex items-center justify-center bg-accent-500 text-white shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
             >
-              <LogOut size={20} />
+              <LogOut size={22} strokeWidth={3} />
             </button>
           </Tooltip>
         )}

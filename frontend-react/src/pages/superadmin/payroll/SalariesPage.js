@@ -8,13 +8,13 @@ import { Search, Filter, Calendar, Users, Briefcase, DollarSign, Download, Refre
 // --- Components ---
 
 const StatCard = ({ label, value, icon: Icon, color, bg, border, loading }) => (
-    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300 group overflow-hidden">
-        <div className={`${bg} ${color} ${border} border-2 p-3.5 rounded-2xl shadow-sm group-hover:scale-110 transition-transform shrink-0`}>
+    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out group overflow-hidden">
+        <div className={`${bg} ${color} ${border} border-2 p-3.5 rounded-10 shadow-md group-hover:scale-110 transition-transform shrink-0`}>
             <Icon size={24} strokeWidth={2.5} />
         </div>
         <div className="min-w-0 flex-1">
             <div className="text-lg xl:text-xl font-black text-slate-900 dark:text-white leading-none mb-1 truncate" title={value}>
-                {loading ? <div className="h-6 w-20 bg-slate-100 dark:bg-white/5 animate-pulse rounded" /> : value}
+                {loading ? <div className="h-6 w-20 bg-slate-100 dark:bg-white/5 animate-pulse rounded-10" /> : value}
             </div>
             <div className="text-[10px] font-black text-slate-400 dark:text-slate-500 tracking-widest uppercase truncate">{label}</div>
         </div>
@@ -223,24 +223,24 @@ const SalariesPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
                     <h1 className="text-5xl md:text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight leading-none">
-                        <span className="italic">Salary</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
+                        Salary <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                            <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                            <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Manage and review employee salary structures.</p>
                         </div>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md"
+                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
                     >
                         <Download size={16} className="text-emerald-500" />
                         <span className="uppercase tracking-widest">Export CSV</span>
                     </button>
                     <button
                         onClick={loadSalaries}
-                        className="flex items-center gap-2 text-xs font-black text-white bg-teal-600 hover:bg-teal-500 px-6 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md"
+                        className="flex items-center gap-2 text-xs font-black text-white bg-[#00b9cd] hover:bg-[#00b9cd]/80 px-6 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
                     >
                         <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
                         <span className="uppercase tracking-widest">Refresh</span>
@@ -253,20 +253,20 @@ const SalariesPage = () => {
                 <StatCard label="Total Staff" value={stats.totalEmployees} icon={Users} color="text-blue-600" bg="bg-blue-50" border="border-blue-100" loading={loading} />
                 <StatCard label="Total Payout" value={formatINR(stats.totalExpense)} icon={Wallet} color="text-emerald-600" bg="bg-emerald-50" border="border-emerald-100" loading={loading} />
                 <StatCard label="Avg Salary" value={formatINR(stats.avgSalary)} icon={TrendingUp} color="text-purple-600" bg="bg-purple-50" border="border-purple-100" loading={loading} />
-                <StatCard label="Highest" value={formatINR(stats.highest)} icon={TrendingUp} color="text-teal-600" bg="bg-teal-50" border="border-teal-100" loading={loading} />
+                <StatCard label="Highest" value={formatINR(stats.highest)} icon={TrendingUp} color="text-[#00b9cd]" bg="bg-[#00b9cd]/10" border="border-[#00b9cd]/10" loading={loading} />
                 <StatCard label="Lowest" value={formatINR(stats.lowest)} icon={TrendingDown} color="text-red-600" bg="bg-red-50" border="border-red-100" loading={loading} />
             </div>
 
             {/* Filters Bar */}
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] mb-10 flex flex-wrap gap-5 border-2 border-slate-50 dark:border-white/5">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out mb-10 flex flex-wrap gap-5 border-2 border-slate-50 dark:border-white/5">
                 <div className="relative flex-1 min-w-[240px] group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-500 transition-colors" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00b9cd] transition-colors" size={18} />
                     <input
                         type="text"
                         placeholder="Search employee or ID..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-medium text-slate-900 dark:text-white transition-all font-paperlogy"
+                        className="pl-12 pr-6 w-full py-3 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-[#00b9cd]/20 focus:border-[#00b9cd] font-medium text-slate-900 dark:text-white transition-all font-paperlogy"
                     />
                 </div>
                 <div className="flex flex-wrap gap-4 flex-1 justify-end">
@@ -274,7 +274,7 @@ const SalariesPage = () => {
                         <select
                             value={departmentId}
                             onChange={e => setDepartmentId(e.target.value)}
-                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                            className="appearance-none pl-5 pr-12 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-[#00b9cd]/20 focus:border-[#00b9cd] font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                         >
                             <option value="">All Departments</option>
                             {departments.map(dept => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
@@ -286,17 +286,17 @@ const SalariesPage = () => {
                             type="month"
                             value={month}
                             onChange={e => setMonth(e.target.value)}
-                            className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-medium text-slate-900 dark:text-white transition-all"
+                            className="pl-5 pr-5 py-3 w-full bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-[#00b9cd]/20 focus:border-[#00b9cd] font-medium text-slate-900 dark:text-white transition-all"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Table Area */}
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900/5 dark:border-white/5 overflow-hidden">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900/5 dark:border-white/5 overflow-hidden">
                 {loading ? (
                     <div className="p-20 text-center">
-                        <RefreshCw className="w-10 h-10 animate-spin text-teal-500 mx-auto mb-4" />
+                        <RefreshCw className="w-10 h-10 animate-spin text-[#00b9cd] mx-auto mb-4" />
                         <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Loading Records...</p>
                     </div>
                 ) : error ? (
@@ -323,12 +323,12 @@ const SalariesPage = () => {
                                         </tr>
                                     ) : (
                                         salaries.data.map((salary) => (
-                                            <tr key={salary.employee_id} className="hover:bg-teal-50/30 dark:hover:bg-teal-500/5 transition-all group">
+                                            <tr key={salary.employee_id} className="hover:bg-[#00b9cd]/10/30 dark:hover:bg-[#00b9cd]/80/5 transition-all group">
                                                 <td className="px-8 py-6">
-                                                    <div className="font-extrabold text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{salary.employee?.user?.name}</div>
+                                                    <div className="font-extrabold text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-[#00b9cd] dark:group-hover:text-[#00b9cd] transition-colors">{salary.employee?.user?.name}</div>
                                                     <div className="flex items-center gap-2 mt-1">
                                                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{salary.employee?.employee_code}</span>
-                                                        <div className="h-1 w-1 rounded-full bg-slate-300"></div>
+                                                        <div className="h-1 w-1 rounded-10 bg-slate-300"></div>
                                                         <span className="text-[10px] font-bold text-slate-500 uppercase">{salary.employee?.department?.name}</span>
                                                     </div>
                                                 </td>
@@ -346,8 +346,8 @@ const SalariesPage = () => {
                                                 </td>
                                                 <td className="px-6 py-6 text-center">
                                                     <div className="flex justify-center gap-3">
-                                                        <div className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border ${salary.pf > 0 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-300 border-slate-100'}`}>PF</div>
-                                                        <div className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border ${salary.esic > 0 ? 'bg-orange-50 text-orange-600 border-orange-100' : 'bg-slate-50 text-slate-300 border-slate-100'}`}>ESIC</div>
+                                                        <div className={`px-2 py-1 rounded-10 text-[9px] font-black uppercase tracking-tighter border ${salary.pf > 0 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-300 border-slate-100'}`}>PF</div>
+                                                        <div className={`px-2 py-1 rounded-10 text-[9px] font-black uppercase tracking-tighter border ${salary.esic > 0 ? 'bg-orange-50 text-orange-600 border-orange-100' : 'bg-slate-50 text-slate-300 border-slate-100'}`}>ESIC</div>
                                                     </div>
                                                     <div className="text-[10px] font-bold text-red-500 mt-2">-{formatINR(salary.deductions || 0)}</div>
                                                 </td>
@@ -363,7 +363,7 @@ const SalariesPage = () => {
                                                     <div className="flex justify-end gap-2">
                                                         <button
                                                             onClick={() => handleHistory(salary.employee_id)}
-                                                            className="p-2.5 rounded-xl border-2 border-slate-900/5 dark:border-white/10 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-all shadow-sm bg-white dark:bg-slate-800"
+                                                            className="p-2.5 rounded-10 border-2 border-slate-900/5 dark:border-white/10 hover:border-[#00b9cd] hover:text-[#00b9cd] dark:hover:text-[#00b9cd] transition-all shadow-md bg-white dark:bg-slate-800"
                                                             title="Salary History"
                                                         >
                                                             <History size={16} />
@@ -371,7 +371,7 @@ const SalariesPage = () => {
                                                         {canManageSalary && (
                                                             <button
                                                                 onClick={() => handleEdit(salary)}
-                                                                className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all shadow-md active:translate-y-0"
+                                                                className="flex items-center gap-2 px-4 py-2.5 bg-[#00b9cd]/80 text-white rounded-10 text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all shadow-md active:translate-y-0"
                                                             >
                                                                 <Edit2 size={12} />
                                                                 {salary.id ? "Adjust" : "Set Structure"}
@@ -392,19 +392,19 @@ const SalariesPage = () => {
                                 <button
                                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                     disabled={currentPage === 1}
-                                    className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl text-xs font-black uppercase tracking-widest disabled:opacity-30 disabled:scale-95 transition-all hover:bg-slate-50"
+                                    className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 rounded-10 text-xs font-black uppercase tracking-widest disabled:opacity-30 disabled:scale-95 transition-all hover:bg-slate-50"
                                 >
                                     Previous
                                 </button>
                                 <div className="flex items-center gap-2">
                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Page</span>
-                                    <span className="h-8 w-8 rounded-lg bg-teal-500 text-white flex items-center justify-center font-black text-sm shadow-sm">{currentPage}</span>
+                                    <span className="h-8 w-8 rounded-10 bg-[#00b9cd] text-white flex items-center justify-center font-black text-sm shadow-md">{currentPage}</span>
                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">of {salaries.last_page}</span>
                                 </div>
                                 <button
                                     onClick={() => setCurrentPage(p => Math.min(salaries.last_page, p + 1))}
                                     disabled={currentPage === salaries.last_page}
-                                    className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl text-xs font-black uppercase tracking-widest disabled:opacity-30 disabled:scale-95 transition-all hover:bg-slate-50"
+                                    className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-slate-900/10 dark:border-white/10 rounded-10 text-xs font-black uppercase tracking-widest disabled:opacity-30 disabled:scale-95 transition-all hover:bg-slate-50"
                                 >
                                     Next
                                 </button>
@@ -417,8 +417,8 @@ const SalariesPage = () => {
             {/* EDIT MODAL */}
             {isEditModalOpen && (
                 <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-slate-900 rounded-[3rem] max-w-lg w-full p-10 shadow-[12px_12px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+                    <div className="bg-white dark:bg-slate-900 rounded-10 max-w-lg w-full p-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-[#f06464]"></div>
                         <h2 className="text-3xl font-black mb-8 text-slate-900 dark:text-white uppercase tracking-tight">Adjust Salary</h2>
 
                         <form onSubmit={handleSave} className="space-y-6">
@@ -431,7 +431,7 @@ const SalariesPage = () => {
                                         type="number"
                                         value={formData.gross_salary}
                                         onChange={(e) => setFormData({ ...formData, gross_salary: e.target.value })}
-                                        className="w-full pl-12 pr-6 py-5 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-black text-xl text-slate-900 dark:text-white transition-all shadow-inner"
+                                        className="w-full pl-12 pr-6 py-5 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-[#00b9cd]/20 focus:border-[#00b9cd] font-black text-xl text-slate-900 dark:text-white transition-all shadow-inner"
                                         placeholder="0"
                                         required
                                     />
@@ -460,13 +460,13 @@ const SalariesPage = () => {
                                 const net = gross - totalDed;
 
                                 return (
-                                    <div className="bg-slate-50 dark:bg-white/5 border-2 border-slate-900/5 dark:border-white/10 rounded-[2rem] p-6 space-y-4">
+                                    <div className="bg-slate-50 dark:bg-white/5 border-2 border-slate-900/5 dark:border-white/10 rounded-10 p-6 space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 flex flex-col items-center">
+                                            <div className="bg-white dark:bg-slate-800 p-4 rounded-10 border border-slate-100 flex flex-col items-center">
                                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Basic</span>
                                                 <span className="text-sm font-black text-slate-700 dark:text-slate-200">{formatINR(basic)}</span>
                                             </div>
-                                            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 flex flex-col items-center">
+                                            <div className="bg-white dark:bg-slate-800 p-4 rounded-10 border border-slate-100 flex flex-col items-center">
                                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">HRA</span>
                                                 <span className="text-sm font-black text-slate-700 dark:text-slate-200">{formatINR(hra)}</span>
                                             </div>
@@ -477,7 +477,7 @@ const SalariesPage = () => {
                                                 <span className="text-xs font-bold text-red-500">-{formatINR(totalDed)}</span>
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-[10px] font-black text-teal-500 uppercase tracking-widest leading-none block mb-1">Est. Net Pay</span>
+                                                <span className="text-[10px] font-black text-[#00b9cd] uppercase tracking-widest leading-none block mb-1">Est. Net Pay</span>
                                                 <span className="text-2xl font-black text-slate-900 dark:text-white font-paperlogy leading-none">{formatINR(net)}</span>
                                             </div>
                                         </div>
@@ -496,7 +496,7 @@ const SalariesPage = () => {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="px-10 py-4 bg-teal-600 hover:bg-teal-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg active:translate-y-0.5 transition-all flex items-center gap-2"
+                                    className="px-10 py-4 bg-[#00b9cd] hover:bg-[#00b9cd]/80 text-white rounded-10 text-xs font-black uppercase tracking-widest shadow-lg active:translate-y-0.5 transition-all flex items-center gap-2"
                                 >
                                     {isSubmitting && <RefreshCw className="animate-spin w-4 h-4" />}
                                     {isSubmitting ? "Finalizing..." : "Update Structure"}
@@ -510,17 +510,17 @@ const SalariesPage = () => {
             {/* HISTORY MODAL */}
             {isHistoryModalOpen && (
                 <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-slate-900 rounded-[3rem] max-w-3xl w-full p-10 shadow-[12px_12px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                    <div className="bg-white dark:bg-slate-900 rounded-10 max-w-3xl w-full p-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
                         <div className="flex justify-between items-center mb-8">
                             <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Salary Log</h2>
-                            <button onClick={() => setIsHistoryModalOpen(false)} className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-red-500 transition-all border border-slate-100">
+                            <button onClick={() => setIsHistoryModalOpen(false)} className="h-10 w-10 flex items-center justify-center rounded-10 bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-red-500 transition-all border border-slate-100">
                                 ✕
                             </button>
                         </div>
 
                         {historyLoading ? (
                             <div className="py-20 text-center">
-                                <RefreshCw className="w-10 h-10 animate-spin text-teal-500 mx-auto" />
+                                <RefreshCw className="w-10 h-10 animate-spin text-[#00b9cd] mx-auto" />
                             </div>
                         ) : salaryHistory.length === 0 ? (
                             <div className="py-20 text-center">
@@ -528,7 +528,7 @@ const SalariesPage = () => {
                                 <p className="font-bold text-slate-400 uppercase tracking-widest">No previous revisions</p>
                             </div>
                         ) : (
-                            <div className="overflow-x-auto rounded-[2rem] border-2 border-slate-900/5 overflow-hidden">
+                            <div className="overflow-x-auto rounded-10 border-2 border-slate-900/5 overflow-hidden">
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="bg-slate-50 dark:bg-white/5 border-b-2 border-slate-900/5">
@@ -552,7 +552,7 @@ const SalariesPage = () => {
                             </div>
                         )}
                         <div className="mt-10 flex justify-end">
-                            <button onClick={() => setIsHistoryModalOpen(false)} className="px-8 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md">
+                            <button onClick={() => setIsHistoryModalOpen(false)} className="px-8 py-4 bg-[#00b9cd]/80 text-white rounded-10 text-[10px] font-black uppercase tracking-widest shadow-md">
                                 Close Panel
                             </button>
                         </div>

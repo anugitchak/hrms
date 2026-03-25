@@ -5,14 +5,14 @@ const ToggleSwitch = ({ enabled, onChange, disabled = false }) => {
             type="button"
             onClick={() => !disabled && onChange(!enabled)}
             disabled={disabled}
-            className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-teal-500/10 ${
+            className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-10 border-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#00b9cd]/10 ${
                 disabled ? 'opacity-50 cursor-not-allowed' : ''
-            } ${enabled ? 'bg-teal-600 border-teal-500 shadow-lg shadow-teal-500/20' : 'bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600'}`}
+            } ${enabled ? 'bg-[#00b9cd] border-[#00b9cd] shadow-lg shadow-[#f06464]/20' : 'bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600'}`}
             role="switch"
             aria-checked={enabled}
         >
             <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition duration-200 ease-in-out mt-[2px] ml-[2px] ${
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-10 bg-white shadow-md transition duration-200 ease-in-out mt-[2px] ml-[2px] ${
                     enabled ? 'translate-x-5' : 'translate-x-0'
                 }`}
             />
@@ -38,7 +38,7 @@ const PermissionCard = ({ permission, enabled, onChange, disabled }) => {
     const getCategoryColor = (category) => {
         switch (category) {
             case 'Leaves': return 'text-orange-600 bg-orange-50 dark:bg-orange-500/10 border-orange-100 dark:border-orange-500/20';
-            case 'Attendance': return 'text-teal-600 bg-teal-50 dark:bg-teal-500/10 border-teal-100 dark:border-teal-500/20';
+            case 'Attendance': return 'text-[#00b9cd] bg-[#00b9cd]/10 dark:bg-[#00b9cd]/10 border-[#00b9cd]/10 dark:border-[#00b9cd]/20';
             case 'Employees': return 'text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20';
             case 'Payroll': return 'text-purple-600 bg-purple-50 dark:bg-purple-500/10 border-purple-100 dark:border-purple-500/20';
             case 'Organization': return 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 border-indigo-100 dark:border-indigo-500/20';
@@ -48,14 +48,14 @@ const PermissionCard = ({ permission, enabled, onChange, disabled }) => {
     };
 
     return (
-        <div className={`p-6 rounded-[2rem] transition-all duration-300 group ${
+        <div className={`p-6 rounded-10 group ${
             enabled 
-                ? 'bg-white dark:bg-slate-900/60 shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)]' 
-                : 'bg-white dark:bg-slate-900/60 shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]'
-        } hover:-translate-y-1 hover:shadow-xl`}>
+                ? 'bg-white dark:bg-slate-900/60 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out dark:shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out' 
+                : 'bg-white dark:bg-slate-900/60 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out'
+        } hover:-translate-y-1 `}>
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 flex items-center justify-center rounded-2xl border transition-transform group-hover:scale-110 duration-500 ${getCategoryColor(permission.category)}`}>
+                    <div className={`w-12 h-12 flex items-center justify-center rounded-10 border transition-transform group-hover:scale-110 duration-500 ${getCategoryColor(permission.category)}`}>
                         {getCategoryIcon(permission.category)}
                     </div>
                     <div>
@@ -80,9 +80,9 @@ const RoleTab = ({ role, isActive, onClick }) => {
     return (
         <button
             onClick={onClick}
-            className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-black transition-all duration-300 uppercase tracking-widest text-xs ${
+            className={`flex items-center gap-3 px-8 py-4 rounded-10 font-black uppercase tracking-widest text-xs ${
                 isActive 
-                    ? 'bg-teal-600 text-white shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] hover:-translate-y-1' 
+                    ? 'bg-[#00b9cd] text-white shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1' 
                     : 'bg-white text-slate-500 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-400'
             }`}
         >
@@ -97,7 +97,7 @@ useEffect(() => { fetchData(); }, []); const fetchData = async () => { setLoadin
         return (
             <div className="p-8 flex items-center justify-center min-vh-100">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-12 h-12 border-4 border-[#00b9cd] border-t-transparent rounded-10 animate-spin"></div>
                     <p className="text-slate-600 dark:text-slate-400 font-bold">Loading permissions...</p>
                 </div>
             </div>
@@ -110,10 +110,10 @@ useEffect(() => { fetchData(); }, []); const fetchData = async () => { setLoadin
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                 <div>
                     <h1 className="text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight leading-none mb-3">
-                        <span className="italic">System</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Settings</span>
+                        System <span className="text-transparent bg-clip-text bg-[#00b9cd]">Settings</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                        <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                        <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Configure corporate roles and platform permissions</p>
                     </div>
                 </div>
@@ -132,23 +132,23 @@ useEffect(() => { fetchData(); }, []); const fetchData = async () => { setLoadin
             </div>
 
             {/* Permissions Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-8 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-8 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out">
                 <div>
                     <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
-                        {activeRole?.name} <span className="text-teal-600">Permissions</span>
+                        {activeRole?.name} <span className="text-[#00b9cd]">Permissions</span>
                     </h2>
                     <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Refine access granularity for this organizational tier</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <button 
                         onClick={handleEnableAll} 
-                        className="px-6 py-3 text-xs font-black text-teal-600 bg-white dark:bg-white/5 border-2 border-slate-100 dark:border-white/10 hover:border-teal-600 transition-all rounded-2xl shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] hover:-translate-y-1 active:translate-y-0 active:shadow-md uppercase tracking-widest"
+                        className="px-6 py-3 text-xs font-black text-[#00b9cd] bg-white dark:bg-white/5 border-2 border-slate-100 dark:border-white/10 hover:border-[#00b9cd] transition-all rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md uppercase tracking-widest"
                     >
                         Enable All
                     </button>
                     <button 
                         onClick={handleDisableAll} 
-                        className="px-6 py-3 text-xs font-black text-red-600 bg-white dark:bg-white/5 border-2 border-slate-100 dark:border-white/10 hover:border-red-600 transition-all rounded-2xl shadow-[4px_4px_0px_0px_rgba(220,38,38,0.3)] hover:-translate-y-1 active:translate-y-0 active:shadow-md uppercase tracking-widest"
+                        className="px-6 py-3 text-xs font-black text-red-600 bg-white dark:bg-white/5 border-2 border-slate-100 dark:border-white/10 hover:border-red-600 transition-all rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-red-200 dark:hover:border-red-700 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md uppercase tracking-widest"
                     >
                         Disable All
                     </button>
@@ -158,9 +158,9 @@ useEffect(() => { fetchData(); }, []); const fetchData = async () => { setLoadin
             <div className="space-y-10">
                 {Object.entries(groupedPermissions).map(([category, permissions]) => (
                     <div key={category} className="relative">
-                        <div className="flex items-center gap-3 mb-6 bg-white dark:bg-white/10 px-5 py-3 rounded-2xl w-fit shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]">
+                        <div className="flex items-center gap-3 mb-6 bg-white dark:bg-white/10 px-5 py-3 rounded-10 w-fit shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out">
                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 leading-none">{category}</h3>
-                            <span className="text-[10px] font-black bg-teal-600 text-white px-3 py-1 rounded-full leading-none">{permissions.length} Units</span>
+                            <span className="text-[10px] font-black bg-[#00b9cd] text-white px-3 py-1 rounded-10 leading-none">{permissions.length} Units</span>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -179,19 +179,19 @@ useEffect(() => { fetchData(); }, []); const fetchData = async () => { setLoadin
             </div>
 
             {/* Bottom Actions Bar */}
-            <div className="sticky bottom-8 mt-16 p-8 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(71,85,105,0.2)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] flex items-center justify-between gap-6 border border-white/20">
+            <div className="sticky bottom-8 mt-16 p-8 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out flex items-center justify-between gap-6 border border-white/20">
                 <div className="hidden sm:block">
                     {hasChanges ? (
-                        <span className="flex items-center gap-4 px-6 py-3 bg-amber-50 dark:bg-amber-500/10 rounded-2xl border border-amber-200 dark:border-amber-500/20">
-                            <span className="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.5)]"></span>
+                        <span className="flex items-center gap-4 px-6 py-3 bg-amber-50 dark:bg-amber-500/10 rounded-10 border border-amber-200 dark:border-amber-500/20">
+                            <span className="w-2.5 h-2.5 bg-amber-500 rounded-10 animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.5)]"></span>
                             <span className="font-black text-amber-700 dark:text-amber-400 text-xs uppercase tracking-widest">Unsaved Refinements</span>
                         </span>
                     ) : (
-                        <span className="flex items-center gap-4 px-6 py-3 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border border-teal-200 dark:border-teal-500/20">
-                            <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span className="flex items-center gap-4 px-6 py-3 bg-[#00b9cd]/10 dark:bg-[#00b9cd]/10 rounded-10 border border-[#00b9cd]/30 dark:border-[#00b9cd]/20">
+                            <svg className="w-5 h-5 text-[#00b9cd]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span className="font-black text-teal-700 dark:text-teal-400 text-xs uppercase tracking-widest">Architecture Synced</span>
+                            <span className="font-black text-[#00b9cd] dark:text-[#00b9cd] text-xs uppercase tracking-widest">Architecture Synced</span>
                         </span>
                     )}
                 </div>
@@ -199,14 +199,14 @@ useEffect(() => { fetchData(); }, []); const fetchData = async () => { setLoadin
                 <button 
                     onClick={handleSave} 
                     disabled={saving || !hasChanges} 
-                    className={`px-12 py-5 rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${
+                    className={`px-12 py-5 rounded-10 font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${
                         saving || !hasChanges 
                             ? 'bg-slate-100 dark:bg-white/5 text-slate-400 cursor-not-allowed' 
-                            : 'bg-teal-600 text-white shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-xl active:translate-y-0 active:shadow-md'
+                            : 'bg-[#00b9cd] text-white shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-y-0 active:shadow-md'
                     }`}
                 >
                     {saving ? (
-                        <><div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>Processing...</>
+                        <><div className="w-5 h-5 border-3 border-white border-t-transparent rounded-10 animate-spin"></div>Processing...</>
                     ) : (
                         <>Apply Refinements</>
                     )}

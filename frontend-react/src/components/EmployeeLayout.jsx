@@ -54,7 +54,7 @@ const EmployeeLayout = ({ children }) => {
             <NotificationBell />
             <button
               onClick={handleLogout}
-              className="px-4 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900/30 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-all active:scale-95"
+              className="px-4 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900/30 rounded-10 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all active:scale-95"
             >
               Logout
             </button>

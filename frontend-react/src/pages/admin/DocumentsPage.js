@@ -43,8 +43,6 @@ const DocumentsPage = () => {
             if (filters.employee_id) params.employee_id = filters.employee_id;
             if (filters.document_type) params.document_type = filters.document_type;
 
-            if (filters.document_type) params.document_type = filters.document_type;
-
             const response = await api.get("/employee-documents", {
                 params: params
             });
@@ -164,7 +162,7 @@ const DocumentsPage = () => {
 
                 <button
                     onClick={() => setIsUploadModalOpen(true)}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition-colors"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-10  transition-colors shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"
                 >
                     <Upload size={18} /> Upload Document
                 </button>
@@ -172,7 +170,7 @@ const DocumentsPage = () => {
 
             {/* Filters (Admin/HR Only) */}
             {!isEmployee && (
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6 flex flex-col md:flex-row gap-4 items-center">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-10  mb-6 flex flex-col md:flex-row gap-4 items-center shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
                     <div className="flex items-center gap-2 text-gray-900">
                         <Filter size={18} /> <span className="text-sm font-medium">Filters:</span>
                     </div>
@@ -182,7 +180,7 @@ const DocumentsPage = () => {
                         <select
                             id="filter_employee"
                             name="filter_employee"
-                            className="border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]"
+                            className="border  dark: rounded-10 p-2 text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 min-w-[200px]"
                             value={filters.employee_id}
                             onChange={(e) => setFilters({ ...filters, employee_id: e.target.value })}
                         >
@@ -198,7 +196,7 @@ const DocumentsPage = () => {
                         <select
                             id="filter_document_type"
                             name="filter_document_type"
-                            className="border border-gray-300 dark:border-gray-600 rounded p-2 text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                            className="border  dark: rounded-10 p-2 text-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                             value={filters.document_type}
                             onChange={(e) => setFilters({ ...filters, document_type: e.target.value })}
                         >
@@ -219,7 +217,7 @@ const DocumentsPage = () => {
             )}
 
             {/* Document List */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-10  overflow-hidden shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]">
                 {loading ? (
                     <div className="p-8 text-center text-gray-900">Loading documents...</div>
                 ) : documents.length === 0 ? (
@@ -231,7 +229,7 @@ const DocumentsPage = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider">
+                                <tr className="bg-gray-50 dark:bg-gray-700 border-b  dark: text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wider">
                                     {!isEmployee && <th className="p-4 font-semibold">Employee</th>}
                                     <th className="p-4 font-semibold">Type</th>
                                     <th className="p-4 font-semibold">Title</th>
@@ -251,7 +249,7 @@ const DocumentsPage = () => {
                                             </td>
                                         )}
                                         <td className="p-4 text-sm text-gray-700 dark:text-gray-300">
-                                            <span className="px-2 py-1 rounded bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-xs font-medium">
+                                            <span className="px-2 py-1 rounded-10 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-xs font-medium">
                                                 {doc.document_type}
                                             </span>
                                         </td>
@@ -279,14 +277,14 @@ const DocumentsPage = () => {
                                         <td className="p-4 text-right flex justify-end gap-2">
                                             <button
                                                 onClick={() => handleView(doc)}
-                                                className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded transition-colors"
+                                                className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-10 transition-colors"
                                                 title="View"
                                             >
                                                 <Eye size={18} />
                                             </button>
                                             <button
                                                 onClick={() => handleDownload(doc)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
+                                                className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-10 transition-colors"
                                                 title="Download"
                                             >
                                                 <Download size={18} />
@@ -295,7 +293,7 @@ const DocumentsPage = () => {
                                             {!isEmployee && (
                                                 <button
                                                     onClick={() => handleDelete(doc.id)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
+                                                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-10 transition-colors"
                                                     title="Delete"
                                                 >
                                                     <Trash2 size={18} />
@@ -313,7 +311,7 @@ const DocumentsPage = () => {
             {/* Upload Modal */}
             {isUploadModalOpen && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-10  shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)]  dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]  w-full max-w-md p-6">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upload Document</h2>
                             <button
@@ -329,7 +327,7 @@ const DocumentsPage = () => {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Employee *</label>
                                     <select
-                                        className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full border  dark: rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                         value={uploadData.employee_id}
                                         onChange={(e) => setUploadData({ ...uploadData, employee_id: e.target.value })}
                                         required
@@ -345,7 +343,7 @@ const DocumentsPage = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Document Type *</label>
                                 <select
-                                    className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border  dark: rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                     value={uploadData.document_type}
                                     onChange={(e) => setUploadData({ ...uploadData, document_type: e.target.value })}
                                     required
@@ -359,7 +357,7 @@ const DocumentsPage = () => {
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Document Title *</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border  dark: rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="e.g. Signed Offer Letter"
                                     value={uploadData.document_title}
                                     onChange={(e) => setUploadData({ ...uploadData, document_title: e.target.value })}
@@ -371,7 +369,7 @@ const DocumentsPage = () => {
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">File (PDF, Image, max 2MB) *</label>
                                 <input
                                     type="file"
-                                    className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full border  dark: rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     onChange={(e) => setUploadData({ ...uploadData, file: e.target.files[0] })}
                                     required
@@ -382,14 +380,14 @@ const DocumentsPage = () => {
                                 <button
                                     type="button"
                                     onClick={() => setIsUploadModalOpen(false)}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    className="px-4 py-2 border  dark: rounded-10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow disabled:opacity-50 flex items-center gap-2"
+                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-10  disabled:opacity-50 flex items-center gap-2 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent transition-all duration-500 ease-out hover:border-[#00b9cd] dark:hover:border-[#00b9cd]"
                                 >
                                     {uploading ? "Uploading..." : "Upload Document"}
                                 </button>

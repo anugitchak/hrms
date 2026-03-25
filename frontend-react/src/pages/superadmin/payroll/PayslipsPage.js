@@ -15,13 +15,13 @@ import { useGlobalUI } from '../../../context/GlobalUIContext';
 // --- Components ---
 
 const StatCard = ({ label, value, icon: Icon, color, bg, border, loading }) => (
-    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex flex-col items-start gap-4 rounded-[2rem] shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:-translate-y-1 transition-all duration-300 group overflow-hidden border border-slate-50 dark:border-white/5">
-        <div className={`${bg} ${color} ${border} w-12 h-12 flex items-center justify-center rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-500 shrink-0`}>
+    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex flex-col items-start gap-4 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 group overflow-hidden border border-slate-50 dark:border-white/5">
+        <div className={`${bg} ${color} ${border} w-12 h-12 flex items-center justify-center rounded-10 shadow-md group-hover:scale-110 transition-transform duration-500 shrink-0`}>
             <Icon size={24} strokeWidth={2.5} />
         </div>
         <div className="min-w-0 flex-1">
             <div className="text-2xl font-black text-slate-900 dark:text-white leading-none mb-2 truncate font-paperlogy tracking-tight" title={value}>
-                {loading ? <div className="h-6 w-20 bg-slate-100 dark:bg-white/5 animate-pulse rounded" /> : value}
+                {loading ? <div className="h-6 w-20 bg-slate-100 dark:bg-white/5 animate-pulse rounded-10" /> : value}
             </div>
             <div className="text-[10px] font-black text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase truncate">{label}</div>
         </div>
@@ -167,31 +167,31 @@ const PayslipsPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6"> 
                 <div> 
                     <h1 className="text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight leading-none mb-3">
-                        <span className="italic">Payslip</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
+                        Payslip <span className="text-transparent bg-clip-text bg-[#00b9cd]">Management</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                        <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                        <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Lifecycle monitoring and compliance archives</p>
                     </div>
                 </div> 
                 <div className="flex items-center gap-4"> 
                     <button 
                         onClick={() => setShowAccessModal(true)} 
-                        className="flex items-center gap-3 text-xs font-black text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-6 py-4 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md border border-slate-50 dark:border-white/5 uppercase tracking-[0.2em]"
+                        className="flex items-center gap-3 text-xs font-black text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-6 py-4 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md border border-slate-50 dark:border-white/5 uppercase tracking-[0.2em]"
                     > 
-                        <Settings size={16} className="text-teal-600" /> 
+                        <Settings size={16} className="text-[#00b9cd]" /> 
                         Permissions
                     </button> 
                     <button 
                         onClick={() => setShowDownloadModal(true)} 
-                        className="flex items-center gap-3 text-xs font-black text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-6 py-4 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md border border-slate-50 dark:border-white/5 uppercase tracking-[0.2em]"
+                        className="flex items-center gap-3 text-xs font-black text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-6 py-4 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md border border-slate-50 dark:border-white/5 uppercase tracking-[0.2em]"
                     > 
                         <DownloadIcon size={16} className="text-emerald-500" /> 
                         Bulk Export
                     </button> 
                     <button 
                         onClick={fetchPayslips}
-                        className="flex items-center justify-center h-[52px] w-[52px] bg-teal-600 hover:bg-teal-500 text-white rounded-2xl shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0"
+                        className="flex items-center justify-center h-[52px] w-[52px] bg-[#00b9cd] hover:bg-[#00b9cd]/80 text-white rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0"
                     >
                         <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
                     </button>
@@ -203,7 +203,7 @@ const PayslipsPage = () => {
                 <StatCard label="Total Issued" value={stats.totalGenerated} icon={FileText} color="text-blue-600" bg="bg-blue-50" border="border-blue-100" loading={loading} />
                 <StatCard label="Total Payout" value={formatINR(stats.totalPayout)} icon={Wallet} color="text-emerald-600" bg="bg-emerald-50" border="border-emerald-100" loading={loading} />
                 <StatCard label="Avg Net Pay" value={formatINR(stats.avgNet)} icon={TrendingUp} color="text-purple-600" bg="bg-purple-50" border="border-purple-100" loading={loading} />
-                <StatCard label="Highest" value={formatINR(stats.highest)} icon={TrendingUp} color="text-teal-600" bg="bg-teal-50" border="border-teal-100" loading={loading} />
+                <StatCard label="Highest" value={formatINR(stats.highest)} icon={TrendingUp} color="text-[#00b9cd]" bg="bg-[#00b9cd]/10" border="border-[#00b9cd]/10" loading={loading} />
                 <StatCard label="Lowest" value={formatINR(stats.lowest)} icon={TrendingDown} color="text-red-600" bg="bg-red-50" border="border-red-100" loading={loading} />
             </div>
 
@@ -218,15 +218,15 @@ const PayslipsPage = () => {
                 </div>
 
                 {/* Table Container */} 
-                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(71,85,105,0.2)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] border border-slate-50 dark:border-white/5 overflow-hidden min-h-[400px]"> 
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border border-slate-50 dark:border-white/5 overflow-hidden min-h-[400px]"> 
                     {loading ? ( 
                         <div className="flex flex-col justify-center items-center h-96"> 
-                            <Loader2 size={48} className="animate-spin text-teal-600 mb-4" /> 
+                            <Loader2 size={48} className="animate-spin text-[#00b9cd] mb-4" /> 
                             <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Loading Payslips...</p>
                         </div> 
                     ) : error ? ( 
                         <div className="p-20 text-center"> 
-                            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-6 rounded-3xl border-2 border-red-100 dark:border-red-800/30 inline-block font-bold"> 
+                            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-6 rounded-10 border-2 border-red-100 dark:border-red-800/30 inline-block font-bold"> 
                                 {error} 
                             </div> 
                         </div> 

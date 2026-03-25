@@ -1,34 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import api from '../../api/axios';
+import { 
+    Bell, Calendar, ArrowLeft, RefreshCw, 
+    MessageSquare, FileText, Info, ExternalLink 
+} from 'lucide-react';
 
-// --- UI Components ---
+// --- Premium Standard Components ---
 
-const Button = ({ children, onClick, disabled, variant = "primary", className }) => {
+const Card = ({ children, className, icon: Icon, title, actions }) => (
+    <div className={`bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out ${className}`}>
+        {(title || Icon) && (
+            <div className="p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                    {Icon && <div className="p-2 bg-[#00b9cd]/10 rounded-10 text-[#00b9cd]"><Icon size={18} /></div>}
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider">{title}</h3>
+                </div>
+                {actions}
+            </div>
+        )}
+        <div className="p-6">{children}</div>
+    </div>
+);
+
+const Button = ({ children, onClick, disabled, variant = "primary", className, icon: Icon }) => {
     const variants = {
-        primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg disabled:bg-blue-300 disabled:shadow-none",
-        secondary: "bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50",
+        primary: "bg-[#00b9cd] text-white hover:bg-blue-600 shadow-md",
+        outline: "bg-transparent border-2 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:border-[#00b9cd] hover:text-[#00b9cd]",
     };
 
     return (
         <button
             onClick={onClick}
             disabled={disabled}
-            className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center ${variants[variant]} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} ${className}`}
+            className={`px-6 py-3 rounded-10 font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 ${variants[variant]} ${disabled ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'} ${className}`}
         >
+
+            {Icon && <Icon size={16} />}
             {children}
         </button>
     );
 };
-
-const Alert = ({ children, variant = "error" }) => (
-    <div className={`p-4 rounded-lg mb-4 text-sm border ${variant === "error"
-        ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
-        : "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400"
-        }`}>
-        {children}
-    </div>
-);
 
 const AnnouncementsPage = () => {
     const navigate = useNavigate();
@@ -42,16 +54,12 @@ const AnnouncementsPage = () => {
 
     const fetchAnnouncements = async () => {
         try {
-            // Using /announcements as requested
             const response = await api.get('/announcements');
-            // Laravel ResourceCollection usually places data in a 'data' property
             const data = response.data.data || response.data;
 
             if (Array.isArray(data)) {
                 setAnnouncements(data);
             } else {
-                // If response is paginated but we just got specific page data object without data key? 
-                // Fallback to empty array if format is unexpected
                 console.error('Unexpected response format:', response.data);
                 setAnnouncements([]);
                 setError('Invalid data format received from server.');
@@ -75,83 +83,112 @@ const AnnouncementsPage = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 transition-colors">
-                <div className="text-xl font-medium animate-pulse">Loading announcements...</div>
+            <div className="flex flex-col justify-center items-center h-screen bg-white dark:bg-slate-950 font-paperlogy">
+                <div className="w-16 h-16 border-4 border-[#00b9cd]/20 border-t-[#00b9cd] rounded-10 animate-spin mb-4"></div>
+                <div className="text-xs font-black uppercase tracking-[0.4em] text-[#00b9cd] animate-pulse">Synchronizing Comms...</div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 max-w-[1200px] mx-auto bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
-
-            {/* Header */}
-            <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
+        <div className="p-8 max-w-[1200px] mx-auto min-h-screen font-paperlogy mesh-bg">
+            {/* Tactical Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-10 relative z-10 px-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Announcements</h1>
-                    <p className="text-gray-900 mt-1">Latest updates and news</p>
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none mb-3">
+                        Announce<span className="text-transparent bg-clip-text bg-[#00b9cd]">ments</span>
+                    </h1>
+                    <div className="flex items-center gap-3 mt-4">
+                        <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
+                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] italic">Latest updates from Command</p>
+                    </div>
                 </div>
-                <div>
-                    <Button variant="secondary" onClick={() => navigate("/employee/dashboard")}>
-                        Back to Dashboard
+                <div className="flex gap-4">
+                    <Button 
+                        variant="outline" 
+                        onClick={() => navigate("/employee/dashboard")}
+                        icon={ArrowLeft}
+                    >
+                        Dashboard
+                    </Button>
+                    <Button 
+                        variant="outline" 
+                        onClick={fetchAnnouncements} 
+                        icon={RefreshCw}
+                        disabled={loading}
+                        className={loading ? "animate-spin" : ""}
+                    >
+                        Refresh
                     </Button>
                 </div>
             </div>
 
-            {/* Error State */}
-            {error && <Alert variant="error">{error}</Alert>}
+            {error && (
+                <div className="mb-8 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-10">
+                    <p className="text-xs font-bold text-rose-600 uppercase tracking-widest flex items-center gap-2">
+                        <Info size={14} /> {error}
+                    </p>
+                </div>
+            )}
 
             {/* Content */}
             {!loading && !error && announcements.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-center shadow-sm">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4 text-gray-400 dark:text-gray-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
+                <Card className="flex flex-col items-center justify-center py-24 text-center">
+                    <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-10 flex items-center justify-center mb-6 text-slate-300">
+                        <Bell size={40} strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">No announcements yet</h3>
-                    <p className="text-gray-900 mt-1 max-w-sm">
-                        Check back later for news and updates from the administration.
+                    <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-wider mb-2">Radio Silence</h3>
+                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest max-w-sm">
+                        No active announcements detected in this sector.
                     </p>
-                </div>
+                </Card>
             ) : (
-                <div className="grid gap-6">
+                <div className="grid gap-8">
                     {announcements.map((announcement) => (
-                        <div
+                        <Card 
                             key={announcement.id}
-                            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-200 relative overflow-hidden"
+                            className="relative overflow-hidden group"
                         >
-                            <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
-                            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-2">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
-                                    {announcement.title}
-                                </h3>
-                                <div className="flex items-center text-xs font-medium text-gray-900 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full whitespace-nowrap">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                                    </svg>
-                                    {formatDate(announcement.created_at)}
+                            <div className="absolute top-0 left-0 w-1.5 h-full bg-[#00b9cd] group-hover:w-2 transition-all"></div>
+                            
+                            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-6 gap-4">
+                                <div>
+                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tight mb-2">
+                                        {announcement.title}
+                                    </h3>
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 dark:bg-white/5 rounded-10 text-[10px] font-black text-slate-400 uppercase tracking-widest border border-slate-100 dark:border-white/5">
+                                            <Calendar size={12} className="text-[#00b9cd]" />
+                                            {formatDate(announcement.created_at)}
+                                        </div>
+                                        <div className="flex items-center gap-1.5 px-3 py-1 bg-[#00b9cd]/5 rounded-10 text-[10px] font-black text-[#00b9cd] uppercase tracking-widest border border-[#00b9cd]/10">
+                                            <MessageSquare size={12} />
+                                            Official
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line mb-4">
+
+                            <div className="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed font-bold text-sm whitespace-pre-line mb-6">
                                 {announcement.content || announcement.message}
                             </div>
 
                             {announcement.attachment_url && (
-                                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/5">
                                     <a
                                         href={announcement.attachment_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                                        className="inline-flex items-center gap-3 text-xs font-black uppercase tracking-widest text-[#00b9cd] hover:text-blue-600 transition-colors group/link"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                        </svg>
-                                        View Attachment
+                                        <div className="p-2 bg-[#00b9cd]/10 rounded-10 group-hover/link:bg-blue-600/10">
+                                            <ExternalLink size={16} />
+                                        </div>
+                                        Secure Document Attached
                                     </a>
                                 </div>
                             )}
-                        </div>
+                        </Card>
                     ))}
                 </div>
             )}

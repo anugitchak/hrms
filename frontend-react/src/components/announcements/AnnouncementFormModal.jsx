@@ -88,7 +88,7 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 
     return (
         <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-            <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.35)] w-full max-w-lg overflow-hidden transform transition-all duration-300 rounded-3xl flex flex-col max-h-[95vh]">
+            <div className="bg-white dark:bg-slate-900/80 dark:backdrop-blur-xl shadow-2xl shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out w-full max-w-lg overflow-hidden transform rounded-10 flex flex-col max-h-[95vh]">
                 {/* Modal Header */}
                 <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-white dark:bg-transparent">
                     <div>
@@ -99,7 +99,7 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-xl transition-all"
+                        className="text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-10 transition-all"
                     >
                         <X size={20} />
                     </button>
@@ -116,7 +116,7 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
-                                className={`w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-brand-800/20 border ${errors.title ? "border-red-500" : "border-slate-200 dark:border-white/10"} rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all`}
+                                className={`w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-brand-800/20 border ${errors.title ? "border-red-500" : "border-slate-200 dark:border-white/10"} rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all`}
                                 placeholder="e.g. Annual Policy Update"
                             />
                         </div>
@@ -131,7 +131,7 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                                     name="category"
                                     value={formData.category}
                                     onChange={handleChange}
-                                    className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                    className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                                 >
                                     <option value="General" className="dark:bg-slate-900">General Notice</option>
                                     <option value="HR" className="dark:bg-slate-900">Human Resources</option>
@@ -149,7 +149,7 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                                     name="status"
                                     value={formData.status}
                                     onChange={handleChange}
-                                    className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
+                                    className="appearance-none w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border border-slate-200 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white cursor-pointer transition-all"
                                 >
                                     <option value="Active" className="dark:bg-slate-900">Active / Live</option>
                                     <option value="Inactive" className="dark:bg-slate-900">Inactive / Draft</option>
@@ -169,7 +169,7 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                                     key={role}
                                     type="button"
                                     onClick={() => handleAudienceChange(role)}
-                                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${formData.target_audience.includes(role)
+                                    className={`px-4 py-2.5 rounded-10 text-xs font-bold transition-all border ${formData.target_audience.includes(role)
                                             ? "bg-brand-500 text-white border-brand-600 shadow-md shadow-brand-500/20"
                                             : "bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-slate-50"
                                         }`}
@@ -188,7 +188,7 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                             value={formData.message}
                             onChange={handleChange}
                             rows={4}
-                            className={`w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border ${errors.message ? "border-red-500" : "border-slate-200 dark:border-white/10"} rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all resize-none`}
+                            className={`w-full px-4 py-3 bg-slate-50 dark:bg-brand-800/20 border ${errors.message ? "border-red-500" : "border-slate-200 dark:border-white/10"} rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-slate-900 dark:text-white transition-all resize-none`}
                             placeholder="Detail the intelligence report here..."
                         />
                         {errors.message && <p className="text-red-500 text-[10px] font-bold uppercase mt-1 px-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.message}</p>}
@@ -196,7 +196,7 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
 
                     <div className="space-y-2">
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Attachments</label>
-                        <div className="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl p-6 text-center hover:bg-slate-50 dark:hover:bg-white/5 transition-all cursor-pointer relative group">
+                        <div className="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-10 p-6 text-center hover:bg-slate-50 dark:hover:bg-white/5 transition-all cursor-pointer relative group">
                             <input type="file" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                             <div className="flex flex-col items-center gap-2">
                                 <Upload className="text-slate-400 group-hover:text-brand-500 transition-colors" size={24} />
@@ -215,16 +215,16 @@ const AnnouncementFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
                     <div className="flex flex-col sm:flex-row gap-3">
                         <button
                             type="button" onClick={onClose}
-                            className="flex-1 px-5 py-3 text-sm font-bold text-slate-600 dark:text-slate-400 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-xl transition-all"
+                            className="flex-1 px-5 py-3 text-sm font-bold text-slate-600 dark:text-slate-400 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-10 transition-all"
                         >
                             Abort
                         </button>
                         <button
                             onClick={handleSubmit} disabled={isSubmitting}
-                            className="flex-[2] flex items-center justify-center gap-3 px-5 py-3 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98] disabled:opacity-50"
+                            className="flex-[2] flex items-center justify-center gap-3 px-5 py-3 text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 rounded-10 shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98] disabled:opacity-50"
                         >
                             {isSubmitting ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-10 animate-spin"></div>
                             ) : (
                                 <>
                                     <Check size={18} strokeWidth={3} />

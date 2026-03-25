@@ -148,11 +148,11 @@ const HolidayPage = () => {
         };
 
         return (
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] border-2 border-slate-900/5 dark:border-white/5 overflow-hidden transition-all duration-300">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900/5 dark:border-white/5 overflow-hidden ">
                 <div className="flex items-center justify-between p-8 bg-slate-50/50 dark:bg-brand-500/5 border-b-2 border-slate-900/5 dark:border-white/10">
                     <button
                         onClick={prevMonth}
-                        className="p-3 hover:bg-white dark:hover:bg-slate-800 rounded-2xl text-slate-400 hover:text-brand-500 transition-all shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-white/5"
+                        className="p-3 hover:bg-white dark:hover:bg-slate-800 rounded-10 text-slate-400 hover:text-brand-500 transition-all shadow-md border border-transparent hover:border-slate-100 dark:hover:border-white/5"
                     >
                         <ChevronLeft className="w-6 h-6" />
                     </button>
@@ -161,7 +161,7 @@ const HolidayPage = () => {
                     </h2>
                     <button
                         onClick={nextMonth}
-                        className="p-3 hover:bg-white dark:hover:bg-slate-800 rounded-2xl text-slate-400 hover:text-brand-500 transition-all shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-white/5"
+                        className="p-3 hover:bg-white dark:hover:bg-slate-800 rounded-10 text-slate-400 hover:text-brand-500 transition-all shadow-md border border-transparent hover:border-slate-100 dark:hover:border-white/5"
                     >
                         <ChevronRight className="w-6 h-6" />
                     </button>
@@ -188,7 +188,7 @@ const HolidayPage = () => {
                                 {day && (
                                     <>
                                         <div className="flex justify-between items-start mb-3">
-                                            <span className={`text-sm font-black w-8 h-8 flex items-center justify-center rounded-xl transition-all ${isToday(day)
+                                            <span className={`text-sm font-black w-8 h-8 flex items-center justify-center rounded-10 transition-all ${isToday(day)
                                                 ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20'
                                                 : hasHoliday
                                                     ? 'text-brand-500 font-black'
@@ -197,7 +197,7 @@ const HolidayPage = () => {
                                                 {day}
                                             </span>
                                             {hasHoliday && (
-                                                <div className="h-1.5 w-1.5 rounded-full bg-brand-500 animate-pulse shadow-[0_0_8px_rgba(0,185,205,1)]"></div>
+                                                <div className="h-1.5 w-1.5 rounded-10 bg-brand-500 animate-pulse shadow-[0_0_8px_rgba(0,185,205,1)]"></div>
                                             )}
                                         </div>
                                         <div className="space-y-1.5">
@@ -208,7 +208,7 @@ const HolidayPage = () => {
                                                         e.stopPropagation();
                                                         openEdit(h);
                                                     }}
-                                                    className="group text-[10px] px-3 py-2 rounded-xl border-l-4 cursor-pointer shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 bg-white dark:bg-slate-800 border-brand-500 text-slate-700 dark:text-slate-200"
+                                                    className="group text-[10px] px-3 py-2 rounded-10 border-l-4 cursor-pointer shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 bg-white dark:bg-slate-800 border-brand-500 text-slate-700 dark:text-slate-200"
                                                     title={h.name}
                                                 >
                                                     <div className="font-black truncate uppercase tracking-tight">{h.name}</div>
@@ -239,26 +239,26 @@ const HolidayPage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div>
                     <h1 className="text-5xl md:text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight">
-                        <span className="italic">Holiday</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Calendar</span>
+                        Holiday <span className="text-transparent bg-clip-text bg-[#00b9cd]">Calendar</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                            <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                            <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Manage and visualize company-wide holiday schedules
                             </p>
                         </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <div className="bg-white dark:bg-slate-900/60 p-1.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.1)] flex border-2 border-slate-900/5 dark:border-white/5">
+                    <div className="bg-white dark:bg-slate-900/60 p-1.5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out flex border-2 border-slate-900/5 dark:border-white/5">
                         <button
                             onClick={() => setViewMode("list")}
-                            className={`p-2.5 rounded-xl transition-all ${viewMode === 'list' ? 'bg-brand-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                            className={`p-2.5 rounded-10 transition-all ${viewMode === 'list' ? 'bg-brand-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
                             title="List View"
                         >
                             <List size={20} />
                         </button>
                         <button
                             onClick={() => setViewMode("calendar")}
-                            className={`p-2.5 rounded-xl transition-all ${viewMode === 'calendar' ? 'bg-brand-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+                            className={`p-2.5 rounded-10 transition-all ${viewMode === 'calendar' ? 'bg-brand-500 text-white shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
                             title="Calendar View"
                         >
                             <CalendarIcon size={20} />
@@ -266,14 +266,14 @@ const HolidayPage = () => {
                     </div>
                     <button
                         onClick={() => setShowImportModal(true)}
-                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-6 py-3.5 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                        className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-6 py-3.5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 "
                     >
                         <Upload size={18} className="text-orange-500" />
                         <span className="uppercase tracking-widest">Import</span>
                     </button>
                     <button
                         onClick={() => { resetForm(); setShowModal(true); }}
-                        className="flex items-center gap-2 text-xs font-black text-white bg-teal-600 hover:bg-teal-500 px-6 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(13,148,136,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md"
+                        className="flex items-center gap-2 text-xs font-black text-white bg-[#00b9cd] hover:bg-[#00b9cd]/80 px-6 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
                     >
                         <Plus size={18} strokeWidth={3} />
                         <span className="uppercase tracking-widest">Add Holiday</span>
@@ -282,7 +282,7 @@ const HolidayPage = () => {
             </div>
 
             {viewMode === "list" ? (
-                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-[2.5rem] shadow-[8px_8px_0px_0px_rgba(71,85,105,0.15)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900/5 dark:border-white/5 overflow-hidden">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900/5 dark:border-white/5 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -297,7 +297,7 @@ const HolidayPage = () => {
                                     <tr key={h.id} className="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors group">
                                         <td className="p-6">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-600 font-black">
+                                                <div className="w-10 h-10 rounded-10 bg-brand-500/10 flex items-center justify-center text-brand-600 font-black">
                                                     {h.name?.charAt(0)}
                                                 </div>
                                                 <span className="font-bold text-slate-900 dark:text-white uppercase tracking-tight">{h.name}</span>
@@ -319,13 +319,13 @@ const HolidayPage = () => {
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     onClick={() => openEdit(h)}
-                                                    className="p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500 rounded-xl transition-all border border-transparent hover:border-blue-100"
+                                                    className="p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500 rounded-10 transition-all border border-transparent hover:border-blue-100"
                                                 >
                                                     <Edit size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(h.id)}
-                                                    className="p-3 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 rounded-xl transition-all border border-transparent hover:border-red-100"
+                                                    className="p-3 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 rounded-10 transition-all border border-transparent hover:border-red-100"
                                                 >
                                                     <Trash size={16} />
                                                 </button>
@@ -349,7 +349,7 @@ const HolidayPage = () => {
 
             {showImportModal && (
                 <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-slate-900 rounded-[3rem] w-full max-w-lg p-10 shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 rounded-10 w-full max-w-lg p-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-orange-400 to-red-500"></div>
                         <button
                             onClick={() => setShowImportModal(false)}
@@ -359,19 +359,19 @@ const HolidayPage = () => {
                         </button>
                         
                         <div className="text-center mb-8">
-                            <div className="bg-orange-50 dark:bg-orange-500/10 text-orange-500 w-16 h-16 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-sm border-2 border-orange-100 dark:border-orange-500/20">
+                            <div className="bg-orange-50 dark:bg-orange-500/10 text-orange-500 w-16 h-16 rounded-10 flex items-center justify-center mx-auto mb-6 shadow-md border-2 border-orange-100 dark:border-orange-500/20">
                                 <FileSpreadsheet size={32} strokeWidth={2.5} />
                             </div>
                             <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2">Import Holidays</h2>
                             <p className="text-slate-400 font-bold text-sm px-6"> Bulk upload using Excel or CSV file. </p>
                         </div>
 
-                        <div className="bg-blue-50/50 dark:bg-brand-500/5 p-6 rounded-3xl mb-8 border-2 border-brand-500/10 space-y-3">
+                        <div className="bg-blue-50/50 dark:bg-brand-500/5 p-6 rounded-10 mb-8 border-2 border-brand-500/10 space-y-3">
                             <h4 className="text-[10px] font-black text-brand-600 uppercase tracking-widest">Required Headings</h4>
                             <div className="flex flex-wrap gap-4">
                                 {['name', 'start_date', 'end_date'].map(h => (
-                                    <div key={h} className="flex items-center gap-2 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-brand-500/10 shadow-sm">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-brand-500"></div>
+                                    <div key={h} className="flex items-center gap-2 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-10 border border-brand-500/10 shadow-md">
+                                        <div className="w-1.5 h-1.5 rounded-10 bg-brand-500"></div>
                                         <span className="text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-tight">{h}</span>
                                     </div>
                                 ))}
@@ -381,7 +381,7 @@ const HolidayPage = () => {
                         <form onSubmit={handleImport} className="space-y-6">
                             <div className="group">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Choose File</label>
-                                <div className="relative border-2 border-dashed border-slate-900/10 dark:border-white/10 rounded-3xl p-8 text-center hover:border-brand-500/40 transition-all group-focus-within:border-brand-500">
+                                <div className="relative border-2 border-dashed border-slate-900/10 dark:border-white/10 rounded-10 p-8 text-center hover:border-brand-500/40 transition-all group-focus-within:border-brand-500">
                                     <input
                                         type="file"
                                         name="file"
@@ -404,7 +404,7 @@ const HolidayPage = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-8 py-3.5 bg-brand-500 hover:bg-brand-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg active:translate-y-0.5 transition-all flex items-center gap-2"
+                                    className="px-8 py-3.5 bg-brand-500 hover:bg-brand-600 text-white text-xs font-black uppercase tracking-widest rounded-10 shadow-lg active:translate-y-0.5 transition-all flex items-center gap-2"
                                 >
                                     <Upload size={16} strokeWidth={3} />
                                     Process & Upload
@@ -417,7 +417,7 @@ const HolidayPage = () => {
 
             {showModal && (
                 <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-slate-900 rounded-[3rem] w-full max-w-md p-10 shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 rounded-10 w-full max-w-md p-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out border-2 border-slate-900 dark:border-white/10 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-3 bg-brand-500"></div>
                         <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-8">
                             {editingHoliday ? "Edit Holiday" : "New Holiday"}
@@ -432,7 +432,7 @@ const HolidayPage = () => {
                                     type="text"
                                     required
                                     placeholder="e.g. Diwali Festival"
-                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white transition-all font-paperlogy"
+                                    className="w-full px-5 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white transition-all font-paperlogy"
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 />
@@ -447,7 +447,7 @@ const HolidayPage = () => {
                                             name="start_date"
                                             type="date"
                                             required
-                                            className="w-full px-5 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white transition-all pr-12"
+                                            className="w-full px-5 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white transition-all pr-12"
                                             value={formData.start_date}
                                             onChange={e => setFormData({ ...formData, start_date: e.target.value })}
                                         />
@@ -462,7 +462,7 @@ const HolidayPage = () => {
                                             name="end_date"
                                             type="date"
                                             required
-                                            className="w-full px-5 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-2xl outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white transition-all pr-12"
+                                            className="w-full px-5 py-4 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 rounded-10 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-bold text-slate-900 dark:text-white transition-all pr-12"
                                             value={formData.end_date}
                                             onChange={e => setFormData({ ...formData, end_date: e.target.value })}
                                         />
@@ -481,7 +481,7 @@ const HolidayPage = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-10 py-4 bg-brand-500 hover:bg-brand-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg active:translate-y-0.5 transition-all flex items-center gap-2"
+                                    className="px-10 py-4 bg-brand-500 hover:bg-brand-600 text-white text-xs font-black uppercase tracking-widest rounded-10 shadow-lg active:translate-y-0.5 transition-all flex items-center gap-2"
                                 >
                                     <CheckCircle size={18} strokeWidth={3} />
                                     Save Entry

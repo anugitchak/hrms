@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react'; import { Users, Briefcase, Building2, ShieldCheck, Activity, Server, Database, HardDrive, Cpu, RefreshCw, AlertTriangle, CheckCircle } from 'lucide-react'; import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, Legend, Sector, ResponsiveContainer, RadialBarChart, RadialBar, LabelList } from 'recharts'; import api from '../../../api/axios'; // --- Components ---
 const StatCard = ({ title, value, icon: Icon, color, bg, border, loading }) => (
-    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg transition-all duration-300 group">
-        <div className={`${bg || 'bg-slate-50 dark:bg-white/5'} ${color || 'text-slate-600 dark:text-slate-400'} ${border || 'border-slate-100 dark:border-white/10'} border-2 p-3.5 rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-10 shadow-md hover:shadow-lg dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out group">
+        <div className={`${bg || 'bg-slate-50 dark:bg-white/5'} ${color || 'text-slate-600 dark:text-slate-400'} p-3.5 rounded-10 shadow-md group-hover:scale-110 transition-transform duration-300`}>
             <Icon size={24} strokeWidth={2.5} />
         </div>
         <div>
             <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">
-                {loading ? <div className="h-6 w-16 bg-slate-100 dark:bg-white/5 animate-pulse rounded" /> : value}
+                {loading ? <div className="h-6 w-16 bg-slate-100 dark:bg-white/5 animate-pulse rounded-10" /> : value}
             </div>
             <div className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-tight uppercase">{title}</div>
         </div>
@@ -36,11 +36,11 @@ const ChartCard = ({ title, children, loading }) => {
     }, [loading]);
 
     return (
-        <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] min-w-0">
+        <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out min-w-0">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 uppercase tracking-wider">{title}</h3>
             <div ref={containerRef} className="w-full h-[300px] min-w-0 relative">
                 {loading ? (
-                    <div className="w-full h-full bg-slate-50 dark:bg-white/5 rounded-2xl animate-pulse flex items-center justify-center text-slate-400">
+                    <div className="w-full h-full bg-slate-50 dark:bg-white/5 rounded-10 animate-pulse flex items-center justify-center text-slate-400">
                         <RefreshCw className="animate-spin mr-2" size={20} /> Loading Chart...
                     </div>
                 ) : (
@@ -62,7 +62,7 @@ const ActivityItem = ({ message, time, type }) => {
     };
     return (
         <div className="flex gap-4 items-start pb-6 border-l-2 border-slate-100 dark:border-white/5 last:border-0 pl-6 relative group">
-            <div className="absolute -left-[11px] top-0 bg-white dark:bg-slate-900 p-1.5 rounded-full border-2 border-slate-100 dark:border-white/10 shadow-sm group-hover:scale-110 transition-transform">
+            <div className="absolute -left-[11px] top-0 bg-white dark:bg-slate-900 p-1.5 rounded-10 border-2 border-slate-100 dark:border-white/10 shadow-md group-hover:scale-110 transition-transform">
                 {icons[type] || icons.info}
             </div>
             <div className="flex-1">
@@ -94,31 +94,31 @@ const DashboardPage = () => {
         color: isDarkMode ? '#f1f5f9' : '#1e293b',
         borderRadius: '16px',
         borderWidth: '2px',
-        boxShadow: isDarkMode ? '4px 4px 0px 0px rgba(255,255,255,0.1)' : '4px 4px 0px 0px rgba(71,85,105,0.2)',
+        boxShadow: isDarkMode ? '0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)' : '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         fontSize: '12px',
         fontWeight: 'bold'
     };
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-10 relative overflow-hidden">
             {/* Fluid Background SVGs */}
-            {/* <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-400/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-70 animate-float pointer-events-none z-0"></div> */}
-            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-accent-500/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] opacity-70 animate-float pointer-events-none z-0" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-[40%] left-[30%] w-64 h-64 bg-brand-300/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-50 animate-float pointer-events-none z-0" style={{ animationDelay: '4s' }}></div>
+            {/* <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-400/30 rounded-10 mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-70 animate-float pointer-events-none z-0"></div> */}
+            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-accent-500/20 rounded-10 mix-blend-multiply dark:mix-blend-screen filter blur-[120px] opacity-70 animate-float pointer-events-none z-0" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-[40%] left-[30%] w-64 h-64 bg-brand-300/20 rounded-10 mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-50 animate-float pointer-events-none z-0" style={{ animationDelay: '4s' }}></div>
 
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 mb-10">
                 <div>
                     <h1 className="text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-3">
-                        <span className="italic">Dashboard</span> <span className="text-transparent bg-clip-text bg-[#00b9cd]">Overview</span>
+                        Dashboard <span className="text-transparent bg-clip-text bg-[#00b9cd]">Overview</span>
                     </h1>
                     <div className="flex items-center gap-3 mt-3">
-                            <span className="h-1.5 w-12 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full shadow-lg shadow-teal-500/20"></span>
+                            <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Real-time insights and system monitoring</p>
                         </div>
                 </div>
                 <div
                     onClick={fetchAllData}
-                    className="flex items-center gap-3 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-2xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md group"
+                    className="flex items-center gap-3 text-xs font-black text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-5 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:border-blue-200 dark:hover:border-blue-900 cursor-pointer hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] active:translate-y-0 active:shadow-md group"
                 >
                     <RefreshCw size={16} className={`text-blue-600 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-500`} strokeWidth={2.5} />
                     <span className="uppercase tracking-widest">Last Updated: {lastUpdated.toLocaleTimeString()}</span>
@@ -184,8 +184,8 @@ const DashboardPage = () => {
 
                 {/* Right Column - Square Widgets */}
                 <div className="space-y-6">
-                    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] flex flex-col h-[400px] overflow-hidden">
-                        <div className="p-5 border-b-2 border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+                    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out flex flex-col h-[400px] overflow-hidden">
+                        <div className="p-5 bg-slate-50/50 dark:bg-white/5">
                             <h3 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
                                 <Activity size={20} className="text-blue-500" strokeWidth={2.5} /> Recent Activity
                             </h3>

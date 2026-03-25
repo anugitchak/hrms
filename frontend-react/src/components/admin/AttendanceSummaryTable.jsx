@@ -52,15 +52,15 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.15)] animate-pulse border-2 border-slate-50 dark:border-white/5">
+                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-10 shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out animate-pulse border-2 border-slate-50 dark:border-white/5">
                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5"></div>
+                            <div className="w-14 h-14 rounded-10 bg-slate-100 dark:bg-white/5"></div>
                             <div className="flex-1">
-                                <div className="h-4 bg-slate-100 dark:bg-white/5 rounded w-3/4 mb-2"></div>
-                                <div className="h-3 bg-slate-50 dark:bg-white/5 rounded w-1/2"></div>
+                                <div className="h-4 bg-slate-100 dark:bg-white/5 rounded-10 w-3/4 mb-2"></div>
+                                <div className="h-3 bg-slate-50 dark:bg-white/5 rounded-10 w-1/2"></div>
                             </div>
                         </div>
-                        <div className="h-20 bg-slate-50 dark:bg-white/5 rounded-2xl w-full"></div>
+                        <div className="h-20 bg-slate-50 dark:bg-white/5 rounded-10 w-full"></div>
                     </div>
                 ))}
             </div>
@@ -69,8 +69,8 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
 
     if (summary.length === 0) {
         return (
-            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-20 rounded-[3rem] shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] text-center flex flex-col items-center gap-6 border-2 border-slate-50 dark:border-white/5">
-                <div className="bg-slate-50 dark:bg-white/5 p-6 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10">
+            <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-20 rounded-10 shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out text-center flex flex-col items-center gap-6 border-2 border-slate-50 dark:border-white/5">
+                <div className="bg-slate-50 dark:bg-white/5 p-6 rounded-10 border-2 border-dashed border-slate-200 dark:border-white/10">
                     <Calendar size={64} className="text-slate-300 dark:text-slate-600" />
                 </div>
                 <div>
@@ -90,12 +90,12 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
                     <div
                         key={employee.id}
                         onClick={() => onEmployeeClick(employee)}
-                        className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-6 group cursor-pointer border-2 border-transparent hover:border-brand-500/20"
+                        className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-10 shadow-xl dark:shadow-[0_25px_30px_-5px_rgba(0,0,0,0.7),0_10px_15px_-5px_rgba(0,185,205,0.2)] border border-transparent hover:shadow-2xl dark:hover:shadow-[0_45px_70px_-20px_rgba(0,0,0,0.9),0_10px_15px_-5px_rgba(0,185,205,0.3)] transition-all duration-300 border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 flex flex-col gap-6 group cursor-pointer border-2 border-transparent hover:border-brand-500/20"
                     >
                         {/* Top: Avatar + Status */}
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-4">
-                                <div className={`w-14 h-14 rounded-2xl ${getAvatarColor(employee.name)} flex items-center justify-center text-xl font-bold border border-white dark:border-slate-800 shadow-md group-hover:scale-110 transition-transform duration-500`}>
+                                <div className={`w-14 h-14 rounded-10 ${getAvatarColor(employee.name)} flex items-center justify-center text-xl font-bold border border-white dark:border-slate-800 shadow-md group-hover:scale-110 transition-transform duration-500`}>
                                     {employee.name?.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
@@ -103,15 +103,15 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
                                     <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">{employee.code}</p>
                                 </div>
                             </div>
-                            <span className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-full shadow-sm border transition-all ${sc.badge}`}>
-                                <span className={`w-2 h-2 rounded-full ${sc.dot} ${employee.today_status === 'Present' ? 'animate-pulse' : ''}`}></span>
+                            <span className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold rounded-10 shadow-sm border transition-all ${sc.badge}`}>
+                                <span className={`w-2 h-2 rounded-10 ${sc.dot} ${employee.today_status === 'Present' ? 'animate-pulse' : ''}`}></span>
                                 {employee.today_status}
                             </span>
                         </div>
 
                         {/* Stats Row */}
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-slate-50 dark:bg-brand-800/20 rounded-2xl p-4 border border-slate-900/5 dark:border-white/5 group-hover:bg-brand-50 dark:group-hover:bg-brand-500/5 transition-colors duration-300">
+                            <div className="bg-slate-50 dark:bg-brand-800/20 rounded-10 p-4 border border-slate-900/5 dark:border-white/5 group-hover:bg-brand-50 dark:group-hover:bg-brand-500/5 transition-colors duration-300">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Calendar size={14} className="text-brand-500" />
                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Days</span>
@@ -121,9 +121,9 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
                                     <span className="text-[10px] font-bold text-slate-400">/mo</span>
                                 </div>
                             </div>
-                            <div className="bg-slate-50 dark:bg-brand-800/20 rounded-2xl p-4 border border-slate-900/5 dark:border-white/5 group-hover:bg-teal-50 dark:group-hover:bg-teal-500/5 transition-colors duration-300">
+                            <div className="bg-slate-50 dark:bg-brand-800/20 rounded-10 p-4 border border-slate-900/5 dark:border-white/5 group-hover:bg-[#00b9cd]/10 dark:group-hover:bg-[#00b9cd]/80/5 transition-colors duration-300">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Timer size={14} className="text-teal-500" />
+                                    <Timer size={14} className="text-[#00b9cd]" />
                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hours</span>
                                 </div>
                                 <span className="text-xl font-black text-slate-900 dark:text-white">{formatDuration(employee.total_hours)}</span>
@@ -132,7 +132,7 @@ const AttendanceSummaryTable = ({ summary, loading, onEmployeeClick }) => {
 
                         {/* Pending Checkout Warning */}
                         {hasPendingCheckout && (
-                            <div className="flex items-start gap-3 bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 rounded-2xl p-4 shadow-sm">
+                            <div className="flex items-start gap-3 bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 rounded-10 p-4 shadow-sm">
                                 <AlertTriangle size={18} className="text-orange-500 shrink-0 mt-0.5" />
                                 <div>
                                     <p className="text-xs font-black text-orange-700 dark:text-orange-400 uppercase tracking-tight">

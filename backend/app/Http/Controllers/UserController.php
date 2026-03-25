@@ -21,7 +21,7 @@ class UserController extends Controller
         $user = $request->user();
 
         // Load relationships - avoid loading designation if it doesn't exist
-        $user->load(['employee.department', 'employee.country', 'employee.subCompany', 'employee.manager.user', 'role']);
+        $user->load(['employee.department', 'employee.country', 'employee.subCompany', 'employee.manager.user', 'employee.designation', 'role']);
 
         // Format response
         $permissions = [];
@@ -99,7 +99,7 @@ class UserController extends Controller
                     'email' => $user->employee->manager->user->email,
                 ] : null,
             ] : null,
-            'hr_email' => \App\Models\User::where('role_id', 3)->value('email') ?? \App\Models\Setting::value('company_email') ?? 'hr@email.com',
+            'hr_email' => \App\Models\User::where('role_id', 3)->value('email') ?? \App\Models\Setting::where('key', 'company_email')->value('value') ?? 'hr@email.com',
         ]);
     }
 
@@ -295,5 +295,65 @@ class UserController extends Controller
                 'has_face' => !empty($employee->face_descriptor)
             ]
         ]);
+    }
+
+    /**
+     * Update Employee Profile Photo
+     */
+    public function updateProfilePhoto(Request $request)
+    {
+        $user = auth()->user();
+        if ($user->role_id != 4 || !$user->employee) {
+            return response()->json(['message' => 'Unauthorized or employee profile not found'], 403);
+        }
+
+        $request->validate([
+            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $employee = $user->employee;
+
+        if ($request->hasFile('profile_photo')) {
+            // Delete old photo if exists
+            if ($employee->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($employee->profile_photo)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->profile_photo);
+            }
+
+            // Store new photo
+            $path = $request->file('profile_photo')->store('employees', 'public');
+            $employee->profile_photo = $path;
+            $employee->save();
+
+            return response()->json([
+                'message' => 'Profile photo updated successfully',
+                'profile_photo_url' => $path
+            ]);
+        }
+
+        return response()->json(['message' => 'No image uploaded'], 400);
+    }
+
+    /**
+     * Delete Employee Profile Photo
+     */
+    public function deleteProfilePhoto()
+    {
+        $user = auth()->user();
+        if ($user->role_id != 4 || !$user->employee) {
+            return response()->json(['message' => 'Unauthorized or employee profile not found'], 403);
+        }
+
+        $employee = $user->employee;
+
+        if ($employee->profile_photo) {
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($employee->profile_photo)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->profile_photo);
+            }
+            $employee->profile_photo = null;
+            $employee->save();
+            return response()->json(['message' => 'Profile photo deleted successfully']);
+        }
+
+        return response()->json(['message' => 'No profile photo to delete'], 400);
     }
 }

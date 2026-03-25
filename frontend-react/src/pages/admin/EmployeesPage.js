@@ -532,7 +532,7 @@ const AdminEmployeesPage = () => {
 
     const getProfilePhotoUrl = (path) => {
         if (!path) return null;
-        return path;
+        return path.startsWith('http') ? path : `${STORAGE_URL}/${path}`;
     };
 
     return (
@@ -545,7 +545,7 @@ const AdminEmployeesPage = () => {
                 {canManage && (
                     <button
                         onClick={openAddModal}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition duration-150 ease-in-out"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-10 transition duration-150 ease-in-out shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]"
                     >
                         + Add Employee
                     </button>
@@ -553,18 +553,18 @@ const AdminEmployeesPage = () => {
             </div>
 
             <div className="p-6 pb-0">
-                <div className="card p-4 flex flex-wrap gap-4 items-center">
+                <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] p-4 flex flex-wrap gap-4 items-center">
                     <input
                         type="text"
                         placeholder="Search employees..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full max-w-[300px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-10 outline-none w-full max-w-[300px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                     <select
                         value={departmentFilter}
                         onChange={(e) => setDepartmentFilter(e.target.value)}
-                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full max-w-[200px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-10 outline-none w-full max-w-[200px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                         <option value="">All Departments</option>
                         {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -572,7 +572,7 @@ const AdminEmployeesPage = () => {
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg outline-none w-full max-w-[150px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="p-2.5 border border-gray-300 dark:border-gray-600 rounded-10 outline-none w-full max-w-[150px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                         <option value="">All Status</option>
                         <option value="Active">Active</option>
@@ -587,7 +587,7 @@ const AdminEmployeesPage = () => {
                 ) : error ? (
                     <div className="text-center p-8 text-red-500">{error}</div>
                 ) : (
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+                    <div className="bg-white dark:bg-gray-800 rounded-10 overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]">
                         <table className="w-full text-left border-collapse">
                             <thead className="bg-brand-50 border-b-2 border-black">
                                 <tr>
@@ -608,8 +608,23 @@ const AdminEmployeesPage = () => {
                                     paginatedEmployees.map((emp) => (
                                         <tr key={emp.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="font-medium text-gray-900 dark:text-white">{emp.user?.name}</div>
-                                                <div className="text-xs text-gray-900">{emp.designation?.name || '-'}</div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-10 bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold overflow-hidden border border-black/5 flex-shrink-0">
+                                                        {emp.profile_photo ? (
+                                                            <img
+                                                                src={getProfilePhotoUrl(emp.profile_photo)}
+                                                                alt={emp.user?.name}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            emp.user?.name?.charAt(0).toUpperCase() || '?'
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-medium text-gray-900 dark:text-white">{emp.user?.name}</div>
+                                                        <div className="text-xs text-slate-500 dark:text-slate-400">{emp.designation?.name || '-'}</div>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{emp.department?.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
@@ -626,7 +641,7 @@ const AdminEmployeesPage = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${emp.user?.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                                <span className={`px-3 py-1 rounded-10 text-xs font-medium ${emp.user?.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                                                     {emp.user?.is_active ? "Active" : "Inactive"}
                                                 </span>
                                             </td>
@@ -635,11 +650,11 @@ const AdminEmployeesPage = () => {
                                                     const hasFaceData = emp.face_descriptor || emp.user?.face_descriptor;
                                                     const isEnrolled = hasFaceData && hasFaceData !== 'null' && hasFaceData.trim() !== '';
                                                     return isEnrolled ? (
-                                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-10 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                                                             ✅ Face Enrolled
                                                         </span>
                                                     ) : (
-                                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
+                                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-10 bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
                                                             ⏳ Enrollment Pending
                                                         </span>
                                                     );
@@ -664,8 +679,8 @@ const AdminEmployeesPage = () => {
                         {/* Pagination controls simplified */}
                         {totalPages > 1 && (
                             <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-2">
-                                <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)} className="px-4 py-2 border rounded disabled:opacity-50">Previous</button>
-                                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)} className="px-4 py-2 border rounded disabled:opacity-50">Next</button>
+                                <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)} className="px-4 py-2 border rounded-10 disabled:opacity-50">Previous</button>
+                                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)} className="px-4 py-2 border rounded-10 disabled:opacity-50">Next</button>
                             </div>
                         )}
                     </div>
@@ -674,22 +689,22 @@ const AdminEmployeesPage = () => {
             {/* Render Modals - Simplified for brevity but functional */}
             {isAddModalOpen && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-auto p-6 transition-colors duration-200">
+                    <div className="bg-white dark:bg-gray-800 rounded-10 w-full max-w-2xl max-h-[90vh] overflow-auto p-6 transition-colors duration-200 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]">
                         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Add Employee</h2>
                         {formErrors.api && <div className="text-red-500 mb-4">{formErrors.api}</div>}
                         <form onSubmit={handleAddSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Name *</label>
-                                <input id="add_name" name="name" type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input id="add_name" name="name" type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
                                 {formErrors.name && <p className="text-red-500 text-xs">{formErrors.name}</p>}
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_email" className="text-sm font-medium text-gray-700 dark:text-gray-300">Email *</label>
-                                <input id="add_email" name="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input id="add_email" name="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_department" className="text-sm font-medium text-gray-700 dark:text-gray-300">Department *</label>
-                                <select id="add_department" name="department_id" value={formData.department_id} onChange={(e) => setFormData({ ...formData, department_id: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="add_department" name="department_id" value={formData.department_id} onChange={(e) => setFormData({ ...formData, department_id: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">Select Department</option>
                                     {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                                 </select>
@@ -701,7 +716,7 @@ const AdminEmployeesPage = () => {
                                     name="country_id"
                                     value={formData.country_id || ""}
                                     onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })}
-                                    className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Select Country</option>
                                     {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -716,7 +731,7 @@ const AdminEmployeesPage = () => {
                                     value={formData.sub_company_id || ""}
                                     onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })}
                                     disabled={!formData.country_id || subCompanies.length === 0}
-                                    className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                                    className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                                 >
                                     <option value="">Select Sub-Company</option>
                                     {subCompanies.map(sc => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
@@ -725,7 +740,7 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_joining_category" className="text-sm font-medium text-gray-700 dark:text-gray-300">Joining Category *</label>
-                                <select id="add_joining_category" name="joining_category" value={formData.joining_category} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="add_joining_category" name="joining_category" value={formData.joining_category} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="New Joinee">New Joinee</option>
                                     <option value="Intern">Intern</option>
                                     <option value="Permanent">Permanent</option>
@@ -733,16 +748,16 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_designation" className="text-sm font-medium text-gray-700 dark:text-gray-300">Designation *</label>
-                                <input id="add_designation" name="designation_name" list="designation_options" autoComplete="off" placeholder="Select or Type Designation" value={formData.designation_name} onChange={(e) => setFormData({ ...formData, designation_name: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input id="add_designation" name="designation_name" list="designation_options" autoComplete="off" placeholder="Select or Type Designation" value={formData.designation_name} onChange={(e) => setFormData({ ...formData, designation_name: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
                                 <datalist id="designation_options">
-                                    {designations.map(d => (
+                                    {designations.filter(d => !d.department_id || String(d.department_id) === String(formData.department_id)).map(d => (
                                         <option key={d.id} value={d.name} />
                                     ))}
                                 </datalist>
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_reports_to" className="text-sm font-medium text-gray-700 dark:text-gray-300">Reports To</label>
-                                <select id="add_reports_to" name="reports_to" value={formData.reports_to} onChange={(e) => setFormData({ ...formData, reports_to: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="add_reports_to" name="reports_to" value={formData.reports_to} onChange={(e) => setFormData({ ...formData, reports_to: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">No Manager</option>
                                     {employees.map(e => (
                                         <option key={e.id} value={e.id}>{e.user?.name} ({e.designation?.name || 'N/A'})</option>
@@ -751,38 +766,38 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_date_of_joining" className="text-sm font-medium text-gray-700 dark:text-gray-300">Date of Joining *</label>
-                                <input id="add_date_of_joining" name="date_of_joining" type="date" value={formData.date_of_joining} onChange={(e) => setFormData({ ...formData, date_of_joining: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input id="add_date_of_joining" name="date_of_joining" type="date" value={formData.date_of_joining} onChange={(e) => setFormData({ ...formData, date_of_joining: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_dob" className="text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth *</label>
-                                <input id="add_dob" name="dob" type="date" value={formData.dob} onChange={(e) => setFormData({ ...formData, dob: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input id="add_dob" name="dob" type="date" value={formData.dob} onChange={(e) => setFormData({ ...formData, dob: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_aadhar" className="text-sm font-medium text-gray-700 dark:text-gray-300">Aadhar *</label>
-                                <input id="add_aadhar" name="aadhar_number" type="text" value={formData.aadhar_number} onChange={(e) => setFormData({ ...formData, aadhar_number: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" maxLength={12} />
+                                <input id="add_aadhar" name="aadhar_number" type="text" value={formData.aadhar_number} onChange={(e) => setFormData({ ...formData, aadhar_number: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" maxLength={12} />
                             </div>
                             <div className="flex flex-col gap-1">
-                                <input id="add_pan" name="pan_number" type="text" value={formData.pan_number} onChange={(e) => setFormData({ ...formData, pan_number: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" maxLength={10} />
+                                <input id="add_pan" name="pan_number" type="text" value={formData.pan_number} onChange={(e) => setFormData({ ...formData, pan_number: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" maxLength={10} />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_aadhar_file" className="text-sm font-medium text-gray-700 dark:text-gray-300">Aadhar File</label>
-                                <input id="add_aadhar_file" type="file" onChange={(e) => setFormData({ ...formData, aadhar_file: e.target.files[0] })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm" accept=".pdf,.jpg,.jpeg,.png" />
+                                <input id="add_aadhar_file" type="file" onChange={(e) => setFormData({ ...formData, aadhar_file: e.target.files[0] })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm" accept=".pdf,.jpg,.jpeg,.png" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_pan_file" className="text-sm font-medium text-gray-700 dark:text-gray-300">PAN File</label>
-                                <input id="add_pan_file" type="file" onChange={(e) => setFormData({ ...formData, pan_file: e.target.files[0] })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm" accept=".pdf,.jpg,.jpeg,.png" />
+                                <input id="add_pan_file" type="file" onChange={(e) => setFormData({ ...formData, pan_file: e.target.files[0] })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm" accept=".pdf,.jpg,.jpeg,.png" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone *</label>
-                                <input id="add_phone" name="phone" type="text" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" maxLength={10} />
+                                <input id="add_phone" name="phone" type="text" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" maxLength={10} />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_emergency" className="text-sm font-medium text-gray-700 dark:text-gray-300">Emergency</label>
-                                <input id="add_emergency" name="emergency_contact" type="text" value={formData.emergency_contact} onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" maxLength={10} />
+                                <input id="add_emergency" name="emergency_contact" type="text" value={formData.emergency_contact} onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" maxLength={10} />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_gender" className="text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
-                                <select id="add_gender" name="gender" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="add_gender" name="gender" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
@@ -791,7 +806,7 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="add_marital_status" className="text-sm font-medium text-gray-700 dark:text-gray-300">Marital Status</label>
-                                <select id="add_marital_status" name="marital_status" value={formData.marital_status} onChange={(e) => setFormData({ ...formData, marital_status: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="add_marital_status" name="marital_status" value={formData.marital_status} onChange={(e) => setFormData({ ...formData, marital_status: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">Select Status</option>
                                     <option value="Single">Single</option>
                                     <option value="Married">Married</option>
@@ -800,20 +815,20 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="col-span-1 md:col-span-2 flex flex-col gap-1">
                                 <label htmlFor="add_address" className="text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
-                                <textarea id="add_address" name="address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" rows="2"></textarea>
+                                <textarea id="add_address" name="address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" rows="2"></textarea>
                             </div>
                             <div className="col-span-1 md:col-span-2 flex flex-col gap-1">
                                 <label htmlFor="add_photo" className="text-sm font-medium text-gray-700 dark:text-gray-300">Profile Photo</label>
-                                <input id="add_photo" type="file" onChange={(e) => setFormData({ ...formData, profile_photo: e.target.files[0] })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                                <input id="add_photo" type="file" onChange={(e) => setFormData({ ...formData, profile_photo: e.target.files[0] })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                             </div>
 
-                            <div className="col-span-1 md:col-span-2 flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <div className="col-span-1 md:col-span-2 flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-10">
                                 <input
                                     type="checkbox"
                                     id="add_enroll_face"
                                     checked={enrollFace}
                                     onChange={(e) => setEnrollFace(e.target.checked)}
-                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-10 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                 />
                                 <label htmlFor="add_enroll_face" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
                                     Enroll Face Recognition (optional)
@@ -821,8 +836,8 @@ const AdminEmployeesPage = () => {
                             </div>
 
                             <div className="col-span-1 md:col-span-2 flex justify-end gap-3 mt-4">
-                                <button type="button" onClick={closeModals} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
-                                <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow">
+                                <button type="button" onClick={closeModals} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
+                                <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]">
                                     {isSubmitting ? "Creating..." : "Create Employee"}
                                 </button>
                             </div>
@@ -833,22 +848,22 @@ const AdminEmployeesPage = () => {
 
             {isEditModalOpen && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-auto p-6 transition-colors duration-200">
+                    <div className="bg-white dark:bg-gray-800 rounded-10 w-full max-w-2xl max-h-[90vh] overflow-auto p-6 transition-colors duration-200 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]">
                         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Edit Employee</h2>
                         {formErrors.api && <div className="text-red-500 mb-4">{formErrors.api}</div>}
                         <form onSubmit={handleEditSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Reusing styled inputs for Edit form */}
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Name *</label>
-                                <input id="edit_name" name="name" type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input id="edit_name" name="name" type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_email" className="text-sm font-medium text-gray-700 dark:text-gray-300">Email *</label>
-                                <input id="edit_email" name="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input id="edit_email" name="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_department" className="text-sm font-medium text-gray-700 dark:text-gray-300">Department *</label>
-                                <select id="edit_department" name="department_id" value={formData.department_id} onChange={(e) => setFormData({ ...formData, department_id: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="edit_department" name="department_id" value={formData.department_id} onChange={(e) => setFormData({ ...formData, department_id: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">Select Department</option>
                                     {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                                 </select>
@@ -860,7 +875,7 @@ const AdminEmployeesPage = () => {
                                     name="country_id"
                                     value={formData.country_id || ""}
                                     onChange={(e) => setFormData({ ...formData, country_id: e.target.value, sub_company_id: "" })}
-                                    className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Select Country</option>
                                     {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -875,7 +890,7 @@ const AdminEmployeesPage = () => {
                                     value={formData.sub_company_id || ""}
                                     onChange={(e) => setFormData({ ...formData, sub_company_id: e.target.value })}
                                     disabled={!formData.country_id || subCompanies.length === 0}
-                                    className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                                    className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                                 >
                                     <option value="">Select Sub-Company</option>
                                     {subCompanies.map(sc => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
@@ -884,7 +899,7 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_joining_category" className="text-sm font-medium text-gray-700 dark:text-gray-300">Joining Category *</label>
-                                <select id="edit_joining_category" name="joining_category" value={formData.joining_category} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="edit_joining_category" name="joining_category" value={formData.joining_category} onChange={(e) => setFormData({ ...formData, joining_category: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="New Joinee">New Joinee</option>
                                     <option value="Intern">Intern</option>
                                     <option value="Permanent">Permanent</option>
@@ -892,16 +907,16 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_designation" className="text-sm font-medium text-gray-700 dark:text-gray-300">Designation *</label>
-                                <input id="edit_designation" name="designation_name" list="designation_options_edit" autoComplete="off" placeholder="Select or Type Designation" value={formData.designation_name} onChange={(e) => setFormData({ ...formData, designation_name: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input id="edit_designation" name="designation_name" list="designation_options_edit" autoComplete="off" placeholder="Select or Type Designation" value={formData.designation_name} onChange={(e) => setFormData({ ...formData, designation_name: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500" />
                                 <datalist id="designation_options_edit">
-                                    {designations.map(d => (
+                                    {designations.filter(d => !d.department_id || String(d.department_id) === String(formData.department_id)).map(d => (
                                         <option key={d.id} value={d.name} />
                                     ))}
                                 </datalist>
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_reports_to" className="text-sm font-medium text-gray-700 dark:text-gray-300">Reports To</label>
-                                <select id="edit_reports_to" name="reports_to" value={formData.reports_to} onChange={(e) => setFormData({ ...formData, reports_to: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="edit_reports_to" name="reports_to" value={formData.reports_to} onChange={(e) => setFormData({ ...formData, reports_to: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">No Manager</option>
                                     {employees.filter(e => {
                                         if (e.id === selectedEmployee?.id) return false;
@@ -913,15 +928,15 @@ const AdminEmployeesPage = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label htmlFor="edit_status" className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                                <select id="edit_status" name="status" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="edit_status" name="status" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="border border-gray-300 dark:border-gray-600 rounded-10 p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="Active">Active</option>
                                     <option value="Inactive">Inactive</option>
                                 </select>
                             </div>
 
                             <div className="col-span-1 md:col-span-2 flex justify-end gap-3 mt-4">
-                                <button type="button" onClick={closeModals} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
-                                <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow">
+                                <button type="button" onClick={closeModals} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
+                                <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-10 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]">
                                     {isSubmitting ? "Saving..." : "Save Changes"}
                                 </button>
                             </div>
@@ -932,12 +947,12 @@ const AdminEmployeesPage = () => {
 
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full transition-colors duration-200">
+                    <div className="bg-white dark:bg-gray-800 rounded-10 p-6 max-w-md w-full transition-colors duration-200">
                         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Delete Employee</h2>
                         <p className="mb-6 text-gray-600 dark:text-gray-300">Are you sure you want to delete <span className="font-semibold text-gray-800 dark:text-gray-200">{selectedEmployee?.user?.name}</span>?</p>
                         <div className="flex justify-end gap-3">
-                            <button onClick={closeModals} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
-                            <button onClick={handleDeleteSubmit} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
+                            <button onClick={closeModals} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
+                            <button onClick={handleDeleteSubmit} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-10">
                                 {isSubmitting ? "Deleting..." : "Delete"}
                             </button>
                         </div>
@@ -947,7 +962,7 @@ const AdminEmployeesPage = () => {
 
             {isViewModalOpen && selectedEmployee && (
                 <div className="fixed inset-0 bg-black/50 overflow-y-auto flex items-center justify-center p-4 z-50">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl relative transition-colors duration-200 my-8">
+                    <div className="bg-white dark:bg-gray-800 rounded-10 w-full max-w-3xl relative transition-colors duration-200 my-8 shadow-md border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)]">
                         <button
                             onClick={closeModals}
                             className="absolute top-4 right-4 text-gray-900 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -959,12 +974,12 @@ const AdminEmployeesPage = () => {
 
                         <div className="p-8">
                             <div className="flex items-center gap-6 mb-8">
-                                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-2xl font-bold text-blue-600 dark:text-blue-300">
+                                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900 rounded-10 flex items-center justify-center text-2xl font-bold text-blue-600 dark:text-blue-300">
                                     {selectedEmployee.profile_photo ? (
                                         <img
                                             src={getProfilePhotoUrl(selectedEmployee.profile_photo)}
                                             alt={selectedEmployee.user?.name}
-                                            className="w-full h-full rounded-full object-cover"
+                                            className="w-full h-full rounded-10 object-cover"
                                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
                                         />
                                     ) : null}
@@ -975,7 +990,7 @@ const AdminEmployeesPage = () => {
                                 <div>
                                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedEmployee.user?.name}</h2>
                                     <p className="text-gray-900">{selectedEmployee.designation?.name}</p>
-                                    <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-2 ${selectedEmployee.user?.is_active
+                                    <div className={`inline-flex items-center px-2.5 py-0.5 rounded-10 text-xs font-medium mt-2 ${selectedEmployee.user?.is_active
                                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                                         : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                                         }`}>
@@ -1064,13 +1079,13 @@ const AdminEmployeesPage = () => {
 
             {isPasswordModalOpen && (
                 <div className="fixed inset-0 bg-black/50 z-[2000] flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full text-center transition-colors duration-200">
+                    <div className="bg-white dark:bg-gray-800 rounded-10 p-6 max-w-sm w-full text-center transition-colors duration-200">
                         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Temporary Password</h2>
-                        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded mb-4">
+                        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded-10 mb-4">
                             <p className="text-2xl font-mono font-bold text-blue-700 dark:text-blue-400">{createdPassword}</p>
                         </div>
                         <p className="text-red-500 dark:text-red-400 text-sm mb-4">Please copy this password. It will not be shown again.</p>
-                        <button onClick={() => { setIsPasswordModalOpen(false); setCreatedPassword(null); }} className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">Close</button>
+                        <button onClick={() => { setIsPasswordModalOpen(false); setCreatedPassword(null); }} className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-10">Close</button>
                     </div>
                 </div>
             )}

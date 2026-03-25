@@ -68,7 +68,7 @@ const CreateUserPage = () => {
                 onClick={handleBack}
                 className="flex items-center gap-3 text-xs font-black text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all uppercase tracking-widest mb-10 group"
             >
-                <div className="p-3 bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-900/5 group-hover:border-slate-900 transition-colors shadow-sm">
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-10 border-2 border-slate-900/5 group-hover:border-slate-900 transition-colors shadow-md">
                     <ArrowLeft size={16} />
                 </div>
                 Return to Hub
@@ -76,29 +76,29 @@ const CreateUserPage = () => {
 
             <div className="mb-12">
                 <h1 className="text-5xl font-black text-slate-900 dark:text-white font-paperlogy tracking-tight lowercase">
-                    <span className="italic">Initiate</span> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Recruitment</span>
+                    Initiate <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Recruitment</span>
                 </h1>
                 <div className="flex items-center gap-3 mt-4">
-                    <span className="h-1.5 w-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></span>
+                    <span className="h-1.5 w-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-10"></span>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Protocol: New Agent Onboarding</p>
                 </div>
             </div>
 
             {/* Notification Bar */}
             {error && (
-                <div className="bg-red-50 dark:bg-red-900/10 border-2 border-red-500/20 text-red-600 dark:text-red-400 p-6 rounded-3xl mb-8 flex items-center gap-4 animate-in zoom-in-95">
+                <div className="bg-red-50 dark:bg-red-900/10 border-2 border-red-500/20 text-red-600 dark:text-red-400 p-6 rounded-10 mb-8 flex items-center gap-4 animate-in zoom-in-95">
                     <X className="shrink-0" size={20} />
                     <p className="text-xs font-black uppercase tracking-wider">{error}</p>
                 </div>
             )}
             {success && (
-                <div className="bg-emerald-50 dark:bg-emerald-900/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-6 rounded-3xl mb-8 flex items-center gap-4 animate-in zoom-in-95">
+                <div className="bg-emerald-50 dark:bg-emerald-900/10 border-2 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-6 rounded-10 mb-8 flex items-center gap-4 animate-in zoom-in-95">
                     <Save className="shrink-0" size={20} />
                     <p className="text-xs font-black uppercase tracking-wider">{success}</p>
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] border-2 border-slate-900/10 shadow-[8px_8px_0px_0px_rgba(71,85,105,0.3)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-all">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 p-10 rounded-10 border-2 border-slate-900/10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out transition-all">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     {/* Primary Identity Section */}
                     <div className="space-y-8">
@@ -114,7 +114,7 @@ const CreateUserPage = () => {
                                 name="name" 
                                 value={formData.name} 
                                 onChange={handleChange} 
-                                className="w-full px-6 py-4 rounded-2xl border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm" 
+                                className="w-full px-6 py-4 rounded-10 border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm" 
                                 placeholder="Enter agent name..."
                                 required 
                             />
@@ -127,7 +127,7 @@ const CreateUserPage = () => {
                                 name="email" 
                                 value={formData.email} 
                                 onChange={handleChange} 
-                                className="w-full px-6 py-4 rounded-2xl border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm" 
+                                className="w-full px-6 py-4 rounded-10 border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm" 
                                 placeholder="agent@system.hub"
                                 required 
                             />
@@ -140,7 +140,7 @@ const CreateUserPage = () => {
                                     name="role_id" 
                                     value={formData.role_id} 
                                     onChange={handleChange} 
-                                    className="w-full px-6 py-4 rounded-2xl border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm appearance-none cursor-pointer"
+                                    className="w-full px-6 py-4 rounded-10 border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm appearance-none cursor-pointer"
                                 >
                                     {isSuperAdmin && <option value={2}>Administrator</option>}
                                     {isSuperAdmin && <option value={3}>HR Agent</option>}
@@ -165,7 +165,7 @@ const CreateUserPage = () => {
                                     name="joining_category" 
                                     value={formData.joining_category} 
                                     onChange={handleChange} 
-                                    className="w-full px-6 py-4 rounded-2xl border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm appearance-none cursor-pointer"
+                                    className="w-full px-6 py-4 rounded-10 border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm appearance-none cursor-pointer"
                                 >
                                     <option value="New Joinee">Initial Activation</option>
                                     <option value="Intern">Probationary Intern</option>
@@ -183,7 +183,7 @@ const CreateUserPage = () => {
                                     name="temp_password" 
                                     value={formData.temp_password} 
                                     onChange={handleChange} 
-                                    className="w-full px-6 py-4 rounded-2xl border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm" 
+                                    className="w-full px-6 py-4 rounded-10 border-2 border-slate-900/5 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all font-bold text-sm" 
                                     placeholder="Enter initial passkey..."
                                     required 
                                     minLength={4} 
@@ -195,7 +195,7 @@ const CreateUserPage = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5 text-center">
                                 <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Aadhar ID Check</label>
-                                <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-900/10 rounded-2xl p-4 cursor-pointer hover:bg-slate-50 transition-colors">
+                                <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-900/10 rounded-10 p-4 cursor-pointer hover:bg-slate-50 transition-colors">
                                     <FileText size={20} className={files.aadhar_file ? "text-emerald-500" : "text-slate-300"} />
                                     <span className="text-[8px] font-bold mt-2 truncate w-full text-center">{files.aadhar_file ? files.aadhar_file.name : "Upload ID"}</span>
                                     <input type="file" name="aadhar_file" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" className="hidden" />
@@ -203,7 +203,7 @@ const CreateUserPage = () => {
                             </div>
                             <div className="space-y-1.5 text-center">
                                 <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">PAN ID Check</label>
-                                <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-900/10 rounded-2xl p-4 cursor-pointer hover:bg-slate-50 transition-colors">
+                                <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-900/10 rounded-10 p-4 cursor-pointer hover:bg-slate-50 transition-colors">
                                     <FileText size={20} className={files.pan_file ? "text-emerald-500" : "text-slate-300"} />
                                     <span className="text-[8px] font-bold mt-2 truncate w-full text-center">{files.pan_file ? files.pan_file.name : "Upload ID"}</span>
                                     <input type="file" name="pan_file" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" className="hidden" />
@@ -217,14 +217,14 @@ const CreateUserPage = () => {
                     <button 
                         type="submit" 
                         disabled={loading} 
-                        className="w-full sm:w-auto px-12 py-5 bg-blue-600 text-white rounded-2xl text-sm font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(37,99,235,0.2)] hover:bg-blue-500 active:translate-y-1 active:shadow-none transition-all disabled:opacity-70 flex items-center justify-center gap-3"
+                        className="w-full sm:w-auto px-12 py-5 bg-blue-600 text-white rounded-10 text-sm font-black uppercase tracking-widest shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:bg-blue-500 active:translate-y-1 active:shadow-none transition-all disabled:opacity-70 flex items-center justify-center gap-3"
                     >
-                        {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><UserPlus size={18} /> Confirm Onboarding</>}
+                        {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-10 animate-spin"></div> : <><UserPlus size={18} /> Confirm Onboarding</>}
                     </button>
                     <button 
                         type="button" 
                         onClick={handleBack} 
-                        className="w-full sm:w-auto px-12 py-5 bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-2 border-slate-900/10 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-white/10 transition-all"
+                        className="w-full sm:w-auto px-12 py-5 bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-2 border-slate-900/10 rounded-10 text-xs font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-white/10 transition-all"
                     >
                         Abort Sequence
                     </button>

@@ -6,14 +6,14 @@ const ViewPayslipModal = ({ payslip, onClose, onDownload }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-gray-800 rounded-10 shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Payslip Details</h3>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => onDownload(payslip)}
-                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-10 transition-colors"
                             title="Download PDF"
                         >
                             <Download size={20} />
@@ -33,13 +33,13 @@ const ViewPayslipModal = ({ payslip, onClose, onDownload }) => {
                     <div className="text-center mb-8">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">COMPANY NAME</h2>
                         <p className="text-gray-500 dark:text-gray-400 text-sm">123 Business Street, Tech City, TC 90210</p>
-                        <div className="mt-4 inline-block px-4 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
+                        <div className="mt-4 inline-block px-4 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-10 text-sm font-medium">
                             Payslip for {payslip.month_year}
                         </div>
                     </div>
 
                     {/* Employee Info */}
-                    <div className="grid grid-cols-2 gap-6 mb-8 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                    <div className="grid grid-cols-2 gap-6 mb-8 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-10 border border-gray-100 dark:border-gray-700">
                         <div>
                             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Employee Name</p>
                             <p className="font-semibold text-gray-900 dark:text-white">{payslip.employee?.user?.name || payslip.employee_name}</p>
@@ -67,7 +67,7 @@ const ViewPayslipModal = ({ payslip, onClose, onDownload }) => {
                     </div>
 
                     {/* Salary Details Table */}
-                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-8">
+                    <div className="border border-gray-200 dark:border-gray-700 rounded-10 overflow-hidden mb-8">
                         <div className="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700">
                             {/* Earnings */}
                             <div>
@@ -128,7 +128,7 @@ const ViewPayslipModal = ({ payslip, onClose, onDownload }) => {
 
                     {/* Net Pay */}
                     <div className="flex justify-end">
-                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg px-6 py-4 text-center min-w-[200px]">
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-10 px-6 py-4 text-center min-w-[200px]">
                             <p className="text-sm text-blue-600 dark:text-blue-400 uppercase font-semibold mb-1">Net Pay</p>
                             <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{payslip.net_pay}</p>
                         </div>

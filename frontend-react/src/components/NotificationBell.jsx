@@ -13,7 +13,7 @@ const NotificationBell = () => {
             <div className="relative">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="relative p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors focus:outline-none"
+                    className="relative w-10 h-10 flex items-center justify-center bg-white dark:bg-brand-900 border-2 border-black dark:border-white shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md rounded-10 text-gray-900 dark:text-white focus:outline-none"
                 >
                     {/* Bell Icon SVG */}
                     <svg
@@ -33,7 +33,7 @@ const NotificationBell = () => {
 
                     {/* Badge */}
                     {unreadCount > 0 && (
-                        <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold h-4 min-w-[16px] px-1 rounded-full flex items-center justify-center">
+                        <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold h-4 min-w-[16px] px-1 rounded-10 flex items-center justify-center">
                             {unreadCount > 9 ? "9+" : unreadCount}
                         </span>
                     )}
