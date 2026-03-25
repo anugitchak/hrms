@@ -232,45 +232,45 @@ const EmployeeProfilePage = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            <div className="space-y-1 group">
+                            <div className="space-y-1 group min-w-0">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Terminal Link (Email)</label>
-                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100">
+                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10 truncate">
                                     {employee?.user?.email}
                                 </div>
                             </div>
                             <div className="space-y-1 group">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Stardate of Birth</label>
-                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100">
+                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10 whitespace-nowrap">
                                     {formatDate(employee?.dob)}
                                 </div>
                             </div>
                             <div className="space-y-1 group">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Activation Stardate</label>
-                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100">
+                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10 whitespace-nowrap">
                                     {formatDate(employee?.date_of_joining)}
                                 </div>
                             </div>
                             <div className="space-y-1 group">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Gender Classification</label>
-                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 uppercase">
+                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10 uppercase truncate">
                                     {employee?.gender || "Undefined"}
                                 </div>
                             </div>
                             <div className="space-y-1 group">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Civilian Status</label>
-                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 uppercase">
+                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10 uppercase truncate">
                                     {employee?.marital_status || "Single"}
                                 </div>
                             </div>
                             <div className="space-y-1 group">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Sector Origin</label>
-                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 uppercase">
+                                <div className="p-5 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10 uppercase truncate">
                                     {employee?.country?.name || "Global HQ"}
                                 </div>
                             </div>
                             <div className="md:col-span-2 lg:col-span-3 space-y-1 group">
                                 <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Terminal Address</label>
-                                <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 leading-relaxed uppercase">
+                                <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-10 border border-slate-900/5 text-sm font-black text-slate-700 dark:text-slate-200 transition-colors group-hover:bg-slate-100 dark:group-hover:bg-white/10 leading-relaxed uppercase break-words">
                                     {employee?.address || "Mobile Deployment"}
                                 </div>
                             </div>

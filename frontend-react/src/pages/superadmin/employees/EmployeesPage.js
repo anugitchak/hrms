@@ -829,7 +829,7 @@ const EmployeesPage = () => {
                                                 )}
                                             </div>
                                             <div className="flex flex-col items-end gap-2.5">
-                                                <span className="px-3 py-1.5 text-[10px] font-bold rounded-10 bg-slate-50 dark:bg-white/5 text-slate-500 border border-slate-900/10 dark:border-white/10 shadow-md uppercase tracking-widest">
+                                                <span className="px-3 py-1.5 text-[10px] font-bold rounded-10 bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 border border-slate-900/10 dark:border-white/10 shadow-md uppercase tracking-widest">
                                                     {emp.employee_code}
                                                 </span>
                                                 <span className={`flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold rounded-10 ${
@@ -844,19 +844,19 @@ const EmployeesPage = () => {
                                         </div>
 
                                         {/* Name + Title */}
-                                        <div>
-                                            <h3 className="font-extrabold text-slate-900 dark:text-white text-lg leading-tight tracking-tight uppercase group-hover:text-[#00b9cd] transition-colors">{emp.user?.name}</h3>
-                                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                        <div className="min-w-0">
+                                            <h3 className="font-extrabold text-slate-900 dark:text-white text-lg leading-tight tracking-tight uppercase group-hover:text-[#00b9cd] transition-colors truncate">{emp.user?.name}</h3>
+                                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 truncate">
                                                 <Briefcase size={12} className="text-[#00b9cd]" />
                                                 {emp.designation?.name || 'Unassigned'}
                                             </div>
                                         </div>
 
                                         {/* Division + Email */}
-                                        <div className="space-y-2">
+                                        <div className="space-y-2 min-w-0">
                                             <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-900/5 dark:border-white/5 rounded-10">
                                                 <Building2 size={14} className="text-blue-500" />
-                                                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tight">{emp.department?.name || 'No Division'}</span>
+                                                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tight truncate">{emp.department?.name || 'No Division'}</span>
                                             </div>
                                             <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-900/5 dark:border-white/5 rounded-10 overflow-hidden">
                                                 <Mail size={14} className="text-purple-500" />

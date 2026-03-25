@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../api/axios';
+import { ScanFace, ArrowLeft, ArrowRight, CheckCircle, X, Check, Camera } from "lucide-react";
 
 /**
  * FaceEnrollment Component - v2 (Python Service Integration)
@@ -10,9 +11,9 @@ import api from '../api/axios';
  * 3. Supports multi-capture enrollment (3 photos: front, left, right) for cross-device robustness
  */
 const CAPTURE_STEPS = [
-  { label: 'Look straight at the camera', hint: 'Center your face in the oval', icon: '😐' },
-  { label: 'Turn slightly to the left', hint: 'Just a small turn — keep face inside oval', icon: '👈' },
-  { label: 'Turn slightly to the right', hint: 'Last one! Small turn to the right', icon: '👉' },
+  { label: 'Look straight at the camera', hint: 'Center your face in the oval', icon: ScanFace },
+  { label: 'Turn slightly to the left', hint: 'Just a small turn — keep face inside oval', icon: ArrowLeft },
+  { label: 'Turn slightly to the right', hint: 'Last one! Small turn to the right', icon: ArrowRight },
 ];
 
 const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
@@ -186,7 +187,7 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
               borderRadius: '8px', color: 'white', fontSize: '22px',
               width: '36px', height: '36px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>×</button>
+            }}><X className="w-5 h-5" /></button>
           </div>
 
           {/* Progress Bar */}
@@ -207,7 +208,7 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
           borderBottom: '1px solid #e0e7ff',
           display: 'flex', alignItems: 'center', gap: '12px',
         }}>
-          <span style={{ fontSize: '32px' }}>{isDone ? '✅' : currentStep.icon}</span>
+          {isDone ? <CheckCircle className="w-8 h-8 text-emerald-500" /> : <currentStep.icon className="w-8 h-8 text-indigo-500" />}
           <div>
             <div style={{ fontWeight: 700, color: '#1e1b4b', fontSize: '15px' }}>
               {isDone ? 'Enrollment Complete!' : currentStep.label}
@@ -239,7 +240,7 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexDirection: 'column', gap: '8px',
             }}>
-              <div style={{ fontSize: '64px' }}>✅</div>
+              <div style={{ fontSize: '64px' }}><CheckCircle className="w-16 h-16 text-white" /></div>
               <div style={{ color: 'white', fontWeight: 700, fontSize: '18px' }}>
                 Face Enrolled Successfully!
               </div>
@@ -289,7 +290,7 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
                     : '#f3f4f6',
                 color: i < capturedCount ? '#16a34a' : i === captureStep ? '#7c3aed' : '#9ca3af',
               }}>
-                {i < capturedCount ? '✓' : i + 1} {step.label.split(' ')[0]}
+                {i < capturedCount ? <Check className="w-3 h-3" /> : i + 1} {step.label.split(' ')[0]}
               </div>
             ))}
           </div>
@@ -312,9 +313,9 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
                 ? 'Uploading...'
                 : isDone
                   ? 'Done!'
-                  : captureStep === 0
-                    ? 'Capture Face'
-                    : `Capture (${captureStep + 1}/${CAPTURE_STEPS.length})`}
+                    : captureStep === 0
+                      ? <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}><Camera className="w-5 h-5" /> Capture Face</span>
+                      : <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}><Camera className="w-5 h-5" /> Capture ({captureStep + 1}/{CAPTURE_STEPS.length})</span>}
             </button>
             <button
               onClick={onClose}

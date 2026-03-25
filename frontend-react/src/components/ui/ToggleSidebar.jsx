@@ -121,11 +121,12 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
 
               <AnimatePresence mode="wait">
                 {isOpen && (
-                  <motion.span
+                    <motion.span
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
-                    className="whitespace-nowrap overflow-hidden font-black text-[11px] tracking-[0.1em] uppercase"
+                    className="whitespace-nowrap overflow-hidden font-black text-[11px] tracking-[0.1em] uppercase truncate"
+                    title={item.label}
                   >
                     {item.label}
                   </motion.span>

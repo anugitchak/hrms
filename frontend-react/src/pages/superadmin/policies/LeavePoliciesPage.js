@@ -489,7 +489,7 @@ const LeavePoliciesPage = () => {
                                                         </td>
                                                         <td className="p-6 text-center">
                                                             <label className="inline-flex items-center gap-3 cursor-pointer group/toggle">
-                                                                <div className="relative w-12 h-6 bg-slate-100 dark:bg-slate-800 rounded-10 border border-slate-900/5 transition-colors group-hover:bg-slate-200 peer-checked:bg-orange-500">
+                                                                <div className="relative w-12 h-6 bg-slate-100 dark:bg-slate-800 rounded-10 border border-slate-900/5 transition-colors group-hover:bg-slate-200 dark:group-hover:bg-white/10 peer-checked:bg-orange-500">
                                                                     <input 
                                                                         type="checkbox" className="sr-only peer"
                                                                         checked={rule.probation_restriction ?? false}
