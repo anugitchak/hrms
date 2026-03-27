@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'face_service' => [
+        'url' => env('FACE_SERVICE_URL', 'http://127.0.0.1:8001'),
+    ],
+
 ];

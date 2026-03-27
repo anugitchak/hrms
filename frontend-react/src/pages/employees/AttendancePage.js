@@ -358,7 +358,7 @@ const AttendancePage = () => {
                                         </td>
                                         <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 rounded-10-[2rem] border-y-2 border-r-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all text-right shadow-sm">
                                             <button 
-                                                onClick={() => { setCurrentLocation({ latitude: record.check_in_latitude, longitude: record.check_in_longitude }); setCurrentLocationName(record.check_in_location); setShowLocationModal(true); }}
+                                                onClick={async () => { setCurrentLocation({ latitude: record.check_in_latitude, longitude: record.check_in_longitude }); if (record.check_in_location) { setCurrentLocationName(record.check_in_location); } else if (record.check_in_latitude) { setCurrentLocationName('Resolving location...'); reverseGeocode(record.check_in_latitude, record.check_in_longitude).then(name => setCurrentLocationName(name)); } else { setCurrentLocationName('Location unavailable'); } setShowLocationModal(true); }}
                                                 className="p-3 bg-white dark:bg-slate-900 text-slate-400 hover:text-[#00b9cd] hover:shadow-lg rounded-10 transition-all border border-slate-100 dark:border-white/5 shadow-sm"
                                             >
                                                 <MapPin size={18} />

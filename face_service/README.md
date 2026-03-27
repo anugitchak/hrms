@@ -1,6 +1,6 @@
 # HRMS Face Recognition Microservice
 
-A Python FastAPI microservice that handles all face recognition processing server-side using **OpenCV SFace** (99.60% LFW accuracy).
+A Python Flask microservice that handles all face recognition processing server-side using **OpenCV SFace** (99.60% LFW accuracy).
 
 ## Why a Python Microservice?
 
@@ -18,15 +18,23 @@ cd face_service
 pip install -r requirements.txt
 ```
 
-Models auto-download on first run (~5MB total from OpenCV Zoo).
+Models auto-download on first run, but for cPanel/shared hosting you should upload the `models/` folder with the app so startup does not depend on external downloads.
 
 ## Running
 
 ```bash
 python main.py
-# or
-uvicorn main:app --host 127.0.0.1 --port 8001 --reload
 ```
+
+For local development the backend can use:
+
+- `FACE_SERVICE_URL=http://127.0.0.1:8001`
+
+For cPanel production with Passenger:
+
+- Mount the Python app at `/face-api`
+- Use `passenger_wsgi.py` as the startup file
+- Set backend `FACE_SERVICE_URL=https://api.mmhrms.in/face-api`
 
 ## Endpoints
 

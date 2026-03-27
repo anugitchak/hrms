@@ -36,15 +36,16 @@ Route::get('/test', function () {
     return response()->json(['message' => 'API working!']);
 });
 
-// DEBUG: Force Password Reset (Delete in Production)
-Route::get('/debug-reset/{email}/{password}', function ($email, $password) {
-    $user = \App\Models\User::where('email', $email)->first();
-    if (!$user)
-        return "User not found";
-    $user->password = \Illuminate\Support\Facades\Hash::make($password);
-    $user->save();
-    return "Password for $email reset to: $password";
-});
+if (app()->environment('local')) {
+    Route::get('/debug-reset/{email}/{password}', function ($email, $password) {
+        $user = \App\Models\User::where('email', $email)->first();
+        if (!$user)
+            return "User not found";
+        $user->password = \Illuminate\Support\Facades\Hash::make($password);
+        $user->save();
+        return "Password for $email reset to: $password";
+    });
+}
 
 // Public auth routes
 Route::post('/register', [AuthController::class, 'register']);

@@ -1,5 +1,15 @@
 <?php
 
+$allowedOrigins = array_values(array_filter(array_unique([
+    env('FRONTEND_URL', 'http://localhost:3000'),
+    'https://mmhrms.in',
+    'https://www.mmhrms.in',
+    'http://mmhrms.in',
+    'http://www.mmhrms.in',
+    'http://localhost:3000',
+    'http://127.0.0.1:8000',
+])));
+
 return [
 
     /*
@@ -19,14 +29,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        env('FRONTEND_URL', 'http://localhost:3000'),
-        'https://hrms-p1demo.onrender.com',
-        'http://localhost:3000',
-        'http://127.0.0.1:8000',
-        'http://mmhrms.in',
-        'https://mmhrms.in',
-    ],
+    'allowed_origins' => $allowedOrigins,
 
     'allowed_origins_patterns' => [],
 

@@ -76,13 +76,13 @@ const renderActiveShape = (props) => { const { cx, cy, midAngle, innerRadius, ou
 // --- Main Dashboard Page ---
 const DashboardPage = () => {
     const { user } = useAuth(); // Get user from context
-    const [loading, setLoading] = useState(true); const [lastUpdated, setLastUpdated] = useState(new Date()); const [isDarkMode, setIsDarkMode] = useState(false); // Data States
+    const [loading, setLoading] = useState(true); const [lastUpdated, setLastUpdated] = useState(new Date()); const [isDarkMode, setIsDarkMode] = useState(false); const [fetchError, setFetchError] = useState(null); // Data States
     const [stats, setStats] = useState({}); const [employeeGrowth, setEmployeeGrowth] = useState([]); const [deptDistribution, setDeptDistribution] = useState([]); const [attendanceTrends, setAttendanceTrends] = useState([]); const [todayAttendance, setTodayAttendance] = useState([]); const [leavesSummary, setLeavesSummary] = useState({}); const [activityLog, setActivityLog] = useState([]); // Interactive Chart States
     const [activeIndexAttendance, setActiveIndexAttendance] = useState(0); const [activeIndexLeaves, setActiveIndexLeaves] = useState(0); const onPieEnterAttendance = (_, index) => { setActiveIndexAttendance(index); }; const onPieEnterLeaves = (_, index) => { setActiveIndexLeaves(index); }; const [mounted, setMounted] = useState(false); useEffect(() => { // Check initial dark mode
         if (document.documentElement.classList.contains('dark')) { setIsDarkMode(true); } // Observer for class changes on html element to detect dark mode toggle
         const observer = new MutationObserver((mutations) => { mutations.forEach((mutation) => { if (mutation.attributeName === 'class') { setIsDarkMode(document.documentElement.classList.contains('dark')); } }); }); observer.observe(document.documentElement, { attributes: true }); return () => observer.disconnect();
-    }, []); const fetchAllData = useCallback(async () => { try { const [statsRes, growthRes, deptRes, attendanceRes, leavesRes, recentActivityRes, todayAttendanceRes] = await Promise.all([api.get('/superadmin/stats'), api.get('/superadmin/employee-growth'), api.get('/superadmin/department-distribution'), api.get('/superadmin/attendance-trends'), api.get('/superadmin/leaves-summary'), api.get('/superadmin/activity-log'), api.get('/superadmin/today-attendance')]); setStats(statsRes.data); setEmployeeGrowth(growthRes.data); setDeptDistribution(deptRes.data); setAttendanceTrends(attendanceRes.data); setLeavesSummary(leavesRes.data); setActivityLog(recentActivityRes.data); setTodayAttendance(todayAttendanceRes.data); setLastUpdated(new Date()); } catch (error) { console.error("Failed to fetch dashboard data", error); } finally { setLoading(false); } }, []); useEffect(() => {
-        setMounted(true); fetchAllData(); const interval = setInterval(fetchAllData, 5000); // Auto-refresh every 5s
+    }, []); const fetchAllData = useCallback(async () => { setFetchError(null); try { const results = await Promise.allSettled([api.get('/superadmin/stats'), api.get('/superadmin/employee-growth'), api.get('/superadmin/department-distribution'), api.get('/superadmin/attendance-trends'), api.get('/superadmin/leaves-summary'), api.get('/superadmin/activity-log'), api.get('/superadmin/today-attendance')]); if (results[0].status === 'fulfilled') setStats(results[0].value.data); if (results[1].status === 'fulfilled') setEmployeeGrowth(results[1].value.data); if (results[2].status === 'fulfilled') setDeptDistribution(results[2].value.data); if (results[3].status === 'fulfilled') setAttendanceTrends(results[3].value.data); if (results[4].status === 'fulfilled') setLeavesSummary(results[4].value.data); if (results[5].status === 'fulfilled') setActivityLog(results[5].value.data); if (results[6].status === 'fulfilled') setTodayAttendance(results[6].value.data); const failedCount = results.filter(r => r.status === 'rejected').length; if (failedCount > 0) { console.error(`${failedCount} of 7 dashboard API calls failed`); setFetchError(`${failedCount} data source(s) failed to load. Retrying automatically...`); } setLastUpdated(new Date()); } catch (error) { console.error("Failed to fetch dashboard data", error); setFetchError('Failed to load dashboard data. Retrying automatically...'); } finally { setLoading(false); } }, []); useEffect(() => {
+        setMounted(true); fetchAllData(); const interval = setInterval(fetchAllData, 60000); // Auto-refresh every 60s
         return () => clearInterval(interval);
     }, [fetchAllData]); if (!mounted) return null;    // Chart Colors & Styles
     const COLORS = ['#2563eb', '#10b981', '#6366f1', '#f59e0b', '#ef4444'];
@@ -124,6 +124,15 @@ const DashboardPage = () => {
                     <span className="uppercase tracking-widest">Last Updated: {lastUpdated.toLocaleTimeString()}</span>
                 </div>
             </div>
+
+            {/* Error Banner */}
+            {fetchError && (
+                <div className="relative z-10 mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-700/40 rounded-10 flex items-center gap-3">
+                    <AlertTriangle size={18} className="text-amber-500 flex-shrink-0" />
+                    <span className="text-sm font-bold text-amber-700 dark:text-amber-300 flex-1">{fetchError}</span>
+                    <button onClick={fetchAllData} className="text-xs font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 px-3 py-1 bg-amber-100 dark:bg-amber-800/30 rounded-10 transition-colors">Retry Now</button>
+                </div>
+            )}
 
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">

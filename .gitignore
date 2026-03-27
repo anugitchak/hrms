@@ -4,3 +4,4 @@
 /frontend-react/.env
 
 /mobile-app/node_modules
+*.zip

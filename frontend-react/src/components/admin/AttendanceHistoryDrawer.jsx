@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
+import { reverseGeocode } from '../../utils/locationUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useGlobalUI } from '../../context/GlobalUIContext';
 import { X, Clock, MapPin, Smartphone, Zap, CheckCircle, XCircle, Calendar, LogOut, Filter } from 'lucide-react';
@@ -12,6 +13,7 @@ const AttendanceHistoryDrawer = ({ employee, isOpen, onClose, month }) => {
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("");
     const [currentMonth, setCurrentMonth] = useState(month);
+    const [resolvedLocations, setResolvedLocations] = useState({});
 
     const formatDuration = (hours) => {
         if (!hours) return "—";
@@ -43,6 +45,37 @@ const AttendanceHistoryDrawer = ({ employee, isOpen, onClose, month }) => {
             setLoading(false);
         }
     };
+
+    // Resolve missing location names from coordinates
+    useEffect(() => {
+        if (!history.length) return;
+        const toResolve = history.filter(
+            r => r.check_in_latitude && !r.check_in_location && !resolvedLocations[r.id]
+        );
+        if (!toResolve.length) return;
+
+        // Resolve in batches to avoid flooding Nominatim
+        let cancelled = false;
+        const resolveAll = async () => {
+            const newResolved = {};
+            for (const record of toResolve) {
+                if (cancelled) break;
+                try {
+                    const name = await reverseGeocode(record.check_in_latitude, record.check_in_longitude);
+                    newResolved[record.id] = name;
+                } catch {
+                    newResolved[record.id] = 'Unknown Location';
+                }
+                // Small delay to respect Nominatim rate limits
+                await new Promise(r => setTimeout(r, 300));
+            }
+            if (!cancelled) {
+                setResolvedLocations(prev => ({ ...prev, ...newResolved }));
+            }
+        };
+        resolveAll();
+        return () => { cancelled = true; };
+    }, [history]);
 
     const getStatusConfig = (status) => {
         switch (status) {
@@ -207,7 +240,7 @@ const AttendanceHistoryDrawer = ({ employee, isOpen, onClose, month }) => {
                                                                     <div className="flex items-start gap-2">
                                                                         <MapPin size={12} className="text-[#00b9cd] shrink-0 mt-0.5" />
                                                                         <div className="flex-1 min-w-0">
-                                                                            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold truncate leading-tight">{record.check_in_location || `${record.check_in_latitude}, ${record.check_in_longitude}`}</p>
+                                                                            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold truncate leading-tight">{record.check_in_location || resolvedLocations[record.id] || 'Resolving location...'}</p>
                                                                             <a href={`https://www.google.com/maps?q=${record.check_in_latitude},${record.check_in_longitude}`} target="_blank" rel="noopener noreferrer" className="text-[9px] text-[#00b9cd] hover:text-[#00b9cd] font-black uppercase tracking-widest mt-0.5 inline-block">Explore Geo-Tag</a>
                                                                         </div>
                                                                     </div>

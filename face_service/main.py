@@ -222,8 +222,8 @@ def recognize_face():
                 elif score > second_best_score:
                     second_best_score = score
 
-        COSINE_THRESHOLD = 0.363
-        MIN_MARGIN = 0.05
+        COSINE_THRESHOLD = 0.30
+        MIN_MARGIN = 0.03
 
         logger.info(f"Recognition: best_score={best_score:.4f}, user_id={best_match_user_id}")
 

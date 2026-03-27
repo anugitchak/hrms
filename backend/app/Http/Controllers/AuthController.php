@@ -16,12 +16,10 @@ class AuthController extends Controller
     protected $notifications;
 
     // URL of the Python face recognition microservice
-    // In production (cPanel), set FACE_SERVICE_URL in .env to the Passenger URL
-    // e.g. FACE_SERVICE_URL=https://mmhrms.in/face-api
-    // In local dev, defaults to uvicorn on port 8001
+    // Read from config so it still works when Laravel config is cached.
     private static function faceServiceUrl(): string
     {
-        return env('FACE_SERVICE_URL', 'http://127.0.0.1:8001');
+        return rtrim(config('services.face_service.url', 'http://127.0.0.1:8001'), '/');
     }
 
     public function __construct(NotificationService $notifications)
@@ -212,21 +210,22 @@ class AuthController extends Controller
 
         // Check if Python face service is reachable
         try {
-            $healthCheck = Http::timeout(3)->get(self::faceServiceUrl() . '/health');
+            $healthCheck = Http::timeout(8)->get(self::faceServiceUrl() . '/health');
             if (!$healthCheck->successful()) {
                 throw new \Exception('Face service returned non-200');
             }
         } catch (\Exception $e) {
             Log::error('Face service health check failed: ' . $e->getMessage());
             return response()->json([
-                'message' => 'Face recognition service is not available. Please ensure the Python face service is running on port 8001.',
-                'hint' => 'Run: uvicorn main:app --host 127.0.0.1 --port 8001 (in the face_service directory)'
+                'message' => 'Face recognition service is not available.',
+                'hint' => 'Check FACE_SERVICE_URL and confirm the Python app health endpoint is reachable.',
+                'service_url' => self::faceServiceUrl()
             ], 503);
         }
 
         // Send image to Python service for descriptor extraction
         try {
-            $response = Http::timeout(30)->attach(
+            $response = Http::timeout(45)->attach(
                 'image',
                 file_get_contents($request->file('face_image')->getPathname()),
                 'face.jpg'
@@ -235,8 +234,8 @@ class AuthController extends Controller
             if (!$response->successful()) {
                 $error = $response->json();
                 return response()->json([
-                    'message' => $error['detail']['message'] ?? 'Face extraction failed',
-                    'error' => $error['detail']['error'] ?? 'unknown',
+                    'message' => $error['message'] ?? $error['detail']['message'] ?? 'Face extraction failed',
+                    'error' => $error['error'] ?? $error['detail']['error'] ?? 'unknown',
                 ], 422);
             }
 
@@ -301,14 +300,15 @@ class AuthController extends Controller
 
         // Check Python service health
         try {
-            $healthCheck = Http::timeout(3)->get(self::faceServiceUrl() . '/health');
+            $healthCheck = Http::timeout(8)->get(self::faceServiceUrl() . '/health');
             if (!$healthCheck->successful()) {
                 throw new \Exception('Not healthy');
             }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Face recognition service is offline. Please use email/password login.',
-                'hint' => 'Run: uvicorn main:app --host 127.0.0.1 --port 8001 (in face_service directory)'
+                'hint' => 'Check FACE_SERVICE_URL and confirm the Python app health endpoint is reachable.',
+                'service_url' => self::faceServiceUrl()
             ], 503);
         }
 
@@ -345,7 +345,7 @@ class AuthController extends Controller
 
         // Call Python face recognition service
         try {
-            $response = Http::timeout(30)->attach(
+            $response = Http::timeout(45)->attach(
                 'image',
                 file_get_contents($request->file('face_image')->getPathname()),
                 'face.jpg'
@@ -356,8 +356,8 @@ class AuthController extends Controller
             if (!$response->successful()) {
                 $error = $response->json();
                 return response()->json([
-                    'message' => $error['detail']['message'] ?? 'Face recognition failed',
-                    'error' => $error['detail']['error'] ?? 'unknown',
+                    'message' => $error['message'] ?? $error['detail']['message'] ?? 'Face recognition failed',
+                    'error' => $error['error'] ?? $error['detail']['error'] ?? 'unknown',
                 ], $response->status());
             }
 

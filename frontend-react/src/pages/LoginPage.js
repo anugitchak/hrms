@@ -556,8 +556,7 @@ const LoginPage = () => {
                                 <Marker position={[checkInLocation.latitude, checkInLocation.longitude]}>
                                     <Popup>
                                         <strong>Your Check-In Location</strong><br />
-                                        Lat: {checkInLocation.latitude.toFixed(6)}<br />
-                                        Lng: {checkInLocation.longitude.toFixed(6)}<br />
+                                        {checkInLocationName || 'Resolving location...'}<br />
                                         Time: {new Date().toLocaleTimeString()}
                                     </Popup>
                                 </Marker>
@@ -571,12 +570,8 @@ const LoginPage = () => {
                                 display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px",
                             }}
                         >
-                            <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#6b7280" }}>
-                                {checkInLocationName && <div style={{ fontWeight: 600, color: "#065f46", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}><MapPin className="w-4 h-4" />{checkInLocationName}</div>}
-                                <div style={{ display: "flex", gap: "24px" }}>
-                                    <div><span style={{ fontWeight: 600, color: "#374151" }}>Latitude:</span>{" "}{checkInLocation.latitude.toFixed(6)}</div>
-                                    <div><span style={{ fontWeight: 600, color: "#374151" }}>Longitude:</span>{" "}{checkInLocation.longitude.toFixed(6)}</div>
-                                </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#6b7280", flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: 600, color: "#065f46", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}><MapPin className="w-4 h-4" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{checkInLocationName || 'Resolving location...'}</span></div>
                             </div>
                             <div
                                 style={{
