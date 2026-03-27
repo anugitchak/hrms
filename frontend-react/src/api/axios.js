@@ -32,6 +32,7 @@ const apiBaseUrl = trimTrailingSlash(
 
 const api = axios.create({
   baseURL: apiBaseUrl,
+  timeout: 15000, // 15s — fail-fast instead of hanging forever
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -46,9 +47,30 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Retry interceptor: 1 retry on 5xx / network errors with 1s delay
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const config = error.config;
+    // Never retry canceled / aborted requests
+    if (error.code === "ERR_CANCELED" || config?.signal?.aborted) {
+      return Promise.reject(error);
+    }
+    // Only retry GET requests, only once, only on retriable errors
+    if (
+      config &&
+      !config._retried &&
+      config.method === "get" &&
+      (error.code === "ECONNABORTED" ||
+        error.code === "ERR_NETWORK" ||
+        error.message === "Network Error" ||
+        (error.response && error.response.status >= 500))
+    ) {
+      config._retried = true;
+      await new Promise((r) => setTimeout(r, 1000));
+      return api(config);
+    }
+
     if (error?.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");

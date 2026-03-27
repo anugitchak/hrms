@@ -310,11 +310,12 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    // Employee can view OWN payslip only
-    Route::middleware('role:4')->group(function () {
+    // Any authenticated user can view their OWN payslips (if they have an employee record)
+    // Removed strict role:4 middleware because SuperAdmins/HRs also have dashboards and employee records.
+    Route::middleware([])->group(function () {
         Route::get('/payslips/{id}', [PayslipController::class, 'show']);
         Route::get('/my-payslips', [PayslipController::class, 'myPayslips']);
-        Route::get('/my-payslips/download', [PayslipController::class, 'download']); // Employee download own payslip
+        Route::get('/my-payslips/download', [PayslipController::class, 'download']); // Download own payslip
     });
 
     // ======================================

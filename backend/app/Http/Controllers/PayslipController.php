@@ -387,11 +387,8 @@ class PayslipController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 4) {
-             // If SuperAdmin calls this, they get their own if they are also employee? 
-             // Logic says check role 4. Sticking to old logic.
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        // Removed the $user->role_id != 4 check. 
+        // If an Admin/SuperAdmin is viewing their own employee dashboard, they should be able to see their payslips.
 
         $employee = $user->employee;
 

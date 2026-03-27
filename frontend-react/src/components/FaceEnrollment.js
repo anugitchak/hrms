@@ -114,7 +114,8 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
       }
 
       const response = await api.post('/auth/enroll-face', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 30000,
       });
 
       const data = response.data;
@@ -139,7 +140,10 @@ const FaceEnrollment = ({ email, onFaceEnrolled, onClose }) => {
       }
 
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Failed to enroll face. Please try again.');
+      const errMsg = err.response?.data?.error === 'no_face_detected'
+        ? 'No face detected. Move to better lighting, remove obstructions, and look directly at the camera.'
+        : err.response?.data?.message || err.message || 'Failed to enroll face. Please try again.';
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

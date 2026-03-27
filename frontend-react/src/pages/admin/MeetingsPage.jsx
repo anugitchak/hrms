@@ -101,6 +101,29 @@ import React, { useState, useEffect } from"react"; import api from"../../api/axi
         m.location?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const filteredEmployees = employees.filter(emp => {
+        if (formData.department_id && emp.department_id != formData.department_id) return false;
+        if (formData.designation_id && emp.designation_id != formData.designation_id) return false;
+        return true;
+    });
+
+    const toggleParticipant = (id) => {
+        setFormData(prev => ({
+            ...prev,
+            participants: prev.participants.includes(id) 
+                ? prev.participants.filter(p => p !== id)
+                : [...prev.participants, id]
+        }));
+    };
+
+    const selectAllFiltered = () => {
+        setFormData(prev => ({ ...prev, participants: filteredEmployees.map(e => e.id) }));
+    };
+
+    const clearAllFiltered = () => {
+        setFormData(prev => ({ ...prev, participants: [] }));
+    };
+
     const generateGCalLink = (meeting) => {
         const dt = new Date(meeting.start_time);
         const endDt = new Date(dt.getTime() + 60 * 60 * 1000);

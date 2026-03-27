@@ -299,7 +299,8 @@ const LoginPage = () => {
                 formData.append('face_image', blob, 'face.jpg');
 
                 const { data } = await api.post('/auth/enroll-face', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    timeout: 30000,
                 });
                 setSuccessMessage('✓ Face enrolled! You can now log in using face authentication.');
                 closeFaceAuth();
@@ -309,7 +310,8 @@ const LoginPage = () => {
                 formData.append('face_image', blob, 'face.jpg');
 
                 const { data } = await api.post('/auth/login-face', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    timeout: 30000,
                 });
 
                 if (!data?.token) {
@@ -338,7 +340,9 @@ const LoginPage = () => {
                 }
             }
         } catch (err) {
-            const message = err?.response?.data?.message || 'Face authentication failed. Please try again.';
+            const message = err?.response?.data?.error === 'no_face_detected'
+                ? 'No face detected. Try moving to better lighting or closer to the camera.'
+                : err?.response?.data?.message || 'Face authentication failed. Please try again.';
             setError(message);
             setIsQuickCheckInFlow(false);
         } finally {

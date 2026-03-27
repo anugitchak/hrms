@@ -9,10 +9,10 @@ import { useGlobalUI } from "../../context/GlobalUIContext";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { 
-    Users, Briefcase, Building2, ShieldCheck, Activity, 
-    Server, Database, HardDrive, Cpu, RefreshCw, 
-    AlertTriangle, CheckCircle, Clock, Calendar, 
+import {
+    Users, Briefcase, Building2, ShieldCheck, Activity,
+    Server, Database, HardDrive, Cpu, RefreshCw,
+    AlertTriangle, CheckCircle, Clock, Calendar,
     MapPin, User, LogIn, LogOut, FileText, Bell, CheckSquare,
     TrendingUp, Award, Zap, ChevronRight, ExternalLink,
     PieChart, Fingerprint, X
@@ -128,7 +128,7 @@ const DashboardHeader = ({ profile }) => {
                     </div>
                 </div>
             </div>
-            
+
             <div className="hidden xl:flex items-center gap-4 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-8 py-5 rounded-10 shadow-lg border border-slate-100 dark:border-white/5">
                 <div className="text-right">
                     <div className="text-[10px] font-black uppercase text-[#00b9cd] tracking-[0.4em] mb-1">Temporal Sync</div>
@@ -223,64 +223,84 @@ const DashboardPage = () => {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [fetchError, setFetchError] = useState(null);
     const [currentLocation, setCurrentLocation] = useState(null);
     const [currentLocationName, setCurrentLocationName] = useState("");
     const [showLocationModal, setShowLocationModal] = useState(false);
-    const [pendingAction, setPendingAction] = useState(null); 
+    const [pendingAction, setPendingAction] = useState(null);
 
     const [showFaceEnrollment, setShowFaceEnrollment] = useState(false);
     const [faceEnrollmentSuccess, setFaceEnrollmentSuccess] = useState(false);
 
     const isSecureContext = typeof window !== 'undefined' ? window.isSecureContext : false;
+    const abortRef = useRef(null);
 
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = useCallback(async () => {
+        // Cancel any previous in-flight request
+        if (abortRef.current) abortRef.current.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+        const signal = controller.signal;
+
+        setFetchError(null);
         try {
-            let profileData = null;
-            try { const profileRes = await api.get("/user"); profileData = profileRes.data; } catch (e) { console.error("Profile fetch error", e); }
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const currentMonth = todayStr.slice(0, 7);
 
-            let announcementsData = [];
-            try { const announcementsRes = await api.get("/announcements"); announcementsData = announcementsRes.data.data || announcementsRes.data; } catch (e) { console.error("Announcements fetch error", e); }
+            const results = await Promise.allSettled([
+                api.get("/user", { signal }),
+                api.get("/announcements", { signal }),
+                api.get("/my-leaves", { signal }),
+                api.get("/my-payslips", { signal }),
+                api.get("/tasks", { signal }),
+                api.get(`/my-attendance?month=${currentMonth}`, { signal }),
+            ]);
 
-            let leavesData = [];
-            try { const leavesRes = await api.get("/my-leaves"); leavesData = leavesRes.data; } catch (e) { console.error("Leaves fetch error", e); }
-            
-            let payslipsData = [];
-            try { const payslipsRes = await api.get("/my-payslips"); payslipsData = payslipsRes.data; } catch (e) { console.error("Payslips fetch error", e); }
-
-            let tasksData = [];
-            try { const tasksRes = await api.get("/tasks"); tasksData = tasksRes.data; } catch (e) { console.error("Tasks fetch error", e); }
-
-            let attendanceData = null;
-            try { 
-                const attendanceRes = await api.get("/my-attendance");
-                const today = new Date();
-                const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                
-                const attendanceList = attendanceRes.data.data || attendanceRes.data;
-                attendanceData = Array.isArray(attendanceList) ? attendanceList.find(a => a.date === todayStr) : null;
-            } catch (e) { console.error("Attendance fetch error", e); }
-
-            setData({
-                profile: profileData,
-                attendance: attendanceData,
-                announcements: Array.isArray(announcementsData) ? announcementsData.slice(0, 3) : [],
-                leaves: Array.isArray(leavesData) ? leavesData.slice(0, 5) : [],
-                payslips: Array.isArray(payslipsData) ? payslipsData.slice(0, 3) : [],
-                tasks: Array.isArray(tasksData) ? tasksData : []
+            // Only update fields that succeeded; preserve stale data for failures
+            setData(prev => {
+                const next = { ...prev };
+                if (results[0].status === 'fulfilled') next.profile = results[0].value.data;
+                if (results[1].status === 'fulfilled') {
+                    const d = results[1].value.data.data || results[1].value.data;
+                    next.announcements = Array.isArray(d) ? d.slice(0, 3) : [];
+                }
+                if (results[2].status === 'fulfilled') {
+                    const d = results[2].value.data;
+                    next.leaves = Array.isArray(d) ? d.slice(0, 5) : [];
+                }
+                if (results[3].status === 'fulfilled') {
+                    const d = results[3].value.data;
+                    next.payslips = Array.isArray(d) ? d.slice(0, 3) : [];
+                }
+                if (results[4].status === 'fulfilled') {
+                    const d = results[4].value.data;
+                    next.tasks = Array.isArray(d) ? d : [];
+                }
+                if (results[5].status === 'fulfilled') {
+                    const attList = results[5].value.data.data || results[5].value.data;
+                    next.attendance = Array.isArray(attList) ? attList.find(a => a.date === todayStr) || null : null;
+                }
+                return next;
             });
-            setError(null);
+
+            const nonCancelRejects = results.filter(r => r.status === 'rejected' && r.reason?.code !== 'ERR_CANCELED');
+            if (nonCancelRejects.length > 0) {
+                setFetchError(`${nonCancelRejects.length} data source(s) failed. Retrying automatically...`);
+            }
         } catch (err) {
+            if (err.code === 'ERR_CANCELED' || signal.aborted) return;
             console.error("Dashboard error:", err);
-            setError("Tactical link failed. Please re-authenticate.");
+            setFetchError("Tactical link failed. Please retry.");
         } finally {
-            setIsLoading(false);
+            if (!signal.aborted) setIsLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchDashboardData();
-    }, []);
+        return () => { if (abortRef.current) abortRef.current.abort(); };
+    }, [fetchDashboardData]);
 
     useEffect(() => {
         document.body.style.overflow = showLocationModal ? 'hidden' : 'unset';
@@ -316,7 +336,7 @@ const DashboardPage = () => {
         let deviceType = 'Desktop';
         if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) deviceType = 'Tablet';
         else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) deviceType = 'Mobile';
-        
+
         let browser = 'Common';
         if (ua.indexOf('Firefox') > -1) browser = 'Firefox';
         else if (ua.indexOf('Chrome') > -1) browser = 'Chrome';
@@ -394,6 +414,14 @@ const DashboardPage = () => {
         <div className="p-10 max-w-[1700px] mx-auto min-h-screen font-paperlogy mesh-bg">
             <DashboardHeader profile={data.profile} />
 
+            {fetchError && (
+                <div className="mb-8 p-5 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-700/40 rounded-10 flex items-center gap-3 relative z-10">
+                    <AlertTriangle size={18} className="text-amber-500 flex-shrink-0" />
+                    <span className="text-xs font-black text-amber-700 dark:text-amber-300 flex-1 uppercase tracking-widest">{fetchError}</span>
+                    <button onClick={fetchDashboardData} className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 hover:text-amber-800 px-4 py-2 bg-amber-100 dark:bg-amber-800/30 rounded-10 transition-colors">Retry Now</button>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 mb-10">
                 <StatCard title="Operative Rank" value={data.profile?.employee?.designation?.name || "—"} icon={Award} color="amber" />
                 <StatCard title="Tactical EXP" value={totalPoints.toLocaleString()} icon={Zap} color="teal" />
@@ -410,7 +438,7 @@ const DashboardPage = () => {
                         loading={actionLoading}
                     />
                 </div>
-                
+
                 <Card title="Identification" icon={Fingerprint}>
                     <div className="flex-1 flex flex-col justify-center items-center text-center py-4">
                         {data.profile?.face_descriptor && !faceEnrollmentSuccess ? (
@@ -559,9 +587,9 @@ const DashboardPage = () => {
 
                         <div className="p-10 bg-slate-50 dark:bg-white/5 border-t border-slate-100 dark:border-white/5 flex gap-6">
                             <Button variant="ghost" onClick={() => setShowLocationModal(false)} className="flex-1 py-8">Abort</Button>
-                            <Button 
-                                onClick={proceedWithAction} 
-                                disabled={actionLoading} 
+                            <Button
+                                onClick={proceedWithAction}
+                                disabled={actionLoading}
                                 variant={pendingAction === 'check-in' ? 'success' : 'danger'}
                                 className="flex-1 py-8 shadow-[0_20px_40px_-10px_rgba(0,185,205,0.3)]"
                             >
@@ -583,7 +611,7 @@ const DashboardPage = () => {
                             <button onClick={() => setShowFaceEnrollment(false)} className="p-4 hover:bg-rose-500 hover:text-white rounded-10 transition-all text-slate-400"><X size={32} /></button>
                         </div>
                         <div className="flex-1 overflow-hidden relative">
-                             <FaceEnrollment
+                            <FaceEnrollment
                                 email={data.profile?.email}
                                 onFaceEnrolled={handleFaceEnrolled}
                                 onClose={() => setShowFaceEnrollment(false)}

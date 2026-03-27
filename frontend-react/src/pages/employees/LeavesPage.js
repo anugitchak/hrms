@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import {
@@ -103,26 +103,41 @@ const LeavesPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({ leave_type_id: "", start_date: "", end_date: "", reason: "" });
 
+    const abortRef = useRef(null);
+
     const fetchLeavesData = async () => {
+        if (abortRef.current) abortRef.current.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
         try {
-            const [leavesRes, balancesRes, typesRes] = await Promise.all([
-                api.get("/my-leaves"),
-                api.get("/my-leaves/balances"),
-                api.get("/my-leaves/types")
+            if (controller.signal.aborted) return;
+            const results = await Promise.allSettled([
+                api.get("/my-leaves", { signal: controller.signal }),
+                api.get("/my-leaves/balances", { signal: controller.signal }),
+                api.get("/my-leaves/types", { signal: controller.signal })
             ]);
-            setLeaves(Array.isArray(leavesRes.data.data) ? leavesRes.data.data : leavesRes.data || []);
-            setBalances(balancesRes.data || []);
-            setLeaveTypes(typesRes.data || []);
+            if (controller.signal.aborted) return;
+            if (results[0].status === 'fulfilled') {
+                const d = results[0].value.data;
+                setLeaves(Array.isArray(d.data) ? d.data : d || []);
+            }
+            if (results[1].status === 'fulfilled') setBalances(results[1].value.data || []);
+            if (results[2].status === 'fulfilled') setLeaveTypes(results[2].value.data || []);
+
+            const nonCancelRejects = results.filter(r => r.status === 'rejected' && r.reason?.code !== 'ERR_CANCELED');
+            if (nonCancelRejects.length > 0) addToast("Some data failed to load. Please retry.", "error");
         } catch (err) {
+            if (err.code === 'ERR_CANCELED' || controller.signal.aborted) return;
             console.error("Fetch leaves error:", err);
             addToast("Failed to sync mission archives.", "error");
         } finally {
-            setIsLoading(false);
+            if (!controller.signal.aborted) setIsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchLeavesData();
+        return () => { if (abortRef.current) abortRef.current.abort(); };
     }, []);
 
     const handleInputChange = (e) => {

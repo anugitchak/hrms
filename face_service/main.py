@@ -1,10 +1,13 @@
 """
-HRMS Face Recognition Microservice v3
+HRMS Face Recognition Microservice v4
 
 Uses OpenCV's built-in face detection (YuNet) and recognition (SFace) models.
-- Flask (WSGI) for cPanel Passenger compatibility
-- YuNet: Fast, accurate face detector
+- Flask with threaded=True for concurrent requests
+- Gunicorn for production (4 workers × 2 threads = 8 parallel)
+- YuNet: Fast, accurate face detector (threshold lowered for poor webcams)
 - SFace: 99.60% accuracy on LFW benchmark
+- CLAHE + gamma correction for low-light environments
+- Bilateral filter for noisy/grainy webcams
 - Zero compilation required — pure pre-built pip wheels
 """
 
@@ -60,12 +63,13 @@ def init_models():
     download_model(FACE_DETECT_URL, FACE_DETECT_MODEL)
     download_model(FACE_RECOG_URL, FACE_RECOG_MODEL)
 
+    # Score threshold lowered from 0.6 → 0.4 for poor webcams / low-light
     face_detector = cv2.FaceDetectorYN.create(
-        FACE_DETECT_MODEL, "", (320, 320), 0.6, 0.3, 5000
+        FACE_DETECT_MODEL, "", (320, 320), 0.4, 0.3, 5000
     )
     face_recognizer = cv2.FaceRecognizerSF.create(FACE_RECOG_MODEL, "")
 
-    logger.info("Face models loaded successfully.")
+    logger.info("Face models loaded (YuNet threshold=0.4 for low-quality webcam support).")
 
 
 # ===== Flask App Setup =====
@@ -79,18 +83,57 @@ init_models()
 # ===== Image Processing =====
 
 def preprocess_image(image_bytes: bytes) -> np.ndarray:
-    """Preprocess image for consistent cross-device results."""
+    """
+    Enhanced preprocessing for cross-device, low-light, and poor webcam results.
+    
+    Pipeline:
+    1. Resize to max 1024px (keep aspect ratio)
+    2. CLAHE on L channel — boosts local contrast in dark regions
+    3. Gamma correction — if image is dark (avg brightness < 100), brighten it
+    4. Bilateral filter — reduces grain from cheap webcams while preserving edges
+    5. AutoContrast — final pass to normalize levels
+    """
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
+    # Step 1: Resize if too large
     max_size = 1024
     if max(image.size) > max_size:
         ratio = max_size / max(image.size)
         new_size = (int(image.size[0] * ratio), int(image.size[1] * ratio))
         image = image.resize(new_size, Image.LANCZOS)
 
-    image = ImageOps.autocontrast(image, cutoff=1)
     img_array = np.array(image)
     img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+
+    # Step 2: CLAHE on L channel (adaptive local contrast enhancement)
+    lab = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2LAB)
+    l_channel, a_channel, b_channel = cv2.split(lab)
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    l_enhanced = clahe.apply(l_channel)
+    lab_enhanced = cv2.merge([l_enhanced, a_channel, b_channel])
+    img_bgr = cv2.cvtColor(lab_enhanced, cv2.COLOR_LAB2BGR)
+
+    # Step 3: Gamma correction for dark images
+    gray_check = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+    avg_brightness = np.mean(gray_check)
+    if avg_brightness < 100:
+        # Apply gamma < 1 to brighten (0.6 for very dark, 0.8 for somewhat dark)
+        gamma = 0.6 if avg_brightness < 60 else 0.8
+        inv_gamma = 1.0 / gamma
+        table = np.array([
+            ((i / 255.0) ** inv_gamma) * 255 for i in range(256)
+        ]).astype("uint8")
+        img_bgr = cv2.LUT(img_bgr, table)
+        logger.info(f"Low-light detected (brightness={avg_brightness:.0f}), applied gamma={gamma}")
+
+    # Step 4: Bilateral filter for noisy/grainy webcams
+    img_bgr = cv2.bilateralFilter(img_bgr, d=5, sigmaColor=50, sigmaSpace=50)
+
+    # Step 5: Final autocontrast via PIL
+    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    image = Image.fromarray(img_rgb)
+    image = ImageOps.autocontrast(image, cutoff=1)
+    img_bgr = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
     return img_bgr
 
@@ -125,9 +168,10 @@ def extract_feature(aligned_face: np.ndarray) -> list:
 def health_check():
     return jsonify({
         "status": "healthy",
-        "service": "HRMS Face Recognition Service",
+        "service": "HRMS Face Recognition Service v4",
         "model": "OpenCV SFace (99.60% LFW accuracy)",
-        "detector": "OpenCV YuNet",
+        "detector": "OpenCV YuNet (threshold=0.4)",
+        "enhancements": "CLAHE + gamma + bilateral filter",
     })
 
 
@@ -222,8 +266,11 @@ def recognize_face():
                 elif score > second_best_score:
                     second_best_score = score
 
-        COSINE_THRESHOLD = 0.30
-        MIN_MARGIN = 0.03
+        # SECURITY: High threshold for structural match (0.363 is OpenCV default, 0.40 is strict)
+        COSINE_THRESHOLD = 0.40
+        # SECURITY: If top 2 matches are too close, it means faces are too similar (e.g. twins, glasses). 
+        # Require a clear margin of victory to prevent mixing up similar employees.
+        MIN_MARGIN = 0.08
 
         logger.info(f"Recognition: best_score={best_score:.4f}, user_id={best_match_user_id}")
 
@@ -266,4 +313,6 @@ def recognize_face():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8001, debug=False)
+    # Windows dev: threaded=True for parallel request handling
+    # Production: use gunicorn (see README.md)
+    app.run(host="127.0.0.1", port=8001, debug=False, threaded=True)

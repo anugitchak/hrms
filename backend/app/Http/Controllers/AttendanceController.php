@@ -305,7 +305,7 @@ class AttendanceController extends Controller
     // =====================================
     // EMPLOYEE: VIEW OWN ATTENDANCE
     // =====================================
-    public function myAttendance()
+    public function myAttendance(Request $request)
     {
         $user = auth()->user();
 
@@ -324,8 +324,16 @@ class AttendanceController extends Controller
         }
 
         try {
-            $records = Attendance::where('employee_id', $employee->id)
-                ->orderByDesc('date')
+            $query = Attendance::where('employee_id', $employee->id);
+
+            // Optional month filter (e.g. ?month=2026-03)
+            if ($request->has('month') && $request->month) {
+                $start = \Carbon\Carbon::parse($request->month)->startOfMonth()->toDateString();
+                $end   = \Carbon\Carbon::parse($request->month)->endOfMonth()->toDateString();
+                $query->whereBetween('date', [$start, $end]);
+            }
+
+            $records = $query->orderByDesc('date')
                 ->get()
                 ->map(function ($record) use ($user) {
                     // Add remarks field
@@ -333,7 +341,6 @@ class AttendanceController extends Controller
 
                     if ($record->check_out) {
                         if (is_numeric($record->checked_out_by)) {
-                            // Any numeric value is treated as a self-checkout to avoid showing raw IDs
                             $remarks = 'Checked out by self';
                         } elseif (in_array($record->checked_out_by, ['hr', 'admin', 'superadmin'])) {
                             $remarks = 'Checked out by ' . ucfirst($record->checked_out_by);

@@ -9,6 +9,7 @@ use App\Models\FaceEmbedding;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use App\Services\NotificationService;
 
 class AuthController extends Controller
@@ -277,6 +278,9 @@ class AuthController extends Controller
             }
         }
 
+        // Invalidate cached embeddings so next login picks up the new face
+        Cache::forget('face_embeddings_all');
+
         // Also keep legacy face_descriptor on users table for backward compatibility
         $user->update([
             'face_descriptor' => json_encode($descriptors[0])
@@ -316,7 +320,11 @@ class AuthController extends Controller
         // ONLY use face_embeddings table (SFace descriptors from new system)
         // Legacy face-api.js descriptors in users/employees tables are NOT compatible
         // with SFace and must NOT be mixed. Users must re-enroll.
-        $embeddingRows = FaceEmbedding::all();
+        // Cache embeddings for 5 minutes — avoids full table scan on every login
+        // Cache is invalidated in enrollFace() when new face is enrolled
+        $embeddingRows = Cache::remember('face_embeddings_all', 300, function () {
+            return FaceEmbedding::all();
+        });
         $userIdMap = [];
 
         foreach ($embeddingRows as $row) {

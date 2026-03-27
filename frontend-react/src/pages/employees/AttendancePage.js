@@ -117,21 +117,28 @@ const AttendancePage = () => {
     const [selectedMonth, setSelectedMonth] = useState(localTodayStr.slice(0, 7)); 
     const isSecureContext = typeof window !== 'undefined' ? window.isSecureContext : false;
 
+    const abortRef = useRef(null);
+
     const fetchAttendance = async () => {
+        if (abortRef.current) abortRef.current.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
         try {
-            const response = await api.get("/my-attendance");
+            const response = await api.get(`/my-attendance?month=${selectedMonth}`, { signal: controller.signal });
             setAttendance(Array.isArray(response.data.data) ? response.data.data : response.data || []);
         } catch (err) {
+            if (err.code === 'ERR_CANCELED' || controller.signal.aborted) return;
             console.error("Fetch error:", err);
             addToast("Failed to sync attendance ledger.", "error");
         } finally {
-            setIsLoading(false);
+            if (!controller.signal.aborted) setIsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchAttendance();
-    }, []);
+        return () => { if (abortRef.current) abortRef.current.abort(); };
+    }, [selectedMonth]);
 
     const getLocation = () => {
         return new Promise((resolve, reject) => {
