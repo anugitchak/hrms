@@ -223,6 +223,7 @@ const DashboardPage = () => {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
+    const [isLocating, setIsLocating] = useState(false);
     const [fetchError, setFetchError] = useState(null);
     const [currentLocation, setCurrentLocation] = useState(null);
     const [currentLocationName, setCurrentLocationName] = useState("");
@@ -350,6 +351,8 @@ const DashboardPage = () => {
     };
 
     const handleAttendanceAction = async (type) => {
+        // Disable buttons immediately so the user cannot double-click during GPS fetch
+        setIsLocating(true);
         try {
             setPendingAction(type);
             const location = await getLocation();
@@ -359,6 +362,8 @@ const DashboardPage = () => {
         } catch (err) {
             addToast(err.message, "error");
             setPendingAction(null);
+        } finally {
+            setIsLocating(false);
         }
     };
 
@@ -435,7 +440,7 @@ const DashboardPage = () => {
                         attendance={data.attendance}
                         onCheckIn={() => handleAttendanceAction("check-in")}
                         onCheckOut={() => handleAttendanceAction("check-out")}
-                        loading={actionLoading}
+                        loading={actionLoading || isLocating}
                     />
                 </div>
 

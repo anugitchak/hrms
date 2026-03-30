@@ -40,6 +40,9 @@ class User extends Authenticatable
         'can_manage_payslip_designer',
         'can_force_checkout',
         'can_assign_tasks',
+        'can_manage_announcements',
+        'can_manage_meetings',
+        'can_manage_documents',
     ];
 
     /**
@@ -65,22 +68,25 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'is_active' => 'boolean',
-        'can_manage_employees' => 'boolean',
-        'can_view_employees' => 'boolean',
-        'can_manage_salaries' => 'boolean',
-        'can_view_salaries' => 'boolean',
-        'can_manage_attendance' => 'boolean',
-        'can_view_attendance' => 'boolean',
-        'can_manage_leaves' => 'boolean',
-        'can_view_leaves' => 'boolean',
-        'can_manage_departments' => 'boolean',
-        'can_manage_payslips' => 'boolean',
+        'email_verified_at'           => 'datetime',
+        'is_active'                   => 'boolean',
+        'can_manage_employees'        => 'boolean',
+        'can_view_employees'          => 'boolean',
+        'can_manage_salaries'         => 'boolean',
+        'can_view_salaries'           => 'boolean',
+        'can_manage_attendance'       => 'boolean',
+        'can_view_attendance'         => 'boolean',
+        'can_manage_leaves'           => 'boolean',
+        'can_view_leaves'             => 'boolean',
+        'can_manage_departments'      => 'boolean',
+        'can_manage_payslips'         => 'boolean',
         'can_manage_payroll_settings' => 'boolean',
         'can_manage_payslip_designer' => 'boolean',
-        'can_force_checkout' => 'boolean',
-        'can_assign_tasks' => 'boolean',
+        'can_force_checkout'          => 'boolean',
+        'can_assign_tasks'            => 'boolean',
+        'can_manage_announcements'    => 'boolean',
+        'can_manage_meetings'         => 'boolean',
+        'can_manage_documents'        => 'boolean',
     ];
 
     // Relationships (optional)

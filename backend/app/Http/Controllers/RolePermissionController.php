@@ -35,7 +35,13 @@ class RolePermissionController extends Controller
                 'can_manage_departments',
                 'can_manage_payslips',
                 'can_assign_tasks',
-                'can_manage_projects'
+                'can_manage_projects',
+                'can_manage_payroll_settings',
+                'can_manage_payslip_designer',
+                'can_force_checkout',
+                'can_manage_announcements',
+                'can_manage_meetings',
+                'can_manage_documents',
             ])
             ->get();
 
@@ -92,20 +98,23 @@ class RolePermissionController extends Controller
 
         // Check if ALL users have each permission
         return [
-            'can_manage_leaves' => $users->every(fn($u) => $u->can_manage_leaves),
-            'can_view_leaves' => $users->every(fn($u) => $u->can_view_leaves),
-            'can_manage_attendance' => $users->every(fn($u) => $u->can_manage_attendance),
-            'can_view_attendance' => $users->every(fn($u) => $u->can_view_attendance),
-            'can_manage_employees' => $users->every(fn($u) => $u->can_manage_employees),
-            'can_view_employees' => $users->every(fn($u) => $u->can_view_employees),
-            'can_manage_salaries' => $users->every(fn($u) => $u->can_manage_salaries),
-            'can_view_salaries' => $users->every(fn($u) => $u->can_view_salaries),
-            'can_manage_departments' => $users->every(fn($u) => $u->can_manage_departments),
-            'can_manage_payslips' => $users->every(fn($u) => $u->can_manage_payslips),
+            'can_manage_leaves'           => $users->every(fn($u) => $u->can_manage_leaves),
+            'can_view_leaves'             => $users->every(fn($u) => $u->can_view_leaves),
+            'can_manage_attendance'       => $users->every(fn($u) => $u->can_manage_attendance),
+            'can_view_attendance'         => $users->every(fn($u) => $u->can_view_attendance),
+            'can_manage_employees'        => $users->every(fn($u) => $u->can_manage_employees),
+            'can_view_employees'          => $users->every(fn($u) => $u->can_view_employees),
+            'can_manage_salaries'         => $users->every(fn($u) => $u->can_manage_salaries),
+            'can_view_salaries'           => $users->every(fn($u) => $u->can_view_salaries),
+            'can_manage_departments'      => $users->every(fn($u) => $u->can_manage_departments),
+            'can_manage_payslips'         => $users->every(fn($u) => $u->can_manage_payslips),
             'can_manage_payroll_settings' => $users->every(fn($u) => $u->can_manage_payroll_settings),
             'can_manage_payslip_designer' => $users->every(fn($u) => $u->can_manage_payslip_designer),
-            'can_force_checkout' => $users->every(fn($u) => $u->can_force_checkout),
-            'can_assign_tasks' => $users->every(fn($u) => $u->can_assign_tasks),
+            'can_force_checkout'          => $users->every(fn($u) => $u->can_force_checkout),
+            'can_assign_tasks'            => $users->every(fn($u) => $u->can_assign_tasks),
+            'can_manage_announcements'    => $users->every(fn($u) => $u->can_manage_announcements),
+            'can_manage_meetings'         => $users->every(fn($u) => $u->can_manage_meetings),
+            'can_manage_documents'        => $users->every(fn($u) => $u->can_manage_documents),
         ];
     }
 
@@ -120,20 +129,23 @@ class RolePermissionController extends Controller
         }
 
         $validated = $request->validate([
-            'can_manage_employees' => 'boolean',
-            'can_view_employees' => 'boolean',
-            'can_manage_salaries' => 'boolean',
-            'can_view_salaries' => 'boolean',
-            'can_manage_attendance' => 'boolean',
-            'can_view_attendance' => 'boolean',
-            'can_manage_leaves' => 'boolean',
-            'can_view_leaves' => 'boolean',
-            'can_manage_departments' => 'boolean',
-            'can_manage_payslips' => 'boolean',
+            'can_manage_employees'        => 'boolean',
+            'can_view_employees'          => 'boolean',
+            'can_manage_salaries'         => 'boolean',
+            'can_view_salaries'           => 'boolean',
+            'can_manage_attendance'       => 'boolean',
+            'can_view_attendance'         => 'boolean',
+            'can_manage_leaves'           => 'boolean',
+            'can_view_leaves'             => 'boolean',
+            'can_manage_departments'      => 'boolean',
+            'can_manage_payslips'         => 'boolean',
             'can_manage_payroll_settings' => 'boolean',
             'can_manage_payslip_designer' => 'boolean',
-            'can_force_checkout' => 'boolean',
-            'can_assign_tasks' => 'boolean',
+            'can_force_checkout'          => 'boolean',
+            'can_assign_tasks'            => 'boolean',
+            'can_manage_announcements'    => 'boolean',
+            'can_manage_meetings'         => 'boolean',
+            'can_manage_documents'        => 'boolean',
         ]);
 
         // Update all users of this role
@@ -236,6 +248,24 @@ class RolePermissionController extends Controller
                 'name' => 'Manage Tasks',
                 'description' => 'Assign, verify and manage employee tasks',
                 'category' => 'Tasks'
+            ],
+            [
+                'key' => 'can_manage_announcements',
+                'name' => 'Manage Announcements',
+                'description' => 'Create, edit and delete company announcements',
+                'category' => 'Communication'
+            ],
+            [
+                'key' => 'can_manage_meetings',
+                'name' => 'Manage Meetings',
+                'description' => 'Schedule, edit and cancel company meetings',
+                'category' => 'Communication'
+            ],
+            [
+                'key' => 'can_manage_documents',
+                'name' => 'Manage Documents',
+                'description' => 'Upload and delete employee documents',
+                'category' => 'Documents'
             ],
         ]);
     }

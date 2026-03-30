@@ -194,7 +194,7 @@ class SuperAdminSalaryController extends Controller
                 $q->where('department_id', $request->department_id);
             });
         }
-        
+
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->whereHas('employee', function ($q) use ($search) {
@@ -208,37 +208,42 @@ class SuperAdminSalaryController extends Controller
 
         $salaries = $query->get();
 
-        $csvFileName = "salaries_export_" . date('Y-m-d') . ".csv";
-        $headers = [
-            "Content-type" => "text/csv",
-            "Content-Disposition" => "attachment; filename=$csvFileName",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
-        ];
+        $csvFileName = "salaries_export_" . date('Y-m') . ".csv";
 
-        $callback = function() use ($salaries) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, ['Employee Name', 'Code', 'Department', 'Basic', 'HRA', 'DA', 'Allowances', 'Deductions', 'Gross Salary', 'Last Updated']);
+        // Build CSV in memory — avoids response()->stream() issues on shared hosting (CPanel)
+        ob_start();
+        $file = fopen('php://output', 'w');
+        fputcsv($file, ['Employee Name', 'Employee Code', 'Department', 'Basic', 'HRA', 'DA', 'Allowances', 'Deductions', 'Gross Salary', 'Last Updated']);
 
-            foreach ($salaries as $salary) {
+        foreach ($salaries as $salary) {
+            try {
                 fputcsv($file, [
-                    $salary->employee->user->name,
-                    $salary->employee->employee_code,
-                    $salary->employee->department->name,
-                    $salary->basic,
-                    $salary->hra,
-                    $salary->da,
-                    $salary->allowances,
-                    $salary->deductions,
-                    $salary->gross_salary,
-                    $salary->updated_at
+                    $salary->employee->user->name ?? 'N/A',
+                    $salary->employee->employee_code ?? 'N/A',
+                    $salary->employee->department->name ?? 'No Department',
+                    $salary->basic ?? 0,
+                    $salary->hra ?? 0,
+                    $salary->da ?? 0,
+                    $salary->allowances ?? 0,
+                    $salary->deductions ?? 0,
+                    $salary->gross_salary ?? 0,
+                    $salary->updated_at ? $salary->updated_at->format('Y-m-d H:i:s') : 'N/A',
                 ]);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('SuperAdmin salary export row error: ' . $e->getMessage());
             }
-            fclose($file);
-        };
+        }
 
-        return response()->stream($callback, 200, $headers);
+        fclose($file);
+        $csvContent = ob_get_clean();
+
+        return response()->make($csvContent, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename={$csvFileName}",
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ]);
     }
     /**
      * Calculate salary breakdown based on payroll policy

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
@@ -36,6 +36,7 @@ const LoginPage = () => {
     const [faceAuthMode, setFaceAuthMode] = useState('login'); // 'login' or 'enroll'
     const [stream, setStream] = useState(null);
     const [faceAuthLoading, setFaceAuthLoading] = useState(false);
+    const faceAuthLoadingRef = useRef(false);
     const [isQuickCheckInFlow, setIsQuickCheckInFlow] = useState(false);
 
     // Update clock every second
@@ -257,20 +258,21 @@ const LoginPage = () => {
      * No more face-api.js descriptor extraction on the client.
      * The Python microservice handles all face processing server-side.
      */
-    const captureFaceAuth = async () => {
+    const captureFaceAuth = async (isAuto = false) => {
         if (!stream) {
-            setError('Camera is not ready. Please allow camera access and try again.');
+            if (!isAuto) setError('Camera is not ready. Please allow camera access and try again.');
             return;
         }
 
         const video = document.getElementById('faceAuthVideo');
         if (!video || video.readyState < 2) {
-            setError('Video is still loading. Please wait a second and try again.');
+            if (!isAuto) setError('Video is still loading. Please wait a second and try again.');
             return;
         }
 
         setFaceAuthLoading(true);
-        setError('');
+        faceAuthLoadingRef.current = true;
+        if (!isAuto) setError('');
 
         try {
             // Capture a snapshot of the video frame
@@ -315,8 +317,10 @@ const LoginPage = () => {
                 });
 
                 if (!data?.token) {
-                    setError('Face not recognized. Please try again or use email/password login.');
-                    closeFaceAuth();
+                    if (!isAuto) {
+                        setError('Face not recognized. Please try again or use email/password login.');
+                        closeFaceAuth();
+                    }
                     return;
                 }
 
@@ -340,15 +344,43 @@ const LoginPage = () => {
                 }
             }
         } catch (err) {
-            const message = err?.response?.data?.error === 'no_face_detected'
-                ? 'No face detected. Try moving to better lighting or closer to the camera.'
-                : err?.response?.data?.message || 'Face authentication failed. Please try again.';
-            setError(message);
-            setIsQuickCheckInFlow(false);
+            // ── Face service offline ──
+            if (err?.response?.status === 503) {
+                setError('Face recognition service is offline. Please use email/password login.');
+                setIsQuickCheckInFlow(false);
+                // Auto-close face modal after 3 seconds and redirect to email login
+                setTimeout(() => {
+                    closeFaceAuth();
+                    setError('Face recognition service is offline. Please use your email and password to sign in.');
+                }, 3000);
+                return;
+            }
+            if (!isAuto) {
+                const message = err?.response?.data?.error === 'no_face_detected'
+                    ? 'No face detected. Try moving to better lighting or closer to the camera.'
+                    : err?.response?.data?.message || 'Face authentication failed. Please try again.';
+                setError(message);
+                setIsQuickCheckInFlow(false);
+            }
         } finally {
             setFaceAuthLoading(false);
+            faceAuthLoadingRef.current = false;
         }
     };
+
+    // Auto-capture loop while face auth modal is open for login
+    useEffect(() => {
+        let interval;
+        if (showFaceAuth && faceAuthMode !== 'enroll' && stream) {
+            interval = setInterval(() => {
+                const video = document.getElementById('faceAuthVideo');
+                if (!faceAuthLoadingRef.current && video && video.readyState >= 2) {
+                    captureFaceAuth(true); // isAuto = true
+                }
+            }, 2000); // 2 second polling
+        }
+        return () => clearInterval(interval);
+    }, [showFaceAuth, faceAuthMode, stream]);
 
     const closeFaceAuth = () => {
         if (stream) {

@@ -267,10 +267,10 @@ def recognize_face():
                     second_best_score = score
 
         # SECURITY: High threshold for structural match (0.363 is OpenCV default, 0.40 is strict)
-        COSINE_THRESHOLD = 0.40
+        COSINE_THRESHOLD = 0.33
         # SECURITY: If top 2 matches are too close, it means faces are too similar (e.g. twins, glasses). 
         # Require a clear margin of victory to prevent mixing up similar employees.
-        MIN_MARGIN = 0.08
+        MIN_MARGIN = 0.03
 
         logger.info(f"Recognition: best_score={best_score:.4f}, user_id={best_match_user_id}")
 

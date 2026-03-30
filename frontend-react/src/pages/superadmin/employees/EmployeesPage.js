@@ -724,17 +724,20 @@ const EmployeesPage = () => {
             </div>
 
             {/* Stats Bar */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {stats.map((s, i) => (
-                    <div key={i} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out ">
-                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-3.5 rounded-10 shadow-md`}>{s.icon}</div>
+                    <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-4 flex items-center gap-4 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out ">
+                        <div className={`${s.bg} ${s.color} ${s.border} border-2 p-2.5 rounded-10 shadow-md`}>{s.icon}</div>
                         <div>
-                            <div className="text-2xl font-bold text-slate-900 dark:text-white leading-none mb-1">{s.val}</div>
+                            <div className="text-xl font-bold text-slate-900 dark:text-white leading-none mb-0.5">{s.val}</div>
                             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-tight">{s.label}</div>
                         </div>
                     </div>
                 ))}
             </div>
+
+
+
 
             {/* Neobrutalist Filter Bar */}
             <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-5 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out mb-10 flex flex-col lg:flex-row gap-5">
@@ -786,7 +789,7 @@ const EmployeesPage = () => {
                     <div className="text-center p-8 text-red-500 dark:text-red-400">{error}</div>
                 ) : (
                     <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                             {paginatedEmployees.length === 0 ? (
                                 <div className="col-span-full bg-white dark:bg-slate-900/60 p-20 rounded-10 border-2 border-slate-900/5 text-center shadow-inner">
                                     <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-10 flex items-center justify-center text-slate-300 mx-auto mb-6">

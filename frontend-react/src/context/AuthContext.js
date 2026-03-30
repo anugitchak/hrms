@@ -67,13 +67,25 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, [refreshUser]);
 
+  /**
+   * hasPermission — check if the current user has a specific permission.
+   * SuperAdmin (role_id === 1) always returns true.
+   * All others check the boolean column on the user object.
+   */
+  const hasPermission = useCallback((key) => {
+    if (!user) return false;
+    if (user.role_id === 1) return true; // SuperAdmin bypass
+    return Boolean(user[key]);
+  }, [user]);
+
   const value = {
     user,
     token,
     isBootstrapping,
     login,
     logout,
-    refreshUser // Expose if needed manually
+    refreshUser,
+    hasPermission,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

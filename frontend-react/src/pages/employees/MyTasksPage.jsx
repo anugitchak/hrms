@@ -42,7 +42,7 @@ const StatCard = ({ title, value, subValue, icon: Icon, color, bg }) => (
     </div>
 );
 
-const Button = ({ children, onClick, disabled, variant = "primary", className, icon: Icon, type = "button" }) => {
+const Button = ({ children, onClick, disabled, variant = "primary", className, icon: Icon, type = "button", form }) => {
     const variants = {
         primary: "bg-[#00b9cd] text-white hover:bg-blue-600 shadow-md",
         success: "bg-white dark:bg-slate-800 text-emerald-600 border-2 border-emerald-500/20 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 shadow-sm",
@@ -53,6 +53,7 @@ const Button = ({ children, onClick, disabled, variant = "primary", className, i
     return (
         <button
             type={type}
+            form={form}
             onClick={onClick}
             disabled={disabled}
             className={`px-6 py-3 rounded-10 font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 ${variants[variant]} ${disabled ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'} ${className}`}

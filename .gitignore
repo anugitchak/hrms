@@ -5,3 +5,5 @@
 
 /mobile-app/node_modules
 *.zip
+
+mobile-app/
