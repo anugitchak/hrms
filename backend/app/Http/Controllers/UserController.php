@@ -297,6 +297,36 @@ class UserController extends Controller
         ]);
     }
 
+    private function isBase64Image(?string $profilePhoto): bool
+    {
+        if (!$profilePhoto) {
+            return false;
+        }
+
+        return str_starts_with(strtolower(trim($profilePhoto)), 'data:image/');
+    }
+
+    private function deleteStoredProfilePhotoIfNeeded(?string $profilePhoto): void
+    {
+        if (!$profilePhoto || $this->isBase64Image($profilePhoto)) {
+            return;
+        }
+
+        $normalizedPath = ltrim($profilePhoto, '/');
+
+        if (str_starts_with($normalizedPath, 'storage/')) {
+            $normalizedPath = substr($normalizedPath, strlen('storage/'));
+        }
+
+        if (str_starts_with($normalizedPath, 'public/')) {
+            $normalizedPath = substr($normalizedPath, strlen('public/'));
+        }
+
+        if ($normalizedPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($normalizedPath)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($normalizedPath);
+        }
+    }
+
     /**
      * Update Employee Profile Photo
      */
@@ -314,19 +344,19 @@ class UserController extends Controller
         $employee = $user->employee;
 
         if ($request->hasFile('profile_photo')) {
-            // Delete old photo if exists
-            if ($employee->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($employee->profile_photo)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->profile_photo);
-            }
+            $file = $request->file('profile_photo');
+            $base64Photo = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
 
-            // Store new photo
-            $path = $request->file('profile_photo')->store('employees', 'public');
-            $employee->profile_photo = $path;
+            // Clean up old file-path photos from legacy storage mode.
+            $this->deleteStoredProfilePhotoIfNeeded($employee->profile_photo);
+
+            // Persist profile photo directly in DB.
+            $employee->profile_photo = $base64Photo;
             $employee->save();
 
             return response()->json([
                 'message' => 'Profile photo updated successfully',
-                'profile_photo_url' => $path
+                'profile_photo' => $employee->profile_photo
             ]);
         }
 
@@ -346,9 +376,7 @@ class UserController extends Controller
         $employee = $user->employee;
 
         if ($employee->profile_photo) {
-            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($employee->profile_photo)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->profile_photo);
-            }
+            $this->deleteStoredProfilePhotoIfNeeded($employee->profile_photo);
             $employee->profile_photo = null;
             $employee->save();
             return response()->json(['message' => 'Profile photo deleted successfully']);

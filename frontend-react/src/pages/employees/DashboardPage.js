@@ -4,6 +4,7 @@ import api, { STORAGE_URL } from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { formatTime, calculateHours, calculateWeeklyStats, calculateMonthlyStats } from "../../utils/dateUtils";
 import { reverseGeocode } from "../../utils/locationUtils";
+import { resolveProfilePhotoUrl } from "../../utils/profilePhoto";
 import FaceEnrollment from "../../components/FaceEnrollment";
 import { useGlobalUI } from "../../context/GlobalUIContext";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -96,6 +97,12 @@ const Button = ({ children, onClick, disabled, variant = "primary", className, i
 
 const DashboardHeader = ({ profile }) => {
     const today = new Date().toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const [photoLoadError, setPhotoLoadError] = useState(false);
+    const profilePhotoUrl = resolveProfilePhotoUrl(profile?.employee?.profile_photo, STORAGE_URL);
+
+    useEffect(() => {
+        setPhotoLoadError(false);
+    }, [profile?.employee?.profile_photo]);
 
     return (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12 relative z-10 px-4">
@@ -103,8 +110,8 @@ const DashboardHeader = ({ profile }) => {
                 <div className="relative">
                     <div className="h-24 w-24 rounded-10 bg-gradient-to-br from-[#00b9cd] to-blue-600 p-1 shadow-2xl transform hover:rotate-0 transition-transform duration-500">
                         <div className="h-full w-full rounded-10 bg-white dark:bg-slate-950 flex items-center justify-center overflow-hidden">
-                            {profile?.employee?.profile_photo ? (
-                                <img src={profile.employee.profile_photo.startsWith('http') ? profile.employee.profile_photo : `${STORAGE_URL}/${profile.employee.profile_photo}`} alt="Profile" className="h-full w-full object-cover" />
+                            {profilePhotoUrl && !photoLoadError ? (
+                                <img src={profilePhotoUrl} alt="Profile" className="h-full w-full object-cover" onError={() => setPhotoLoadError(true)} />
                             ) : (
                                 <User size={48} className="text-[#00b9cd]" />
                             )}
@@ -235,10 +242,17 @@ const DashboardPage = () => {
 
     const isSecureContext = typeof window !== 'undefined' ? window.isSecureContext : false;
     const abortRef = useRef(null);
+    const retryTimerRef = useRef(null);
+    const retryAttemptRef = useRef(0);
 
     const fetchDashboardData = useCallback(async () => {
         // Cancel any previous in-flight request
         if (abortRef.current) abortRef.current.abort();
+        if (retryTimerRef.current) {
+            clearTimeout(retryTimerRef.current);
+            retryTimerRef.current = null;
+        }
+
         const controller = new AbortController();
         abortRef.current = controller;
         const signal = controller.signal;
@@ -249,50 +263,81 @@ const DashboardPage = () => {
             const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
             const currentMonth = todayStr.slice(0, 7);
 
-            const results = await Promise.allSettled([
+            const coreResults = await Promise.allSettled([
                 api.get("/user", { signal }),
+                api.get(`/my-attendance?month=${currentMonth}`, { signal }),
+            ]);
+
+            const optionalResults = await Promise.allSettled([
                 api.get("/announcements", { signal }),
                 api.get("/my-leaves", { signal }),
                 api.get("/my-payslips", { signal }),
                 api.get("/tasks", { signal }),
-                api.get(`/my-attendance?month=${currentMonth}`, { signal }),
             ]);
 
             // Only update fields that succeeded; preserve stale data for failures
             setData(prev => {
                 const next = { ...prev };
-                if (results[0].status === 'fulfilled') next.profile = results[0].value.data;
-                if (results[1].status === 'fulfilled') {
-                    const d = results[1].value.data.data || results[1].value.data;
-                    next.announcements = Array.isArray(d) ? d.slice(0, 3) : [];
-                }
-                if (results[2].status === 'fulfilled') {
-                    const d = results[2].value.data;
-                    next.leaves = Array.isArray(d) ? d.slice(0, 5) : [];
-                }
-                if (results[3].status === 'fulfilled') {
-                    const d = results[3].value.data;
-                    next.payslips = Array.isArray(d) ? d.slice(0, 3) : [];
-                }
-                if (results[4].status === 'fulfilled') {
-                    const d = results[4].value.data;
-                    next.tasks = Array.isArray(d) ? d : [];
-                }
-                if (results[5].status === 'fulfilled') {
-                    const attList = results[5].value.data.data || results[5].value.data;
+                if (coreResults[0].status === 'fulfilled') next.profile = coreResults[0].value.data;
+                if (coreResults[1].status === 'fulfilled') {
+                    const attList = coreResults[1].value.data.data || coreResults[1].value.data;
                     next.attendance = Array.isArray(attList) ? attList.find(a => a.date === todayStr) || null : null;
                 }
+
+                if (optionalResults[0].status === 'fulfilled') {
+                    const d = optionalResults[0].value.data.data || optionalResults[0].value.data;
+                    next.announcements = Array.isArray(d) ? d.slice(0, 3) : [];
+                }
+                if (optionalResults[1].status === 'fulfilled') {
+                    const d = optionalResults[1].value.data;
+                    next.leaves = Array.isArray(d) ? d.slice(0, 5) : [];
+                }
+                if (optionalResults[2].status === 'fulfilled') {
+                    const d = optionalResults[2].value.data;
+                    next.payslips = Array.isArray(d) ? d.slice(0, 3) : [];
+                }
+                if (optionalResults[3].status === 'fulfilled') {
+                    const d = optionalResults[3].value.data;
+                    next.tasks = Array.isArray(d) ? d : [];
+                }
+
                 return next;
             });
 
-            const nonCancelRejects = results.filter(r => r.status === 'rejected' && r.reason?.code !== 'ERR_CANCELED');
-            if (nonCancelRejects.length > 0) {
-                setFetchError(`${nonCancelRejects.length} data source(s) failed. Retrying automatically...`);
+            const isNonCanceledReject = (result) => result.status === 'rejected' && result.reason?.code !== 'ERR_CANCELED';
+            const coreRejects = coreResults.filter(isNonCanceledReject);
+            const optionalRejects = optionalResults.filter(isNonCanceledReject);
+            const totalRejects = coreRejects.length + optionalRejects.length;
+
+            if (totalRejects === 0) {
+                retryAttemptRef.current = 0;
+                setFetchError(null);
+            } else {
+                const delay = Math.min(20000, 4000 * Math.pow(2, retryAttemptRef.current));
+                const delaySeconds = Math.ceil(delay / 1000);
+                retryAttemptRef.current += 1;
+
+                if (coreRejects.length > 0) {
+                    setFetchError(`Core dashboard sync delayed. Retrying in ${delaySeconds}s...`);
+                } else {
+                    setFetchError(`Some dashboard widgets are temporarily unavailable. Retrying in ${delaySeconds}s...`);
+                }
+
+                retryTimerRef.current = setTimeout(() => {
+                    if (!signal.aborted) fetchDashboardData();
+                }, delay);
             }
         } catch (err) {
             if (err.code === 'ERR_CANCELED' || signal.aborted) return;
             console.error("Dashboard error:", err);
-            setFetchError("Tactical link failed. Please retry.");
+
+            const delay = Math.min(20000, 4000 * Math.pow(2, retryAttemptRef.current));
+            retryAttemptRef.current += 1;
+            setFetchError(`Tactical link failed. Retrying in ${Math.ceil(delay / 1000)}s...`);
+
+            retryTimerRef.current = setTimeout(() => {
+                if (!signal.aborted) fetchDashboardData();
+            }, delay);
         } finally {
             if (!signal.aborted) setIsLoading(false);
         }
@@ -300,7 +345,10 @@ const DashboardPage = () => {
 
     useEffect(() => {
         fetchDashboardData();
-        return () => { if (abortRef.current) abortRef.current.abort(); };
+        return () => {
+            if (abortRef.current) abortRef.current.abort();
+            if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+        };
     }, [fetchDashboardData]);
 
     useEffect(() => {

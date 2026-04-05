@@ -4,6 +4,7 @@ import api, { STORAGE_URL } from "../../../api/axios";
 import { ArrowLeft, Save, Edit2, X, Phone, Mail, Calendar as CalendarIcon, MapPin, Briefcase, DollarSign, RefreshCw, Hash, User, Shield, Zap } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { useGlobalUI } from "../../../context/GlobalUIContext";
+import { resolveProfilePhotoUrl } from "../../../utils/profilePhoto";
 
 const EmployeeProfilePage = () => {
     const { id } = useParams();
@@ -125,6 +126,8 @@ const EmployeeProfilePage = () => {
         else navigate("/superadmin/employees");
     };
 
+    const employeePhotoUrl = resolveProfilePhotoUrl(employee?.profile_photo, STORAGE_URL);
+
     if (loading) return (
         <div className="flex flex-col items-center justify-center h-96">
             <RefreshCw size={48} className="animate-spin text-[#00b9cd] mb-4" />
@@ -158,9 +161,9 @@ const EmployeeProfilePage = () => {
                         <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
                         <div className="flex flex-col items-center text-center">
                             <div className="w-32 h-32 bg-slate-50 dark:bg-white/5 rounded-10 p-0.5 shadow-inner border-2 border-slate-900/5 overflow-hidden mb-6 hover:scale-105 transition-transform duration-500">
-                                {employee?.profile_photo ? (
+                                {employeePhotoUrl ? (
                                     <img
-                                        src={employee.profile_photo.startsWith('http') ? employee.profile_photo : `${STORAGE_URL}/${employee.profile_photo}`}
+                                        src={employeePhotoUrl}
                                         alt={employee.user?.name}
                                         className="w-full h-full object-cover rounded-10"
                                     />

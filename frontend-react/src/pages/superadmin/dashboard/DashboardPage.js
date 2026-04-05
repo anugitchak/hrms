@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'; import { Users, Briefcase, Building2, ShieldCheck, Activity, Server, Database, HardDrive, Cpu, RefreshCw, AlertTriangle, CheckCircle } from 'lucide-react'; import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, Legend, Sector, ResponsiveContainer, RadialBarChart, RadialBar, LabelList } from 'recharts'; import api from '../../../api/axios'; // --- Components ---
+import React, { useState, useEffect, useCallback, useRef } from 'react'; import { Users, Briefcase, Building2, ShieldCheck, Activity, Server, Database, HardDrive, Cpu, RefreshCw, AlertTriangle, CheckCircle } from 'lucide-react'; import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, Legend, Sector, ResponsiveContainer, RadialBarChart, RadialBar, LabelList } from 'recharts'; import api from '../../../api/axios'; // --- Components ---
 const StatCard = ({ title, value, icon: Icon, color, bg, border, loading }) => (
     <div className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 flex items-center gap-5 rounded-10 shadow-md hover:shadow-lg dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out group">
         <div className={`${bg || 'bg-slate-50 dark:bg-white/5'} ${color || 'text-slate-600 dark:text-slate-400'} p-3.5 rounded-10 shadow-md group-hover:scale-110 transition-transform duration-300`}>
@@ -76,15 +76,147 @@ const renderActiveShape = (props) => { const { cx, cy, midAngle, innerRadius, ou
 // --- Main Dashboard Page ---
 const DashboardPage = () => {
     const { user } = useAuth(); // Get user from context
-    const [loading, setLoading] = useState(true); const [lastUpdated, setLastUpdated] = useState(new Date()); const [isDarkMode, setIsDarkMode] = useState(false); const [fetchError, setFetchError] = useState(null); // Data States
-    const [stats, setStats] = useState({}); const [employeeGrowth, setEmployeeGrowth] = useState([]); const [deptDistribution, setDeptDistribution] = useState([]); const [attendanceTrends, setAttendanceTrends] = useState([]); const [todayAttendance, setTodayAttendance] = useState([]); const [leavesSummary, setLeavesSummary] = useState({}); const [activityLog, setActivityLog] = useState([]); // Interactive Chart States
-    const [activeIndexAttendance, setActiveIndexAttendance] = useState(0); const [activeIndexLeaves, setActiveIndexLeaves] = useState(0); const onPieEnterAttendance = (_, index) => { setActiveIndexAttendance(index); }; const onPieEnterLeaves = (_, index) => { setActiveIndexLeaves(index); }; const [mounted, setMounted] = useState(false); useEffect(() => { // Check initial dark mode
-        if (document.documentElement.classList.contains('dark')) { setIsDarkMode(true); } // Observer for class changes on html element to detect dark mode toggle
-        const observer = new MutationObserver((mutations) => { mutations.forEach((mutation) => { if (mutation.attributeName === 'class') { setIsDarkMode(document.documentElement.classList.contains('dark')); } }); }); observer.observe(document.documentElement, { attributes: true }); return () => observer.disconnect();
-    }, []); const fetchAllData = useCallback(async () => { setFetchError(null); try { const results = await Promise.allSettled([api.get('/superadmin/stats'), api.get('/superadmin/employee-growth'), api.get('/superadmin/department-distribution'), api.get('/superadmin/attendance-trends'), api.get('/superadmin/leaves-summary'), api.get('/superadmin/activity-log'), api.get('/superadmin/today-attendance')]); if (results[0].status === 'fulfilled') setStats(results[0].value.data); if (results[1].status === 'fulfilled') setEmployeeGrowth(results[1].value.data); if (results[2].status === 'fulfilled') setDeptDistribution(results[2].value.data); if (results[3].status === 'fulfilled') setAttendanceTrends(results[3].value.data); if (results[4].status === 'fulfilled') setLeavesSummary(results[4].value.data); if (results[5].status === 'fulfilled') setActivityLog(results[5].value.data); if (results[6].status === 'fulfilled') setTodayAttendance(results[6].value.data); const failedCount = results.filter(r => r.status === 'rejected').length; if (failedCount > 0) { console.error(`${failedCount} of 7 dashboard API calls failed`); setFetchError(`${failedCount} data source(s) failed to load. Retrying automatically...`); } setLastUpdated(new Date()); } catch (error) { console.error("Failed to fetch dashboard data", error); setFetchError('Failed to load dashboard data. Retrying automatically...'); } finally { setLoading(false); } }, []); useEffect(() => {
-        setMounted(true); fetchAllData(); const interval = setInterval(fetchAllData, 60000); // Auto-refresh every 60s
-        return () => clearInterval(interval);
-    }, [fetchAllData]); if (!mounted) return null;    // Chart Colors & Styles
+    const [loading, setLoading] = useState(true);
+    const [lastUpdated, setLastUpdated] = useState(new Date());
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [fetchError, setFetchError] = useState(null);
+
+    // Data States
+    const [stats, setStats] = useState({});
+    const [employeeGrowth, setEmployeeGrowth] = useState([]);
+    const [deptDistribution, setDeptDistribution] = useState([]);
+    const [attendanceTrends, setAttendanceTrends] = useState([]);
+    const [todayAttendance, setTodayAttendance] = useState([]);
+    const [leavesSummary, setLeavesSummary] = useState({});
+    const [activityLog, setActivityLog] = useState([]);
+
+    // Interactive Chart States
+    const [activeIndexAttendance, setActiveIndexAttendance] = useState(0);
+    const [activeIndexLeaves, setActiveIndexLeaves] = useState(0);
+    const onPieEnterAttendance = (_, index) => { setActiveIndexAttendance(index); };
+    const onPieEnterLeaves = (_, index) => { setActiveIndexLeaves(index); };
+    const [mounted, setMounted] = useState(false);
+
+    const abortRef = useRef(null);
+    const retryTimerRef = useRef(null);
+    const retryAttemptRef = useRef(0);
+
+    useEffect(() => {
+        // Check initial dark mode
+        if (document.documentElement.classList.contains('dark')) {
+            setIsDarkMode(true);
+        }
+
+        // Observer for class changes on html element to detect dark mode toggle
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    setIsDarkMode(document.documentElement.classList.contains('dark'));
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true });
+
+        return () => observer.disconnect();
+    }, []);
+
+    const fetchAllData = useCallback(async () => {
+        if (abortRef.current) abortRef.current.abort();
+        if (retryTimerRef.current) {
+            clearTimeout(retryTimerRef.current);
+            retryTimerRef.current = null;
+        }
+
+        const controller = new AbortController();
+        abortRef.current = controller;
+        const signal = controller.signal;
+
+        setFetchError(null);
+
+        try {
+            const coreResults = await Promise.allSettled([
+                api.get('/superadmin/stats', { signal }),
+                api.get('/superadmin/today-attendance', { signal }),
+            ]);
+
+            const optionalResults = await Promise.allSettled([
+                api.get('/superadmin/employee-growth', { signal }),
+                api.get('/superadmin/department-distribution', { signal }),
+                api.get('/superadmin/attendance-trends', { signal }),
+                api.get('/superadmin/leaves-summary', { signal }),
+                api.get('/superadmin/activity-log', { signal }),
+            ]);
+
+            if (coreResults[0].status === 'fulfilled') setStats(coreResults[0].value.data);
+            if (coreResults[1].status === 'fulfilled') setTodayAttendance(coreResults[1].value.data);
+
+            if (optionalResults[0].status === 'fulfilled') setEmployeeGrowth(optionalResults[0].value.data);
+            if (optionalResults[1].status === 'fulfilled') setDeptDistribution(optionalResults[1].value.data);
+            if (optionalResults[2].status === 'fulfilled') setAttendanceTrends(optionalResults[2].value.data);
+            if (optionalResults[3].status === 'fulfilled') setLeavesSummary(optionalResults[3].value.data);
+            if (optionalResults[4].status === 'fulfilled') setActivityLog(optionalResults[4].value.data);
+
+            const isNonCanceledReject = (result) => result.status === 'rejected' && result.reason?.code !== 'ERR_CANCELED';
+            const coreRejects = coreResults.filter(isNonCanceledReject);
+            const optionalRejects = optionalResults.filter(isNonCanceledReject);
+            const totalRejects = coreRejects.length + optionalRejects.length;
+
+            if (totalRejects === 0) {
+                retryAttemptRef.current = 0;
+                setFetchError(null);
+            } else {
+                const delay = Math.min(30000, 4000 * Math.pow(2, retryAttemptRef.current));
+                const delaySeconds = Math.ceil(delay / 1000);
+                retryAttemptRef.current += 1;
+
+                if (coreRejects.length > 0) {
+                    setFetchError(`Core dashboard sync delayed. Retrying in ${delaySeconds}s...`);
+                } else {
+                    setFetchError(`Some dashboard widgets are temporarily unavailable. Retrying in ${delaySeconds}s...`);
+                }
+
+                retryTimerRef.current = setTimeout(() => {
+                    if (!signal.aborted) fetchAllData();
+                }, delay);
+            }
+
+            if (!signal.aborted) setLastUpdated(new Date());
+        } catch (error) {
+            if (error?.code === 'ERR_CANCELED' || signal.aborted) return;
+
+            console.error('Failed to fetch dashboard data', error);
+
+            const delay = Math.min(30000, 4000 * Math.pow(2, retryAttemptRef.current));
+            retryAttemptRef.current += 1;
+            setFetchError(`Dashboard sync failed. Retrying in ${Math.ceil(delay / 1000)}s...`);
+
+            retryTimerRef.current = setTimeout(() => {
+                if (!signal.aborted) fetchAllData();
+            }, delay);
+        } finally {
+            if (!signal.aborted) setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        setMounted(true);
+        fetchAllData();
+
+        // Auto-refresh every 60s
+        const interval = setInterval(() => {
+            fetchAllData();
+        }, 60000);
+
+        return () => {
+            clearInterval(interval);
+            if (abortRef.current) abortRef.current.abort();
+            if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+        };
+    }, [fetchAllData]);
+
+    if (!mounted) return null;
+
+    // Chart Colors & Styles
     const COLORS = ['#2563eb', '#10b981', '#6366f1', '#f59e0b', '#ef4444'];
     const chartGridColor = isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
     const chartTextColor = isDarkMode ? "#94a3b8" : "#64748b";

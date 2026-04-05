@@ -409,6 +409,7 @@ class EmployeeController extends Controller
         if ($request->hasFile('profile_photo')) {
             $file = $request->file('profile_photo');
             $profilePhotoPath = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
+            $validated['profile_photo'] = $profilePhotoPath;
         }
 
         // Update User
@@ -529,8 +530,7 @@ class EmployeeController extends Controller
             'status',
             'password',
             'designation_name',
-            'gross_salary',
-            'profile_photo'
+            'gross_salary'
         ]);
 
         $oldCategory = $employee->joining_category;

@@ -116,7 +116,7 @@
 
         <p>Please log in and update your password and complete your profile information.</p>
 
-        <a href="{{ config('app.url') }}" class="cta-button">Go to Portal</a>
+        <a href="{{ config('app.frontend_url') }}" class="cta-button">Go to Portal</a>
 
         <p>If you have any questions, please reach out to the HR department.</p>
 

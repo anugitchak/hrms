@@ -6,6 +6,7 @@ import { useGlobalUI } from "../../context/GlobalUIContext";
 import FaceEnrollment from "../../components/FaceEnrollment";
 
 import { formatDate } from "../../utils/dateUtils";
+import { resolveProfilePhotoUrl } from "../../utils/profilePhoto";
 import { 
     Users, 
     Activity, 
@@ -292,6 +293,7 @@ const EmployeesPage = () => {
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
+    const selectedEmployeePhotoUrl = resolveProfilePhotoUrl(selectedEmployee?.profile_photo, STORAGE_URL);
 
     const handleSort = (key) => {
         setSortConfig(prev => ({
@@ -805,6 +807,7 @@ const EmployeesPage = () => {
                                     'from-purple-500/20 to-purple-600/20 text-purple-600'
                                 ];
                                 const avatarColor = avatarColors[(emp.user?.name?.charCodeAt(0) || 0) % avatarColors.length];
+                                const profilePhotoUrl = resolveProfilePhotoUrl(emp.profile_photo, STORAGE_URL);
                                 
                                 return (
                                     <div key={emp.id} className="bg-white dark:bg-slate-900/60 dark:backdrop-blur-md p-6 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out flex flex-col gap-6 group">
@@ -812,9 +815,9 @@ const EmployeesPage = () => {
                                         <div className="flex items-start justify-between">
                                             <div className="relative group/avatar">
                                                 <div className={`w-14 h-14 rounded-10 flex items-center justify-center text-xl font-bold bg-gradient-to-br ${avatarColor} border border-white dark:border-slate-800 shadow-md group-hover/avatar:scale-110 transition-transform duration-500 overflow-hidden`}>
-                                                    {emp.profile_photo ? (
+                                                    {profilePhotoUrl ? (
                                                         <img
-                                                            src={emp.profile_photo.startsWith('http') ? emp.profile_photo : `${STORAGE_URL}/${emp.profile_photo}`}
+                                                            src={profilePhotoUrl}
                                                             alt={emp.user?.name}
                                                             className="w-full h-full object-cover"
                                                         />
@@ -1694,9 +1697,9 @@ const EmployeesPage = () => {
                         <div className="px-10 py-10 flex justify-between items-center bg-slate-50 dark:bg-white/5 border-b-2 border-slate-900/5">
                             <div className="flex items-center gap-6">
                                 <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-10 p-1 shadow-inner border-2 border-slate-900/5 overflow-hidden group">
-                                    {selectedEmployee.profile_photo ? (
+                                    {selectedEmployeePhotoUrl ? (
                                         <img
-                                            src={selectedEmployee.profile_photo.startsWith('http') ? selectedEmployee.profile_photo : `${STORAGE_URL}/${selectedEmployee.profile_photo}`}
+                                            src={selectedEmployeePhotoUrl}
                                             alt={selectedEmployee.user?.name}
                                             className="w-full h-full object-cover rounded-10 transition-transform duration-500 group-hover:scale-110"
                                         />

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import api, { STORAGE_URL } from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
+import { resolveProfilePhotoUrl } from "../../utils/profilePhoto";
 import { 
     Camera, Trash2, Loader2, User, Mail, Phone, 
     MapPin, Calendar, Briefcase, Building2, Clock,
@@ -59,6 +60,7 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [photoLoadError, setPhotoLoadError] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -75,6 +77,10 @@ const ProfilePage = () => {
     };
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    setPhotoLoadError(false);
+  }, [profile?.employee?.profile_photo]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -132,6 +138,8 @@ const ProfilePage = () => {
     return aadhar.replace(/\d{8}(\d{4})/, "XXXX XXXX $1");
   };
 
+  const profilePhotoUrl = resolveProfilePhotoUrl(profile?.employee?.profile_photo, STORAGE_URL);
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-white dark:bg-slate-950 transition-colors">
@@ -179,11 +187,12 @@ const ProfilePage = () => {
                                 <Camera className="mb-2" />
                                 <span>Update</span>
                             </div>
-                            {profile?.employee?.profile_photo ? (
+                            {profilePhotoUrl && !photoLoadError ? (
                                 <img 
-                                    src={profile.employee.profile_photo.startsWith('http') ? profile.employee.profile_photo : `${STORAGE_URL}/${profile.employee.profile_photo}`} 
+                                src={profilePhotoUrl}
                                     alt="Profile" 
-                                    className="h-full w-full object-cover" 
+                                className="h-full w-full object-cover"
+                                onError={() => setPhotoLoadError(true)}
                                 />
                             ) : (
                                 <User size={56} className="text-[#00b9cd]" />

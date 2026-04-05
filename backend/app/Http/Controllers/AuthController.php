@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\FaceEmbedding;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -209,24 +210,9 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        // Check if Python face service is reachable
-        try {
-            $healthCheck = Http::timeout(8)->get(self::faceServiceUrl() . '/health');
-            if (!$healthCheck->successful()) {
-                throw new \Exception('Face service returned non-200');
-            }
-        } catch (\Exception $e) {
-            Log::error('Face service health check failed: ' . $e->getMessage());
-            return response()->json([
-                'message' => 'Face recognition service is not available.',
-                'hint' => 'Check FACE_SERVICE_URL and confirm the Python app health endpoint is reachable.',
-                'service_url' => self::faceServiceUrl()
-            ], 503);
-        }
-
         // Send image to Python service for descriptor extraction
         try {
-            $response = Http::timeout(45)->attach(
+            $response = Http::timeout(45)->retry(1, 250)->attach(
                 'image',
                 file_get_contents($request->file('face_image')->getPathname()),
                 'face.jpg'
@@ -247,6 +233,13 @@ class AuthController extends Controller
                 return response()->json(['message' => 'No face detected in the image'], 422);
             }
 
+        } catch (ConnectionException $e) {
+            Log::error('Face enrollment service unavailable: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Face recognition service is not available.',
+                'hint' => 'Check FACE_SERVICE_URL and confirm the Python app health endpoint is reachable.',
+                'service_url' => self::faceServiceUrl()
+            ], 503);
         } catch (\Exception $e) {
             Log::error('Face enrollment Python call failed: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to communicate with face recognition service'], 500);
@@ -302,20 +295,6 @@ class AuthController extends Controller
             'face_image' => 'required|image|max:10240',
         ]);
 
-        // Check Python service health
-        try {
-            $healthCheck = Http::timeout(8)->get(self::faceServiceUrl() . '/health');
-            if (!$healthCheck->successful()) {
-                throw new \Exception('Not healthy');
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Face recognition service is offline. Please use email/password login.',
-                'hint' => 'Check FACE_SERVICE_URL and confirm the Python app health endpoint is reachable.',
-                'service_url' => self::faceServiceUrl()
-            ], 503);
-        }
-
         // Build the stored_descriptors payload for the Python service
         // ONLY use face_embeddings table (SFace descriptors from new system)
         // Legacy face-api.js descriptors in users/employees tables are NOT compatible
@@ -353,7 +332,7 @@ class AuthController extends Controller
 
         // Call Python face recognition service
         try {
-            $response = Http::timeout(45)->attach(
+            $response = Http::timeout(45)->retry(1, 250)->attach(
                 'image',
                 file_get_contents($request->file('face_image')->getPathname()),
                 'face.jpg'
@@ -371,6 +350,13 @@ class AuthController extends Controller
 
             $result = $response->json();
 
+        } catch (ConnectionException $e) {
+            Log::error('Face login service unavailable: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Face recognition service is offline. Please use email/password login.',
+                'hint' => 'Check FACE_SERVICE_URL and confirm the Python app health endpoint is reachable.',
+                'service_url' => self::faceServiceUrl()
+            ], 503);
         } catch (\Exception $e) {
             Log::error('Face recognition Python call failed: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to communicate with face recognition service'], 500);

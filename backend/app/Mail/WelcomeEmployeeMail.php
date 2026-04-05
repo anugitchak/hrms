@@ -73,7 +73,7 @@ class WelcomeEmployeeMail extends Mailable
                 ($emp->designation instanceof \App\Models\Designation ? $emp->designation->name : null) ?? 'N/A',
                 $emp->date_of_joining ? $emp->date_of_joining->format('d M, Y') : 'N/A',
                 config('app.name'),
-                config('app.url'),
+                config('app.frontend_url'),
             ],
             $text
         );

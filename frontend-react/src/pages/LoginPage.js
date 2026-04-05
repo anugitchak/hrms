@@ -18,6 +18,10 @@ L.Icon.Default.mergeOptions({
     shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
+const FACE_AUTH_AUTO_BASE_INTERVAL_MS = 3500;
+const FACE_AUTH_AUTO_MAX_INTERVAL_MS = 12000;
+const FACE_AUTH_AUTO_MAX_ATTEMPTS = 8;
+
 const LoginPage = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -37,7 +41,16 @@ const LoginPage = () => {
     const [stream, setStream] = useState(null);
     const [faceAuthLoading, setFaceAuthLoading] = useState(false);
     const faceAuthLoadingRef = useRef(false);
+    const autoFaceAttemptRef = useRef(0);
+    const autoFaceDelayRef = useRef(FACE_AUTH_AUTO_BASE_INTERVAL_MS);
+    const nextAutoCaptureAtRef = useRef(0);
     const [isQuickCheckInFlow, setIsQuickCheckInFlow] = useState(false);
+
+    const resetAutoFaceAuthState = () => {
+        autoFaceAttemptRef.current = 0;
+        autoFaceDelayRef.current = FACE_AUTH_AUTO_BASE_INTERVAL_MS;
+        nextAutoCaptureAtRef.current = 0;
+    };
 
     // Update clock every second
     useEffect(() => {
@@ -139,6 +152,7 @@ const LoginPage = () => {
         setFaceAuthMode(isEnroll ? 'enroll' : 'login');
         setError("");
         setSuccessMessage("");
+        resetAutoFaceAuthState();
         try {
             // Start webcam
             const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
@@ -147,6 +161,7 @@ const LoginPage = () => {
             setError("Camera access denied. Please enable camera permissions.");
             setShowFaceAuth(false);
             setIsQuickCheckInFlow(false);
+            resetAutoFaceAuthState();
         }
     };
 
@@ -259,6 +274,20 @@ const LoginPage = () => {
      * The Python microservice handles all face processing server-side.
      */
     const captureFaceAuth = async (isAuto = false) => {
+        if (isAuto) {
+            const now = Date.now();
+            if (now < nextAutoCaptureAtRef.current) return;
+
+            if (autoFaceAttemptRef.current >= FACE_AUTH_AUTO_MAX_ATTEMPTS) {
+                setError('Face authentication timed out. Please try again or use email/password login.');
+                setIsQuickCheckInFlow(false);
+                closeFaceAuth();
+                return;
+            }
+
+            autoFaceAttemptRef.current += 1;
+        }
+
         if (!stream) {
             if (!isAuto) setError('Camera is not ready. Please allow camera access and try again.');
             return;
@@ -317,6 +346,10 @@ const LoginPage = () => {
                 });
 
                 if (!data?.token) {
+                    if (isAuto) {
+                        autoFaceDelayRef.current = Math.min(FACE_AUTH_AUTO_MAX_INTERVAL_MS, autoFaceDelayRef.current + 1000);
+                        nextAutoCaptureAtRef.current = Date.now() + autoFaceDelayRef.current;
+                    }
                     if (!isAuto) {
                         setError('Face not recognized. Please try again or use email/password login.');
                         closeFaceAuth();
@@ -324,6 +357,7 @@ const LoginPage = () => {
                     return;
                 }
 
+                resetAutoFaceAuthState();
                 localStorage.setItem('token', data.token);
 
                 if (data.force_password_change) {
@@ -348,6 +382,8 @@ const LoginPage = () => {
             if (err?.response?.status === 503) {
                 setError('Face recognition service is offline. Please use email/password login.');
                 setIsQuickCheckInFlow(false);
+                autoFaceAttemptRef.current = FACE_AUTH_AUTO_MAX_ATTEMPTS;
+                nextAutoCaptureAtRef.current = Date.now() + FACE_AUTH_AUTO_MAX_INTERVAL_MS;
                 // Auto-close face modal after 3 seconds and redirect to email login
                 setTimeout(() => {
                     closeFaceAuth();
@@ -355,6 +391,12 @@ const LoginPage = () => {
                 }, 3000);
                 return;
             }
+
+            if (isAuto) {
+                autoFaceDelayRef.current = Math.min(FACE_AUTH_AUTO_MAX_INTERVAL_MS, autoFaceDelayRef.current * 2);
+                nextAutoCaptureAtRef.current = Date.now() + autoFaceDelayRef.current;
+            }
+
             if (!isAuto) {
                 const message = err?.response?.data?.error === 'no_face_detected'
                     ? 'No face detected. Try moving to better lighting or closer to the camera.'
@@ -377,7 +419,7 @@ const LoginPage = () => {
                 if (!faceAuthLoadingRef.current && video && video.readyState >= 2) {
                     captureFaceAuth(true); // isAuto = true
                 }
-            }, 2000); // 2 second polling
+            }, 2000); // Cooldown/backoff is enforced inside captureFaceAuth
         }
         return () => clearInterval(interval);
     }, [showFaceAuth, faceAuthMode, stream]);
@@ -390,6 +432,7 @@ const LoginPage = () => {
         setShowFaceAuth(false);
         setFaceAuthLoading(false);
         setIsQuickCheckInFlow(false);
+        resetAutoFaceAuthState();
     };
 
     return (
