@@ -23,6 +23,9 @@ import urllib.request
 import logging
 import json
 import io
+import time
+import threading
+from collections import defaultdict, deque
 
 import cv2
 import numpy as np
@@ -74,7 +77,50 @@ def init_models():
 
 # ===== Flask App Setup =====
 app = Flask(__name__)
-CORS(app, origins=["*"])
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
+
+# SECURITY FIX: Restricted CORS to specific origins instead of wildcard "*"
+# Prevents unauthorized cross-origin requests and biometric data theft
+# In production, replace with actual frontend/backend domains
+allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://mmhrms.in",
+    "https://www.mmhrms.in",
+    "https://api.mmhrms.in",
+    "http://mmhrms.in",
+    "http://www.mmhrms.in",
+    "http://api.mmhrms.in",
+]
+CORS(app, origins=allowed_origins, supports_credentials=True)
+
+RATE_LIMIT_WINDOW_SECONDS = 60
+RATE_LIMIT_MAX_REQUESTS = 30
+_RATE_LIMIT_BUCKETS = defaultdict(deque)
+_RATE_LIMIT_LOCK = threading.Lock()
+
+
+def _client_ip() -> str:
+    forwarded_for = request.headers.get("X-Forwarded-For", "")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+    return request.remote_addr or "unknown"
+
+
+def _is_rate_limited(bucket_key: str, max_requests: int = RATE_LIMIT_MAX_REQUESTS) -> bool:
+    now = time.time()
+    with _RATE_LIMIT_LOCK:
+        bucket = _RATE_LIMIT_BUCKETS[bucket_key]
+        while bucket and (now - bucket[0]) > RATE_LIMIT_WINDOW_SECONDS:
+            bucket.popleft()
+
+        if len(bucket) >= max_requests:
+            return True
+
+        bucket.append(now)
+        return False
 
 # Initialize models at module load time (for Passenger/WSGI)
 init_models()
@@ -179,6 +225,9 @@ def health_check():
 def enroll_face():
     """Extract face descriptor(s) from an enrollment image."""
     try:
+        if _is_rate_limited(f"enroll:{_client_ip()}", max_requests=20):
+            return jsonify({"error": "rate_limited", "message": "Too many enroll requests. Please retry in a minute."}), 429
+
         if "image" not in request.files:
             return jsonify({"error": "missing_image", "message": "No image file provided"}), 400
 
@@ -218,6 +267,9 @@ def enroll_face():
 def recognize_face():
     """Match a face against stored descriptors using cosine similarity."""
     try:
+        if _is_rate_limited(f"recognize:{_client_ip()}", max_requests=30):
+            return jsonify({"error": "rate_limited", "message": "Too many recognition attempts. Please retry in a minute."}), 429
+
         if "image" not in request.files:
             return jsonify({"error": "missing_image", "message": "No image file provided"}), 400
 

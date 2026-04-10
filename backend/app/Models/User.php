@@ -11,6 +11,11 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public const ROLE_SUPER_ADMIN = 1;
+    public const ROLE_ADMIN = 2;
+    public const ROLE_HR = 3;
+    public const ROLE_EMPLOYEE = 4;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -113,10 +118,60 @@ class User extends Authenticatable
     // Accessor: Check if user is a manager (has direct reports)
     public function getIsManagerAttribute()
     {
-        if ($this->role_id === 4 && $this->employee) {
-            // Check if any employee reports to this user's employee ID
-            return Employee::where('reports_to', $this->employee->id)->exists();
+        if (!$this->hasEmployeeProfile()) {
+            return false;
         }
-        return false;
+
+        // Avoid lazy-loading violations when this accessor runs during JSON serialization.
+        // If relation is already eager loaded, reuse it; otherwise query by user_id.
+        if ($this->relationLoaded('employee')) {
+            $employee = $this->getRelation('employee');
+            if (!$employee) {
+                return false;
+            }
+
+            return Employee::where('reports_to', $employee->id)->exists();
+        }
+
+        $employeeId = Employee::where('user_id', $this->id)->value('id');
+        if (!$employeeId) {
+            return false;
+        }
+
+        return Employee::where('reports_to', $employeeId)->exists();
+    }
+
+    public function hasEmployeeProfile(): bool
+    {
+        if ($this->relationLoaded('employee')) {
+            return $this->getRelation('employee') !== null;
+        }
+
+        return Employee::where('user_id', $this->id)->exists();
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role_id === self::ROLE_SUPER_ADMIN;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role_id === self::ROLE_ADMIN;
+    }
+
+    public function isHr(): bool
+    {
+        return $this->role_id === self::ROLE_HR;
+    }
+
+    public function isEmployee(): bool
+    {
+        return $this->role_id === self::ROLE_EMPLOYEE;
+    }
+
+    public function hasAnyRole(array $roleIds): bool
+    {
+        return in_array($this->role_id, $roleIds, true);
     }
 }

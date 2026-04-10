@@ -11,7 +11,7 @@ class SuperAdminAttendanceController extends Controller
     public function index(Request $request)
     {
         // Ensure only SuperAdmin (role_id = 1) can access
-        if (auth()->user()->role_id !== 1) {
+        if (!auth()->user()->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

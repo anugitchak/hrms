@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use App\Services\LeavePolicyService;
 
 class UserController extends Controller
@@ -99,13 +101,13 @@ class UserController extends Controller
                     'email' => $user->employee->manager->user->email,
                 ] : null,
             ] : null,
-            'hr_email' => \App\Models\User::where('role_id', 3)->value('email') ?? \App\Models\Setting::where('key', 'company_email')->value('value') ?? 'hr@email.com',
+            'hr_email' => \App\Models\User::where('role_id', User::ROLE_HR)->value('email') ?? \App\Models\Setting::where('key', 'company_email')->value('value') ?? 'hr@email.com',
         ]);
     }
 
     public function index()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2])) {
+        if (!auth()->user()->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -114,14 +116,14 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $currentUserRole = auth()->user()->role_id;
+        $currentUser = auth()->user();
 
         // 1. Authorization Check
-        if ($currentUserRole == 1) {
+        if ($currentUser->isSuperAdmin()) {
             // SuperAdmin can create Admin (2), HR (3), Employee (4)
-        } elseif ($currentUserRole == 2) {
+        } elseif ($currentUser->isAdmin()) {
             // Admin can ONLY create Employee (4)
-            if ($request->role_id != 4) {
+            if ((int) $request->role_id !== User::ROLE_EMPLOYEE) {
                 return response()->json(['message' => 'Admins can only create Employees.'], 403);
             }
         } else {
@@ -134,7 +136,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'role_id' => 'required|integer|in:2,3,4',
-            'temp_password' => 'required|string|min:4',
+            // SECURITY FIX: Strengthened password requirements
+            'temp_password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/',
         ]);
 
         // 3. Create User
@@ -144,11 +147,12 @@ class UserController extends Controller
         $user->role_id = $validated['role_id'];
         $user->temp_password = $validated['temp_password'];
         $user->password = Hash::make($validated['temp_password']);
+        $user->is_active = true;
         $user->save();
 
         // 4. Auto-create Employee record if role is Employee (4)
         $employee = null;
-        if ($user->role_id == 4) {
+        if ($user->isEmployee()) {
             try {
                 // Check if Employee model exists and create it
                 $employee = new Employee();
@@ -175,7 +179,9 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2])) {
+        $actor = auth()->user();
+
+        if (!$actor->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -185,14 +191,32 @@ class UserController extends Controller
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $id,
             'role_id' => 'sometimes|exists:roles,id',
-            'temp_password' => 'sometimes|string|min:4',
+            'is_active' => 'sometimes|boolean',
+            // SECURITY FIX: Strengthened password requirements
+            'temp_password' => 'sometimes|string|min:8|regex:/[A-Z]/|regex:/[0-9]/',
         ]);
+
+        if (array_key_exists('is_active', $validated) && !$validated['is_active'] && (int) $actor->id === (int) $user->id) {
+            return response()->json(['message' => 'You cannot deactivate your own active account.'], 422);
+        }
+
+        if (
+            array_key_exists('is_active', $validated) &&
+            $actor->isAdmin() &&
+            ((int) $user->role_id === User::ROLE_SUPER_ADMIN || (int) $user->role_id === User::ROLE_ADMIN)
+        ) {
+            return response()->json(['message' => 'Admins cannot change active state of Super Admin/Admin accounts.'], 403);
+        }
 
         if (isset($validated['temp_password'])) {
             $validated['password'] = Hash::make($validated['temp_password']);
         }
 
         $user->update($validated);
+
+        if (array_key_exists('is_active', $validated) && !$validated['is_active']) {
+            $user->tokens()->delete();
+        }
 
         return response()->json([
             'message' => 'User updated successfully',
@@ -202,12 +226,12 @@ class UserController extends Controller
 
     public function setTempPassword(Request $request, $id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2])) {
+        if (!auth()->user()->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $request->validate([
-            'temp_password' => 'required|min:4'
+            'temp_password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/'
         ]);
 
         $user = User::findOrFail($id);
@@ -220,8 +244,7 @@ class UserController extends Controller
             'message' => 'Temporary password updated successfully',
             'user' => [
                 'id' => $user->id,
-                'email' => $user->email,
-                'temp_password' => $user->temp_password
+                'email' => $user->email
             ]
         ]);
     }
@@ -230,7 +253,7 @@ class UserController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'new_password' => 'required|min:6'
+            'new_password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/'
         ]);
 
         $user = User::find($request->user_id);
@@ -246,13 +269,54 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2])) {
+        $actor = auth()->user();
+
+        if (!$actor->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        User::findOrFail($id)->delete();
+        if ((int) $actor->id === (int) $id) {
+            return response()->json(['message' => 'You cannot delete your own active account.'], 422);
+        }
 
-        return response()->json(['message' => 'User deleted']);
+        $user = User::with('employee')->findOrFail($id);
+
+        // Admins should not be able to remove Super Admin or peer Admin accounts.
+        if ($actor->isAdmin() && ((int) $user->role_id === User::ROLE_SUPER_ADMIN || (int) $user->role_id === User::ROLE_ADMIN)) {
+            return response()->json(['message' => 'Admins cannot delete Super Admin/Admin accounts.'], 403);
+        }
+
+        DB::beginTransaction();
+        try {
+            $user->tokens()->delete();
+
+            if ($user->employee) {
+                // Preserve hierarchy integrity before deleting this employee profile.
+                Employee::where('reports_to', $user->employee->id)->update(['reports_to' => null]);
+                $user->employee->delete();
+            }
+
+            $user->delete();
+            DB::commit();
+
+            return response()->json([
+                'message' => 'User deleted permanently.',
+                'deletion_mode' => 'hard',
+            ]);
+        } catch (QueryException $e) {
+            DB::rollBack();
+
+            // If hard delete is blocked by linked records, deactivate instead.
+            $user->is_active = false;
+            $user->save();
+            $user->tokens()->delete();
+
+            return response()->json([
+                'message' => 'User has linked records, so the account was deactivated instead.',
+                'deletion_mode' => 'soft',
+            ]);
+        }
+
     }
 
     /**
@@ -263,9 +327,9 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        // Only employees can self-enroll
-        if ($user->role_id != 4) {
-            return response()->json(['message' => 'Only employees can self-enroll face authentication'], 403);
+        // Any user with an employee profile can self-enroll for employee-portal usage.
+        if (!$user->hasEmployeeProfile()) {
+            return response()->json(['message' => 'Only users with employee profiles can self-enroll face authentication'], 403);
         }
 
         $request->validate([
@@ -333,7 +397,7 @@ class UserController extends Controller
     public function updateProfilePhoto(Request $request)
     {
         $user = auth()->user();
-        if ($user->role_id != 4 || !$user->employee) {
+        if (!$user->hasEmployeeProfile() || !$user->employee) {
             return response()->json(['message' => 'Unauthorized or employee profile not found'], 403);
         }
 
@@ -369,7 +433,7 @@ class UserController extends Controller
     public function deleteProfilePhoto()
     {
         $user = auth()->user();
-        if ($user->role_id != 4 || !$user->employee) {
+        if (!$user->hasEmployeeProfile() || !$user->employee) {
             return response()->json(['message' => 'Unauthorized or employee profile not found'], 403);
         }
 

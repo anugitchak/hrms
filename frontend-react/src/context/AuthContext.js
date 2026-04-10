@@ -11,19 +11,19 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback((nextToken, nextUser) => {
     setToken(nextToken);
     setUser(nextUser);
-    localStorage.setItem("token", nextToken);
-    localStorage.setItem("user", JSON.stringify(nextUser));
+    sessionStorage.setItem("token", nextToken);
+    sessionStorage.setItem("user", JSON.stringify(nextUser));
   }, []);
 
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
   }, []);
 
   const refreshUser = useCallback(async (currentToken) => {
-    const tokenToUse = currentToken || token || localStorage.getItem("token");
+    const tokenToUse = currentToken || token || sessionStorage.getItem("token");
     if (!tokenToUse) return;
 
     try {
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       });
       const userData = response.data;
       setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+      sessionStorage.setItem("user", JSON.stringify(userData));
     } catch (error) {
       console.error("Failed to refresh user data", error);
       // Optional: if 401, maybe logout? But allow soft fail for now 
@@ -45,8 +45,8 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const storedToken = localStorage.getItem("token");
-      const storedUser = localStorage.getItem("user");
+      const storedToken = sessionStorage.getItem("token");
+      const storedUser = sessionStorage.getItem("user");
 
       if (storedToken) {
         setToken(storedToken);

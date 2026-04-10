@@ -3,17 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class PermissionController extends Controller
 {
     public function update(Request $request, $id)
     {
         // Enforce SuperAdmin only (though route middleware handles this too)
-        if ($request->user()->role_id !== 1) {
+        if (!$request->user()->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $user = \App\Models\User::findOrFail($id);
+        $user = User::findOrFail($id);
 
         // Validate payload
         $validated = $request->validate([

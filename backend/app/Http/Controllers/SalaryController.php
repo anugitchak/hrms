@@ -15,8 +15,14 @@ class SalaryController extends Controller
     // ======================================
     public function index(Request $request)
     {
+        $user = auth()->user();
+
         // Permission Check: View Salaries
-        if (!auth()->user()->can('can_view_salaries') && !in_array(auth()->user()->role_id, [1, 2, 3])) {
+        if (!$user->can('can_view_salaries') && !$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -47,7 +53,7 @@ class SalaryController extends Controller
         $employees = $query->paginate(15);
 
         // Transform data to flatten salary structure (Frontend Expectation)
-        $employees->getCollection()->transform(function ($employee) {
+        $transformedItems = collect($employees->items())->map(function ($employee) {
             $salary = $employee->currentSalary;
             return [
                 'id' => $salary ? $salary->id : null, 
@@ -64,7 +70,10 @@ class SalaryController extends Controller
             ];
         });
 
-        return response()->json($employees);
+        $payload = json_decode(json_encode($employees), true);
+        $payload['data'] = $transformedItems->values()->all();
+
+        return response()->json($payload);
     }
 
     // ======================================
@@ -73,7 +82,12 @@ class SalaryController extends Controller
     // ======================================
     public function store(Request $request)
     {
-        if (!auth()->user()->can('can_manage_salaries') && !in_array(auth()->user()->role_id, [1, 2])) {
+        $user = auth()->user();
+
+        if (!$user->can('can_manage_salaries') && !$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -91,21 +105,25 @@ class SalaryController extends Controller
             $employee->ptax_opt_out
         );
 
-        $salary = Salary::create([
-            'employee_id' => $request->employee_id,
-            'basic' => $salaryData['basic'],
-            'hra' => $salaryData['hra'],
-            'pf' => $salaryData['pf'],
-            'esic' => $salaryData['esic'],
-            'ptax' => $salaryData['ptax'],
-            'da' => 0,
-            'allowances' => 0,
-            'deductions' => $salaryData['deductions'],
-            'gross_salary' => $salaryData['gross_salary'],
-        ]);
+        $salary = DB::transaction(function () use ($request, $salaryData) {
+            $salary = Salary::create([
+                'employee_id' => $request->employee_id,
+                'basic' => $salaryData['basic'],
+                'hra' => $salaryData['hra'],
+                'pf' => $salaryData['pf'],
+                'esic' => $salaryData['esic'],
+                'ptax' => $salaryData['ptax'],
+                'da' => 0,
+                'allowances' => 0,
+                'deductions' => $salaryData['deductions'],
+                'gross_salary' => $salaryData['gross_salary'],
+            ]);
 
-        // Create History Record
-        \App\Models\SalaryHistory::create(array_merge($salary->toArray(), ['salary_id' => $salary->id]));
+            // Create History Record
+            \App\Models\SalaryHistory::create(array_merge($salary->toArray(), ['salary_id' => $salary->id]));
+
+            return $salary;
+        });
 
         return response()->json([
             'message' => 'Salary record created successfully',
@@ -121,8 +139,12 @@ class SalaryController extends Controller
     {
         // Support both old route with ID and new route without ID (generic update)
         // If ID is not passed, use employee_id from request to find record
+        $user = auth()->user();
         
-        if (!auth()->user()->can('can_manage_salaries') && !in_array(auth()->user()->role_id, [1, 2])) {
+        if (!$user->can('can_manage_salaries') && !$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -182,7 +204,7 @@ class SalaryController extends Controller
         $user = auth()->user();
 
         // Employee Check
-        if ($user->role_id == 4) {
+        if ($user->isEmployee()) {
             if ($salary->employee->user_id != $user->id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
@@ -190,8 +212,36 @@ class SalaryController extends Controller
         }
 
         // Admin/HR Check
-        if (!auth()->user()->can('can_view_salaries') && !in_array($user->role_id, [1, 2, 3])) {
+        if (!$user->can('can_view_salaries') && !$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($salary);
+    }
+
+    // ======================================
+    // GET SALARY BY EMPLOYEE ID
+    // ======================================
+    public function getByEmployee($employeeId)
+    {
+        $user = auth()->user();
+
+        if (!$user->can('can_view_salaries') && !$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $salary = Salary::where('employee_id', $employeeId)->latest()->first();
+
+        if (!$salary) {
+            return response()->json(['message' => 'Salary structure not found for this employee. Please configure salary first.'], 404);
         }
 
         return response()->json($salary);
@@ -202,7 +252,13 @@ class SalaryController extends Controller
     // ======================================
     public function history($employeeId)
     {
-        if (!auth()->user()->can('can_view_salaries') && !in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->can('can_view_salaries') && !$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -231,7 +287,13 @@ class SalaryController extends Controller
     // ======================================
     public function export(Request $request)
     {
-        if (!auth()->user()->can('can_view_salaries') && !in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->can('can_view_salaries') && !$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -307,7 +369,9 @@ class SalaryController extends Controller
     public function mySalary()
     {
         $user = auth()->user();
-        if ($user->role_id != 4) return response()->json(['message' => 'Unauthorized'], 403);
+        if (!$user->hasEmployeeProfile()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         
         $employee = $user->employee;
         if (!$employee) return response()->json(['message' => 'Employee profile not found'], 404);

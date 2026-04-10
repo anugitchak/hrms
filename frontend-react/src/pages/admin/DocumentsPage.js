@@ -37,7 +37,6 @@ const DocumentsPage = () => {
     const fetchDocuments = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem("token");
 
             let params = {};
             if (filters.employee_id) params.employee_id = filters.employee_id;
@@ -69,7 +68,6 @@ const DocumentsPage = () => {
         e.preventDefault();
         setUploading(true);
         try {
-            const token = localStorage.getItem("token");
             const formData = new FormData();
             formData.append("document_type", uploadData.document_type);
             formData.append("document_title", uploadData.document_title);

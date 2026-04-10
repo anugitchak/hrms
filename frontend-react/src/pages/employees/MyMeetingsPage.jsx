@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
 import { 
     Calendar, Clock, Video, MapPin, CalendarCheck, 
     CheckCircle2, XCircle, ExternalLink, CalendarDays,
@@ -48,8 +49,12 @@ const Button = ({ children, onClick, disabled, variant = "primary", className, i
 
 const MyMeetingsPage = () => {
     const { addToast } = useGlobalUI();
+    const { user } = useAuth();
     const [meetings, setMeetings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [respondingMeetingId, setRespondingMeetingId] = useState(null);
+
+    const currentEmployeeId = user?.employee?.id;
 
     useEffect(() => {
         fetchMyMeetings();
@@ -69,14 +74,78 @@ const MyMeetingsPage = () => {
     };
 
     const handleResponse = async (id, status) => {
+        if (respondingMeetingId === id) {
+            return;
+        }
+
+        setRespondingMeetingId(id);
         try {
             await api.post(`/meetings/${id}/respond`, { status });
+
+            setMeetings((prev) => prev.map((meeting) => {
+                if (meeting.id !== id) return meeting;
+
+                let updated = false;
+                const nextParticipants = (meeting.participants || []).map((participant) => {
+                    if (currentEmployeeId && Number(participant.id) === Number(currentEmployeeId)) {
+                        updated = true;
+                        return {
+                            ...participant,
+                            pivot: {
+                                ...participant.pivot,
+                                attendance_status: status,
+                            },
+                        };
+                    }
+                    return participant;
+                });
+
+                if (!updated) {
+                    const firstPivotIndex = nextParticipants.findIndex((participant) => participant?.pivot);
+                    if (firstPivotIndex !== -1) {
+                        nextParticipants[firstPivotIndex] = {
+                            ...nextParticipants[firstPivotIndex],
+                            pivot: {
+                                ...nextParticipants[firstPivotIndex].pivot,
+                                attendance_status: status,
+                            },
+                        };
+                    }
+                }
+
+                return {
+                    ...meeting,
+                    participants: nextParticipants,
+                };
+            }));
+
             addToast(`Broadcast Signal Recorded: ${status.toUpperCase()}`, "success");
-            fetchMyMeetings();
         } catch (err) {
             console.error("Failed to respond to meeting", err);
-            addToast("Signal Transmission Failure.", "error");
+            if (err?.response?.status === 409) {
+                addToast(err?.response?.data?.message || "You have already responded to this meeting.", "error");
+                fetchMyMeetings();
+            } else {
+                addToast("Signal Transmission Failure.", "error");
+            }
+        } finally {
+            setRespondingMeetingId(null);
         }
+    };
+
+    const getMyStatus = (meeting) => {
+        const participants = meeting?.participants || [];
+        if (!participants.length) return "pending";
+
+        if (currentEmployeeId) {
+            const mine = participants.find((participant) => Number(participant.id) === Number(currentEmployeeId));
+            if (mine?.pivot?.attendance_status) {
+                return mine.pivot.attendance_status;
+            }
+        }
+
+        const fallback = participants.find((participant) => participant?.pivot?.attendance_status);
+        return fallback?.pivot?.attendance_status || "pending";
     };
 
     const generateGCalLink = (meeting) => {
@@ -137,8 +206,10 @@ const MyMeetingsPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {meetings.map((meeting) => {
-                    const myStatus = meeting.participants?.find(p => p.pivot)?.pivot?.attendance_status || 'pending';
+                    const myStatus = getMyStatus(meeting);
                     const startTime = new Date(meeting.start_time);
+                    const isResponding = respondingMeetingId === meeting.id;
+                    const isAlreadyResponded = myStatus !== 'pending';
                     
                     return (
                         <Card key={meeting.id} className="group relative overflow-hidden">
@@ -214,30 +285,40 @@ const MyMeetingsPage = () => {
                             </div>
 
                             <div className="mt-8 pt-8 border-t-2 border-slate-100 dark:border-white/5">
-                                {myStatus === 'pending' ? (
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <Button 
-                                            onClick={() => handleResponse(meeting.id, 'accepted')} 
-                                            icon={CheckCircle2}
-                                            variant="success"
-                                        >
-                                            Confirm
-                                        </Button>
-                                        <Button 
-                                            onClick={() => handleResponse(meeting.id, 'declined')} 
-                                            icon={XCircle}
-                                            variant="outline"
-                                            className="hover:!bg-rose-500 hover:!text-white hover:border-transparent"
-                                        >
-                                            Deny
-                                        </Button>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Button 
+                                        onClick={() => handleResponse(meeting.id, 'accepted')} 
+                                        icon={CheckCircle2}
+                                        variant="success"
+                                        disabled={isResponding || isAlreadyResponded}
+                                    >
+                                        {myStatus === 'accepted' ? 'Confirmed' : 'Confirm'}
+                                    </Button>
+                                    <Button 
+                                        onClick={() => handleResponse(meeting.id, 'declined')} 
+                                        icon={XCircle}
+                                        variant={myStatus === 'declined' ? 'danger' : 'outline'}
+                                        disabled={isResponding || isAlreadyResponded}
+                                        className={myStatus === 'declined' ? '' : 'hover:!bg-rose-500 hover:!text-white hover:border-transparent'}
+                                    >
+                                        {myStatus === 'declined' ? 'Declined' : 'Deny'}
+                                    </Button>
+                                </div>
+
+                                {myStatus !== 'pending' && (
+                                    <div className="mt-4 text-center">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                            Response locked after submission
+                                        </span>
                                     </div>
-                                ) : (
+                                )}
+
+                                {myStatus === 'accepted' && (
                                     <a 
                                         href={generateGCalLink(meeting)} 
                                         target="_blank" 
                                         rel="noreferrer" 
-                                        className="w-full bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-100 dark:border-white/10 text-slate-600 dark:text-slate-400 py-4 rounded-10 text-[10px] font-black uppercase tracking-[0.2em] hover:border-[#00b9cd] hover:text-[#00b9cd] transition-all flex items-center justify-center gap-2 group/btn"
+                                        className="mt-4 w-full bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-100 dark:border-white/10 text-slate-600 dark:text-slate-400 py-4 rounded-10 text-[10px] font-black uppercase tracking-[0.2em] hover:border-[#00b9cd] hover:text-[#00b9cd] transition-all flex items-center justify-center gap-2 group/btn"
                                     >
                                         <CalendarDays className="w-4 h-4 group-hover/btn:scale-110 transition-transform" /> 
                                         Sync G-Archive

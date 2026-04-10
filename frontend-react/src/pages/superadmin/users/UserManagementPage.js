@@ -14,7 +14,7 @@ const UserManagementPage = () => {
     // Filter State
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("active");
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -95,12 +95,41 @@ const UserManagementPage = () => {
         if (!confirmed) return;
 
         try {
-            await api.delete(`/users/${userId}`);
+            const response = await api.delete(`/users/${userId}`);
             fetchUsers();
-            setSuccessModal({ show: true, message: "User deleted successfully" });
+            setSuccessModal({
+                show: true,
+                message: response?.data?.message || "User action completed successfully"
+            });
         } catch (err) {
             console.error("Failed to delete user", err);
-            addToast("Failed to delete user", "error");
+            addToast(err.response?.data?.message || "Failed to delete user", "error");
+        }
+    };
+
+    const handleToggleActive = async (user) => {
+        const nextActive = !user.is_active;
+        const confirmed = await confirm({
+            title: nextActive ? "Activate User" : "Deactivate User",
+            message: nextActive
+                ? `Activate ${user.name}'s account?`
+                : `Deactivate ${user.name}'s account? They won't be able to log in until re-activated.`,
+            confirmText: nextActive ? "Activate" : "Deactivate",
+            type: nextActive ? "info" : "warning"
+        });
+
+        if (!confirmed) return;
+
+        try {
+            const response = await api.put(`/users/${user.id}`, { is_active: nextActive });
+            await fetchUsers();
+            setSuccessModal({
+                show: true,
+                message: response?.data?.message || (nextActive ? "User activated successfully" : "User deactivated successfully")
+            });
+        } catch (err) {
+            console.error("Failed to update active status", err);
+            addToast(err.response?.data?.message || "Failed to update user status", "error");
         }
     };
 
@@ -350,7 +379,17 @@ const UserManagementPage = () => {
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex gap-3 pt-2 mt-auto">
+                                <div className="flex gap-2 pt-2 mt-auto">
+                                    <button
+                                        onClick={() => handleToggleActive(user)}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold border rounded-10 shadow-md transition-all focus:ring-2 active:scale-[0.98] ${
+                                            user.is_active
+                                                ? "border-amber-200 dark:border-amber-700/50 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 focus:ring-amber-500/10"
+                                                : "border-green-200 dark:border-green-700/50 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 focus:ring-green-500/10"
+                                        }`}
+                                    >
+                                        {user.is_active ? "Deactivate" : "Activate"}
+                                    </button>
                                     <button onClick={() => handleEdit(user)}
                                         className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold border-2 border-slate-200 dark:border-white/10 rounded-10 bg-white dark:bg-brand-800/40 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-brand-800/60 hover:border-slate-300 dark:hover:border-white/20 shadow-md transition-all focus:ring-2 focus:ring-brand-500/10 active:scale-[0.98]">
                                         <div className="bg-slate-100 dark:bg-slate-700/50 p-1.5 rounded-10 group-hover:bg-[#00b9cd]/30 dark:group-hover:bg-[#00b9cd]/80/50 transition-colors duration-300">

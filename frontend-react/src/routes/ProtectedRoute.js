@@ -65,6 +65,11 @@ const routeRoleMap = {
 const ProtectedRoute = ({ children, roles }) => {
   const location = useLocation();
   const { user, token, isBootstrapping } = useAuth();
+  const hasEmployeeProfile = Boolean(user?.employee?.id || user?.employee_id);
+
+  const canAccessEmployeeRouteByProfile = (path, allowedRoles = []) => {
+    return path.startsWith("/employee/") && allowedRoles.includes(4) && hasEmployeeProfile;
+  };
 
   if (isBootstrapping) {
     return <div>Loading...</div>;
@@ -75,7 +80,7 @@ const ProtectedRoute = ({ children, roles }) => {
   }
 
   // 1. Check if the route is explicitly restricted via props (legacy support or extra safety)
-  if (roles && !roles.includes(user.role_id)) {
+  if (roles && !roles.includes(user.role_id) && !canAccessEmployeeRouteByProfile(location.pathname, roles)) {
     return <Navigate to={getRedirectPath(user.role_id)} replace />;
   }
 
@@ -89,7 +94,7 @@ const ProtectedRoute = ({ children, roles }) => {
 
   if (matchedRoute) {
     const allowedRoles = routeRoleMap[matchedRoute];
-    if (!allowedRoles.includes(user.role_id)) {
+    if (!allowedRoles.includes(user.role_id) && !canAccessEmployeeRouteByProfile(currentPath, allowedRoles)) {
       return <Navigate to={getRedirectPath(user.role_id)} replace />;
     }
   }

@@ -141,7 +141,7 @@ class LeavePolicyController extends Controller
     // ======================================
     public function destroy($id)
     {
-        if (auth()->user()->role_id != 1) { // Only SuperAdmin? User said "SuperAdmin -> Full access ... Admin -> Cannot delete global policies"
+           if (!auth()->user()->isSuperAdmin()) { // Only SuperAdmin? User said "SuperAdmin -> Full access ... Admin -> Cannot delete global policies"
              // How to define "Global"? Maybe check if it's assigned to anyone?
              // For now, let's allow SuperAdmin only for DELETE.
              return response()->json(['message' => 'Only SuperAdmin can delete policies'], 403);
@@ -204,21 +204,25 @@ class LeavePolicyController extends Controller
                 }
             })
             ->get();
+
+        $rule = LeavePolicyRule::where('leave_policy_id', $id)
+            ->where('leave_type_id', $leaveTypeId)
+            ->first();
+
+        $totalQuota = $rule ? $rule->total_leaves_per_year : 0;
+
+        $balancesByEmployee = LeaveBalance::whereIn('employee_id', $employees->pluck('id'))
+            ->where('leave_type_id', $leaveTypeId)
+            ->get()
+            ->keyBy('employee_id');
+
         $candidates = [];
 
         foreach ($employees as $emp) {
-            $balance = LeaveBalance::where('employee_id', $emp->id)
-                ->where('leave_type_id', $leaveTypeId)
-                ->first();
+            $balance = $balancesByEmployee->get($emp->id);
             
             $dateOfJoining = $emp->date_of_joining ? \Carbon\Carbon::parse($emp->date_of_joining) : null;
             $currentYear = \Carbon\Carbon::now()->year;
-            
-            // Get Total Quota from Rule
-            $rule = LeavePolicyRule::where('leave_policy_id', $id)
-                ->where('leave_type_id', $leaveTypeId)
-                ->first();
-            $totalQuota = $rule ? $rule->total_leaves_per_year : 0;
             
             // Calculate Pro-Rata Allocation if joined this year
             $calculatedQuota = $totalQuota;

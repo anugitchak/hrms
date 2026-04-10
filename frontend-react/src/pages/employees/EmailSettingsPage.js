@@ -285,18 +285,21 @@ const EmailSettingsPage = () => {
     const unreadCount = inbox.filter(m => !m.is_read).length;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-6">
-            <div className="mb-8">
-                <div className="flex items-center gap-4 mb-2">
-                    <div className="p-3 bg-[#00b9cd]/10 rounded-10 text-[#00b9cd]"><Mail size={24} /></div>
-                    <div>
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Messages</h1>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Internal HRMS Mail System</p>
+        <div className="p-8 w-full min-h-screen font-paperlogy mesh-bg">
+            {/* Tactical Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-10 relative z-10 px-4">
+                <div>
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none mb-3">
+                        Mess<span className="text-transparent bg-clip-text bg-[#00b9cd]">ages</span>
+                    </h1>
+                    <div className="flex items-center gap-3 mt-4">
+                        <span className="h-1.5 w-12 bg-[#f06464] rounded-10 shadow-lg shadow-[#f06464]/20"></span>
+                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] italic">HRMS Mail System</p>
                     </div>
                 </div>
             </div>
 
-            <div className="flex gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-6 px-4">
                 {TABS.map(tab => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -307,7 +310,7 @@ const EmailSettingsPage = () => {
                             className={`flex items-center gap-2 px-5 py-3 rounded-10 font-black text-[10px] uppercase tracking-[0.25em] transition-all duration-300 ${
                                 isActive
                                     ? 'bg-[#00b9cd] text-white shadow-md shadow-[#00b9cd]/30'
-                                    : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-[#00b9cd] border-2 border-slate-200 dark:border-white/10'
+                                    : 'bg-white dark:bg-slate-900/60 dark:backdrop-blur-md text-slate-500 dark:text-slate-400 hover:text-[#00b9cd] border-2 border-slate-200 dark:border-white/10 hover:border-[#00b9cd] dark:hover:border-[#00b9cd]'
                             }`}
                         >
                             <Icon size={14} />
@@ -322,7 +325,8 @@ const EmailSettingsPage = () => {
                 })}
             </div>
 
-            {activeTab === 'compose' && (
+            <div className="px-4">
+                {activeTab === 'compose' && (
                 <Card icon={Send} title="Compose Message" subtitle="Send an internal message with real email delivery">
                     <form onSubmit={handleSend} className="flex flex-col gap-5">
                         <UserSelect
@@ -590,6 +594,7 @@ const EmailSettingsPage = () => {
                     )}
                 </div>
             )}
+            </div>
         </div>
     );
 };

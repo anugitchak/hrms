@@ -27,11 +27,29 @@ class NotificationService
      */
     public function sendToRoles(array $roles, $title, $message, $type = "system", $link = null)
     {
-        $users = User::whereIn('role_id', $roles)->pluck('id');
+        $userIds = User::whereIn('role_id', $roles)->pluck('id')->unique()->values();
 
-        foreach ($users as $userId) {
-            $this->sendToUser($userId, $title, $message, $type, $link);
+        if ($userIds->isEmpty()) {
+            return 0;
         }
+
+        $timestamp = now();
+        $rows = $userIds->map(function ($userId) use ($title, $message, $type, $link, $timestamp) {
+            return [
+                'user_id' => $userId,
+                'title' => $title,
+                'message' => $message,
+                'type' => $type,
+                'link' => $link,
+                'is_read' => false,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ];
+        })->all();
+
+        Notification::insert($rows);
+
+        return count($rows);
     }
 
     /**

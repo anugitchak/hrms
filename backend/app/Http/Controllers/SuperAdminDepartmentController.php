@@ -11,7 +11,7 @@ class SuperAdminDepartmentController extends Controller
     public function index()
     {
         // Ensure only SuperAdmin (role_id = 1) can access
-        if (auth()->user()->role_id !== 1) {
+        if (!auth()->user()->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -22,7 +22,7 @@ class SuperAdminDepartmentController extends Controller
     // POST /api/superadmin/departments
     public function store(Request $request)
     {
-        if (auth()->user()->role_id !== 1) {
+        if (!auth()->user()->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -43,7 +43,7 @@ class SuperAdminDepartmentController extends Controller
     // PUT /api/superadmin/departments/{id}
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role_id !== 1) {
+        if (!auth()->user()->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -66,7 +66,7 @@ class SuperAdminDepartmentController extends Controller
     // DELETE /api/superadmin/departments/{id}
     public function destroy($id)
     {
-        if (auth()->user()->role_id !== 1) {
+        if (!auth()->user()->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

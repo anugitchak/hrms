@@ -49,7 +49,20 @@ const PayslipsPage = () => {
     
     const { user } = useAuth(); 
     
-    const canViewPayslips = user?.role_id === 1 || user?.role_id === 2 || user?.role_id === 3 || user?.permissions?.includes("can_manage_payslips") || user?.permissions?.includes("can_view_payslips"); 
+    const canViewPayslips =
+        user?.role_id === 1 ||
+        user?.role_id === 2 ||
+        user?.role_id === 3 ||
+        user?.permissions?.includes("can_view_salaries") ||
+        user?.permissions?.includes("can_manage_salaries") ||
+        user?.permissions?.includes("can_manage_payslips") ||
+        user?.permissions?.includes("can_view_payslips");
+    const canManagePayslips =
+        user?.role_id === 1 ||
+        user?.role_id === 2 ||
+        user?.role_id === 3 ||
+        user?.permissions?.includes("can_manage_salaries") ||
+        user?.permissions?.includes("can_manage_payslips");
     const isSuperAdmin = user?.role_id === 1; 
 
     useEffect(() => { 
@@ -76,10 +89,12 @@ const PayslipsPage = () => {
             } else if (deptRes.data?.success && deptRes.data?.data) { 
                 setDepartments(deptRes.data.data); 
             } 
-            if (Array.isArray(empRes.data)) { 
-                setEmployees(empRes.data); 
-            } else if (empRes.data?.success && empRes.data?.data) { 
-                setEmployees(empRes.data.data); 
+            if (Array.isArray(empRes.data)) {
+                setEmployees(empRes.data);
+            } else if (Array.isArray(empRes.data?.data)) {
+                setEmployees(empRes.data.data);
+            } else if (empRes.data?.success && Array.isArray(empRes.data?.data)) {
+                setEmployees(empRes.data.data);
             } 
         } catch (err) { 
             console.error("Failed to fetch initial data", err); 
@@ -175,6 +190,15 @@ const PayslipsPage = () => {
                     </div>
                 </div> 
                 <div className="flex items-center gap-4"> 
+                    {canManagePayslips && (
+                        <button
+                            onClick={() => setShowGenerateModal(true)}
+                            className="flex items-center gap-3 text-xs font-black text-white bg-[#00b9cd] px-6 py-4 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] hover:bg-[#00b9cd]/85 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md uppercase tracking-[0.2em]"
+                        >
+                            <Plus size={16} />
+                            Generate
+                        </button>
+                    )}
                     <button 
                         onClick={() => setShowAccessModal(true)} 
                         className="flex items-center gap-3 text-xs font-black text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-900/60 dark:backdrop-blur-md px-6 py-4 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] border-2 border-transparent hover:border-[#00b9cd] dark:hover:border-[#00b9cd] transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md border border-slate-50 dark:border-white/5 uppercase tracking-[0.2em]"

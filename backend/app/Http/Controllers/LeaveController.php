@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Leave;
 use App\Models\LeaveBalance;
+use App\Models\User;
 use App\Services\NotificationService;
 use App\Services\HolidayService;
 use App\Services\LeavePolicyService;
@@ -35,7 +36,7 @@ class LeaveController extends Controller
         // Permission/Role Check
         // Permission/Role Check
         // Allow SuperAdmin (1) or anyone with view/manage permissions
-        if ($user->role_id !== 1 && !$user->can_view_leaves && !$user->can_manage_leaves) {
+                if (!$user->isSuperAdmin() && !$user->can_view_leaves && !$user->can_manage_leaves) {
              return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -106,7 +107,7 @@ class LeaveController extends Controller
     public function summary(Request $request)
     {
         $user = auth()->user();
-        if ($user->role_id !== 1 && !$user->can_view_leaves && !$user->can_manage_leaves) {
+        if (!$user->isSuperAdmin() && !$user->can_view_leaves && !$user->can_manage_leaves) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -145,7 +146,7 @@ class LeaveController extends Controller
     public function export(Request $request)
     {
         $user = auth()->user();
-        if ($user->role_id !== 1 && !$user->can_view_leaves && !$user->can_manage_leaves) {
+        if (!$user->isSuperAdmin() && !$user->can_view_leaves && !$user->can_manage_leaves) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -203,7 +204,7 @@ class LeaveController extends Controller
         $user = auth()->user();
 
         // Only Employee can apply leave
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -388,7 +389,7 @@ class LeaveController extends Controller
         // Notify Admins & HR & SuperAdmin (only if Pending?)
         if ($status === 'Pending') {
             $this->notifications->sendToRoles(
-                [1, 2, 3],
+                [User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR],
                 "New Leave Request",
                 "{$employee->user->name} applied for {$leaveType->name} leave ({$days} days)",
                 "leave",
@@ -421,7 +422,7 @@ class LeaveController extends Controller
         $user = auth()->user();
 
         // Permission check for HR/Admin
-        if ($user->role_id !== 4 && $user->role_id !== 1 && !$user->can_view_leaves && !$user->can_manage_leaves) {
+        if (!$user->hasEmployeeProfile() && !$user->isSuperAdmin() && !$user->can_view_leaves && !$user->can_manage_leaves) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -432,7 +433,13 @@ class LeaveController extends Controller
         }
 
         // Employee can ONLY view their own leave
-        if ($user->role_id == 4 && $leave->employee->user_id != $user->id) {
+        if (
+            $user->hasEmployeeProfile() &&
+            !$user->isSuperAdmin() &&
+            !$user->can_view_leaves &&
+            !$user->can_manage_leaves &&
+            $leave->employee->user_id != $user->id
+        ) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -448,7 +455,7 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if (!in_array($user->role_id, [1,2,3])) {
+        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -499,7 +506,7 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if (!in_array($user->role_id, [1,2])) {
+        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -517,7 +524,7 @@ class LeaveController extends Controller
 {
     $user = auth()->user();
 
-    if ($user->role_id != 4) {
+    if (!$user->hasEmployeeProfile()) {
         return response()->json(['message' => 'Unauthorized'], 403);
     }
 
@@ -542,7 +549,7 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -579,7 +586,7 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -617,7 +624,7 @@ class LeaveController extends Controller
 
         // Notify Admin/HR/SuperAdmin (Internal Notification)
         $this->notifications->sendToRoles(
-            [1, 2, 3],
+            [User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR],
             "Leave Withdrawn",
             "{$user->name} withdrew their leave request for {$leave->start_date}",
             "leave",
@@ -728,7 +735,7 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if (!in_array($user->role_id, [1, 2, 3])) {
+        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -792,7 +799,7 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 4) {
+                     if (!$user->hasEmployeeProfile()) {
              return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -842,7 +849,7 @@ class LeaveController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -104,7 +104,7 @@ const LoginPage = () => {
         setSuccessMessage("");
 
         if (!formValues.email || !formValues.password) {
-            setError("Email and password are required.");
+            setError("Email/Employee Code and password are required.");
             return;
         }
 
@@ -117,10 +117,10 @@ const LoginPage = () => {
                 return;
             }
 
-            localStorage.setItem("token", data.token);
+            sessionStorage.setItem("token", data.token);
 
             if (data.force_password_change) {
-                if (data.user_id) localStorage.setItem("temp_user_id", data.user_id);
+                if (data.user_id) sessionStorage.setItem("temp_user_id", data.user_id);
                 navigate("/change-password", { replace: true });
                 return;
             }
@@ -358,10 +358,10 @@ const LoginPage = () => {
                 }
 
                 resetAutoFaceAuthState();
-                localStorage.setItem('token', data.token);
+                sessionStorage.setItem('token', data.token);
 
                 if (data.force_password_change) {
-                    if (data.user_id) localStorage.setItem('temp_user_id', data.user_id);
+                    if (data.user_id) sessionStorage.setItem('temp_user_id', data.user_id);
                     navigate('/change-password', { replace: true });
                     closeFaceAuth();
                     return;
@@ -489,16 +489,16 @@ const LoginPage = () => {
 
                     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                         <div>
-                            <label htmlFor="email" style={{ display: "block", fontSize: "14px", fontWeight: 600, marginBottom: "8px", color: theme === 'dark' ? "rgba(255,255,255,0.9)" : "#374151" }}>Email Address</label>
+                            <label htmlFor="email" style={{ display: "block", fontSize: "14px", fontWeight: 600, marginBottom: "8px", color: theme === 'dark' ? "rgba(255,255,255,0.9)" : "#374151" }}>Email or Employee Code</label>
                             <input
                                 id="email"
-                                type="email"
+                                type="text"
                                 name="email"
-                                autoComplete="email"
+                                autoComplete="username"
                                 value={formValues.email}
                                 onChange={handleChange}
                                 disabled={isLoading}
-                                placeholder="you@example.com"
+                                placeholder="you@example.com or EMP001"
                                 required
                                 className="w-full px-4 py-3 rounded-10 bg-slate-50 dark:bg-white/5 border-2 border-slate-900/10 dark:border-white/10 outline-none focus:ring-2 focus:ring-[#00b9cd]/20 focus:border-[#00b9cd] font-medium text-slate-900 dark:text-white transition-all shadow-inner"
                             />

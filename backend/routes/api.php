@@ -36,16 +36,8 @@ Route::get('/test', function () {
     return response()->json(['message' => 'API working!']);
 });
 
-if (app()->environment('local')) {
-    Route::get('/debug-reset/{email}/{password}', function ($email, $password) {
-        $user = \App\Models\User::where('email', $email)->first();
-        if (!$user)
-            return "User not found";
-        $user->password = \Illuminate\Support\Facades\Hash::make($password);
-        $user->save();
-        return "Password for $email reset to: $password";
-    });
-}
+// SECURITY FIX: Removed debug password reset route that allowed account takeover
+// This route was a critical vulnerability allowing unauthenticated password resets
 
 // Public auth routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -145,8 +137,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // =====================================
 // ATTENDANCE — EMPLOYEE SELF CHECK-IN / CHECK-OUT
+// Accessible to any authenticated user with an employee profile.
 // =====================================
-    Route::middleware(['auth:sanctum', 'role:4'])->group(function () {
+    Route::middleware([])->group(function () {
 
         // Employee check-in
         Route::post('/my-attendance/check-in', [AttendanceController::class, 'employeeCheckIn']);
@@ -201,7 +194,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // ======================================
     // EMPLOYEE: OWN SALARY
     // ======================================
-    Route::middleware(['role:4'])->group(function () {
+    Route::middleware([])->group(function () {
         Route::get('/salary/{id}', [SalaryController::class, 'show']);
         Route::get('/my-salary', [SalaryController::class, 'mySalary']);
     });
@@ -209,7 +202,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // =====================================
     // EMPLOYEE: LEAVES (Apply + View Own)
     // =====================================
-    Route::middleware(['auth:sanctum', 'role:4'])->group(function () {
+    Route::middleware([])->group(function () {
         Route::post('/leaves', [LeaveController::class, 'store']);
         Route::get('/my-leaves', [LeaveController::class, 'myLeaves']);
         Route::get('/my-leaves/balances', [LeaveController::class, 'myBalances']);
@@ -227,7 +220,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // =====================================
     // MANAGER: TEAM VISIBILITY
     // =====================================
-    Route::middleware(['auth:sanctum', 'role:4'])->group(function () {
+    Route::middleware([])->group(function () {
         Route::get('/my-team', [EmployeeController::class, 'myTeam']);
         Route::get('/my-team/attendance', [AttendanceController::class, 'teamAttendance']);
         Route::get('/my-team/leaves', [LeaveController::class, 'teamLeaves']);

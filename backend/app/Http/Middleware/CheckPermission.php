@@ -21,8 +21,8 @@ class CheckPermission
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Super Admin (Role 1) bypasses all permission checks
-        if ($user->role_id === 1) {
+        // Super Admin bypasses all permission checks
+        if ($user->isSuperAdmin()) {
             return $next($request);
         }
 

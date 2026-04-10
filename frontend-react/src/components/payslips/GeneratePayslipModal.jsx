@@ -12,6 +12,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
     const [loading, setLoading] = useState(false);
     const [fetchingSalary, setFetchingSalary] = useState(false);
     const [error, setError] = useState('');
+    const [downloadAfterGenerate, setDownloadAfterGenerate] = useState(true);
 
     const months = [
         { value: 1, label: 'January' }, { value: 2, label: 'February' }, { value: 3, label: 'March' },
@@ -22,6 +23,11 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
 
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+
+    const now = new Date();
+    const selectedPeriodEnd = new Date(formData.year, formData.month, 0, 23, 59, 59, 999);
+    const isPeriodClosed = now.getTime() > selectedPeriodEnd.getTime();
+    const selectedMonthLabel = months.find((m) => m.value === formData.month)?.label || `Month ${formData.month}`;
 
     useEffect(() => {
         if (formData.employee_id) {
@@ -53,12 +59,40 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!salaryData) return;
+        if (!isPeriodClosed) {
+            setError(`Payslip for ${selectedMonthLabel} ${formData.year} can be generated only after month end.`);
+            return;
+        }
 
         setLoading(true);
         setError('');
         try {
             const response = await axios.post('/payslips', formData);
             if (response.status === 201) {
+                if (downloadAfterGenerate) {
+                    const downloadRes = await axios.get('/payslips/download', {
+                        params: {
+                            employee_id: formData.employee_id,
+                            year: formData.year,
+                            start_month: formData.month,
+                            end_month: formData.month,
+                        },
+                        responseType: 'blob',
+                    });
+
+                    const blobUrl = window.URL.createObjectURL(new Blob([downloadRes.data]));
+                    const link = document.createElement('a');
+                    const selectedEmployee = employees.find((emp) => String(emp.id) === String(formData.employee_id));
+                    const empCode = selectedEmployee?.employee_code || formData.employee_id;
+
+                    link.href = blobUrl;
+                    link.setAttribute('download', `Payslip_${empCode}_${formData.year}_${formData.month}.pdf`);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    window.URL.revokeObjectURL(blobUrl);
+                }
+
                 onSuccess();
                 onClose();
             } else {
@@ -70,6 +104,12 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
             setLoading(false);
         }
     };
+
+    const basic = parseFloat(salaryData?.basic ?? salaryData?.basic_salary ?? 0);
+    const hra = parseFloat(salaryData?.hra ?? 0);
+    const allowances = parseFloat(salaryData?.allowances ?? 0);
+    const deductions = parseFloat(salaryData?.deductions ?? 0);
+    const net = basic + hra + allowances - deductions;
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -93,6 +133,12 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                         </div>
                     )}
 
+                    {!isPeriodClosed && (
+                        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 rounded-10 text-sm">
+                            Payslip generation is locked for {selectedMonthLabel} {formData.year}. You can generate it only after month end.
+                        </div>
+                    )}
+
                     <form id="generate-form" onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="md:col-span-3">
@@ -106,7 +152,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                                 >
                                     <option value="">Select Employee</option>
                                     {employees.map(emp => (
-                                        <option key={emp.id} value={emp.id}>{emp.name} ({emp.employee_code})</option>
+                                        <option key={emp.id} value={emp.id}>{emp.user?.name || emp.name || 'Unnamed'} ({emp.employee_code || 'N/A'})</option>
                                     ))}
                                 </select>
                             </div>
@@ -153,25 +199,25 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                                 <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                                     <div className="flex justify-between">
                                         <span className="text-gray-600 dark:text-gray-400">Basic Salary:</span>
-                                        <span className="font-medium text-gray-900 dark:text-white">{salaryData.basic_salary}</span>
+                                        <span className="font-medium text-gray-900 dark:text-white">{basic.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-600 dark:text-gray-400">HRA:</span>
-                                        <span className="font-medium text-gray-900 dark:text-white">{salaryData.hra}</span>
+                                        <span className="font-medium text-gray-900 dark:text-white">{hra.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-600 dark:text-gray-400">Allowances:</span>
-                                        <span className="font-medium text-gray-900 dark:text-white">{salaryData.allowances}</span>
+                                        <span className="font-medium text-gray-900 dark:text-white">{allowances.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-600 dark:text-gray-400">Deductions:</span>
-                                        <span className="font-medium text-red-600 dark:text-red-400">-{salaryData.deductions}</span>
+                                        <span className="font-medium text-red-600 dark:text-red-400">-{deductions.toFixed(2)}</span>
                                     </div>
                                     <div className="col-span-2 border-t border-gray-200 dark:border-gray-700 my-2"></div>
                                     <div className="flex justify-between text-base font-bold">
                                         <span className="text-gray-800 dark:text-gray-200">Net Salary:</span>
                                         <span className="text-blue-600 dark:text-blue-400">
-                                            {(parseFloat(salaryData.basic_salary) + parseFloat(salaryData.hra) + parseFloat(salaryData.allowances) - parseFloat(salaryData.deductions)).toFixed(2)}
+                                            {net.toFixed(2)}
                                         </span>
                                     </div>
                                 </div>
@@ -181,6 +227,16 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                                 Select an employee to view salary structure preview.
                             </div>
                         )}
+
+                        <label className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                            <input
+                                type="checkbox"
+                                checked={downloadAfterGenerate}
+                                onChange={(e) => setDownloadAfterGenerate(e.target.checked)}
+                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            Auto-download PDF after generation (recommended for template testing)
+                        </label>
                     </form>
                 </div>
 
@@ -196,7 +252,7 @@ const GeneratePayslipModal = ({ onClose, onSuccess, employees }) => {
                     <button
                         type="submit"
                         form="generate-form"
-                        disabled={loading || !salaryData}
+                        disabled={loading || !salaryData || !isPeriodClosed}
                         className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-10 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
                     >
                         {loading && <Loader2 size={16} className="animate-spin" />}

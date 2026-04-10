@@ -26,7 +26,13 @@ class AttendanceController extends Controller
     // =====================================
     public function index(Request $request)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -78,7 +84,13 @@ class AttendanceController extends Controller
     // =====================================
     public function store(Request $request)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -116,7 +128,13 @@ class AttendanceController extends Controller
     // =====================================
     public function show($id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -150,9 +168,9 @@ class AttendanceController extends Controller
             return response()->json(['message' => 'User not authenticated'], 401);
         }
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json([
-                'message' => 'Unauthorized - Only employees can check in',
+                'message' => 'Unauthorized - Only users with employee profiles can check in',
                 'debug' => [
                     'user_id' => $user->id,
                     'role_id' => $user->role_id
@@ -244,7 +262,7 @@ class AttendanceController extends Controller
             return response()->json(['message' => 'User not authenticated'], 401);
         }
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -313,7 +331,7 @@ class AttendanceController extends Controller
             return response()->json(['message' => 'User not authenticated'], 401);
         }
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -394,7 +412,7 @@ class AttendanceController extends Controller
         // 1. SuperAdmin (1) - Always allowed
         // 2. Admin (2) / HR (3) - Allowed if they have 'can_force_checkout' permission
 
-        $isSuperAdmin = $user->role_id == 1;
+        $isSuperAdmin = $user->isSuperAdmin();
         $hasPermission = $user->can_force_checkout;
 
         if (!$isSuperAdmin && !$hasPermission) {
@@ -414,11 +432,11 @@ class AttendanceController extends Controller
 
         // Determine who is checking out
         $checkedOutBy = 'system';
-        if ($user->role_id == 1)
+        if ($user->isSuperAdmin())
             $checkedOutBy = 'superadmin';
-        elseif ($user->role_id == 2)
+        elseif ($user->isAdmin())
             $checkedOutBy = 'admin';
-        elseif ($user->role_id == 3)
+        elseif ($user->isHr())
             $checkedOutBy = 'hr';
 
         // Update the attendance record with checkout time
@@ -453,7 +471,7 @@ class AttendanceController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             // Or allow Admin/HR to view specific teams later? For now, this is for Managers.
             return response()->json(['message' => 'Unauthorized'], 403);
         }
@@ -528,7 +546,13 @@ class AttendanceController extends Controller
     // =====================================
     public function summary(Request $request)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -570,6 +594,7 @@ class AttendanceController extends Controller
         }
 
         $employees = $employeesQuery->paginate(15);
+        $employeeIds = collect($employees->items())->pluck('id')->all();
 
         // Process each employee
         // Determine Date Range
@@ -582,17 +607,28 @@ class AttendanceController extends Controller
             $endDate = \Carbon\Carbon::parse($month)->endOfMonth();
         }
 
-        // Process each employee
-        $employees->getCollection()->transform(function ($employee) use ($startDate, $endDate) {
-            // Fetch attendance for the calculated range
-            $records = Attendance::where('employee_id', $employee->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->get();
+        $attendanceByEmployee = collect();
+        $todayAttendanceByEmployee = collect();
+
+        if (!empty($employeeIds)) {
+            $attendanceByEmployee = Attendance::whereIn('employee_id', $employeeIds)
+                ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+                ->orderBy('date')
+                ->get()
+                ->groupBy('employee_id');
+
+            $todayAttendanceByEmployee = Attendance::whereIn('employee_id', $employeeIds)
+                ->whereDate('date', now()->toDateString())
+                ->get()
+                ->keyBy('employee_id');
+        }
+
+        // Process each employee using preloaded attendance maps
+        $transformedEmployees = collect($employees->items())->map(function ($employee) use ($attendanceByEmployee, $todayAttendanceByEmployee) {
+            $records = $attendanceByEmployee->get($employee->id, collect());
 
             // Today's status
-            $todayRecord = Attendance::where('employee_id', $employee->id)
-                ->where('date', now()->toDateString())
-                ->first();
+            $todayRecord = $todayAttendanceByEmployee->get($employee->id);
 
             $todayStatus = 'Absent';
             if ($todayRecord) {
@@ -636,10 +672,10 @@ class AttendanceController extends Controller
                 'missing_punches' => $missingPunches,
                 'pending_checkout_dates' => $pendingCheckoutDates, // NEW: Return dates
             ];
-        });
+        })->values();
 
         return response()->json([
-            'data' => $employees->items(),
+            'data' => $transformedEmployees,
             'current_page' => $employees->currentPage(),
             'last_page' => $employees->lastPage(),
             'total' => $employees->total(),
@@ -657,12 +693,14 @@ class AttendanceController extends Controller
         $user = auth()->user();
 
         $canAccess = false;
-        // 1=Admin, 2=HR, 3=SuperAdmin
-        if (in_array($user->role_id, [1, 2, 3])) {
+        if ($user->hasAnyRole([
+            \App\Models\User::ROLE_SUPER_ADMIN,
+            \App\Models\User::ROLE_ADMIN,
+            \App\Models\User::ROLE_HR,
+        ])) {
             $canAccess = true;
         }
-        // 4=Employee (Manager)
-        elseif ($user->role_id == 4 && $user->employee) {
+        elseif ($user->hasEmployeeProfile() && $user->employee) {
             // Check if target employee is a subordinate
             $subordinates = $user->employee->getAllSubordinateIds();
             if ($subordinates->contains((int) $id) || $user->employee->id == $id) {
@@ -783,7 +821,7 @@ class AttendanceController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -840,7 +878,7 @@ class AttendanceController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 4) {
+        if (!$user->hasEmployeeProfile()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

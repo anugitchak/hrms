@@ -16,8 +16,10 @@ class RoleMiddleware
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
+        $roles = array_map('intval', $roles);
+
         // Check role permission
-        if (!in_array($user->role_id, $roles)) {
+        if (!in_array($user->role_id, $roles, true)) {
             return response()->json(['message' => 'Forbidden: Access denied'], 403);
         }
 

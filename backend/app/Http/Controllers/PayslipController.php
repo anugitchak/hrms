@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Payslip;
+use App\Models\PayslipTemplate;
 use App\Models\Salary;
 use App\Models\Employee;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PayslipController extends Controller
@@ -16,7 +18,7 @@ class PayslipController extends Controller
     // ======================================
     public function index()
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        if (!auth()->user()->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -30,7 +32,7 @@ class PayslipController extends Controller
     // ======================================
     public function store(Request $request)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        if (!auth()->user()->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -47,6 +49,15 @@ class PayslipController extends Controller
         // Create date object for the 1st of the requested payslip month
         $payslipStart = \Carbon\Carbon::createFromDate($request->year, $request->month, 1);
         $payslipEnd = $payslipStart->copy()->endOfMonth();
+        $today = \Carbon\Carbon::today();
+
+        // Prevent generation before the selected month is fully completed.
+        // Example: April payslip can be generated only from May 1 onward.
+        if ($today->lessThanOrEqualTo($payslipEnd->copy()->startOfDay())) {
+            return response()->json([
+                'message' => 'Payslip for the selected month can be generated only after the month ends.'
+            ], 422);
+        }
 
         // If employee joined AFTER the requested month ends, error.
         // e.g. Joined Aug 10. Request June. JoinDate > June 30. Error.
@@ -183,7 +194,7 @@ class PayslipController extends Controller
         $targetEmployeeId = $request->employee_id;
 
         // If Employee, can only download own AND if they have access enabled
-        if ($user->role_id == 4) {
+        if ($user->isEmployee()) {
              // For employees, auto-use their own employee_id if not provided or if trying to access others
              if (!$targetEmployeeId || $targetEmployeeId === 'all') {
                 $targetEmployeeId = $user->employee->id;
@@ -211,7 +222,7 @@ class PayslipController extends Controller
         ];
         
         // Only require employee_id for non-employee users
-        if ($user->role_id != 4) {
+        if (!$user->isEmployee()) {
             $rules['employee_id'] = 'required';
         }
         
@@ -261,7 +272,11 @@ class PayslipController extends Controller
         // Generate PDF filename
         $filename = 'payslips_' . ($targetEmployeeId === 'all' ? 'ALL' : $targetEmployeeId) . '_' . $request->year . '.pdf';
         
-        $pdf = Pdf::loadView('pdf.payslip', compact('payslips', 'signatureData'))
+        $activeTemplate = PayslipTemplate::where('is_active', true)->first();
+        $hasDesignerTemplate = $activeTemplate && is_array($activeTemplate->design_data) && count($activeTemplate->design_data) > 0;
+        $viewName = $hasDesignerTemplate ? 'pdf.payslip_designer' : 'pdf.payslip';
+
+        $pdf = Pdf::loadView($viewName, compact('payslips', 'signatureData', 'activeTemplate'))
             ->setOption('enable-javascript', true)
             ->setOption('enable-smart-shrinking', true);
         
@@ -298,7 +313,7 @@ class PayslipController extends Controller
         $user = auth()->user();
 
         // Employees can only view their own payslip
-        if ($user->role_id == 4) {
+        if ($user->isEmployee()) {
             if ($payslip->employee->user_id != $user->id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
@@ -318,7 +333,7 @@ class PayslipController extends Controller
     // ======================================
     public function update(Request $request, $id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        if (!auth()->user()->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -365,7 +380,7 @@ class PayslipController extends Controller
     // ======================================
     public function destroy($id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        if (!auth()->user()->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -387,7 +402,7 @@ class PayslipController extends Controller
     {
         $user = auth()->user();
 
-        // Removed the $user->role_id != 4 check. 
+        // Removed the employee-only role gate.
         // If an Admin/SuperAdmin is viewing their own employee dashboard, they should be able to see their payslips.
 
         $employee = $user->employee;

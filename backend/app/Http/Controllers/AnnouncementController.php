@@ -28,7 +28,7 @@ class AnnouncementController extends Controller
             $query = Announcement::with('user:id,name,email')
                 ->orderBy('created_at', 'desc');
 
-            if ($user->role_id == 4) {
+            if ($user->isEmployee()) {
                 $query->whereJsonContains('target_audience', 'Employee')
                     ->where('status', 'Active');
 
@@ -38,7 +38,7 @@ class AnnouncementController extends Controller
                 }
             }
             // Filter by Role for HR (Role 3) - Optional, can see HR + Employee?
-            elseif ($user->role_id == 3) {
+            elseif ($user->isHr()) {
                 $query->where(function ($q) {
                     $q->whereJsonContains('target_audience', 'HR')
                         ->orWhereJsonContains('target_audience', 'Employee');
@@ -76,7 +76,7 @@ class AnnouncementController extends Controller
         $user = auth()->user();
 
         // Only SuperAdmin (1), Admin (2), HR (3)
-        if (!in_array($user->role_id, [1, 2, 3])) {
+        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -132,7 +132,7 @@ class AnnouncementController extends Controller
     {
         $user = auth()->user();
 
-        if (!in_array($user->role_id, [1, 2, 3])) {
+        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -142,7 +142,7 @@ class AnnouncementController extends Controller
             return response()->json(['message' => 'Announcement not found'], 404);
         }
 
-        if ($user->role_id == 3 && $announcement->created_by != $user->id) {
+        if ($user->isHr() && (int) $announcement->created_by !== (int) $user->id) {
             return response()->json([
                 'message' => 'HR cannot modify announcements created by Admin or SuperAdmin'
             ], 403);
@@ -170,7 +170,7 @@ class AnnouncementController extends Controller
     {
         $user = auth()->user();
 
-        if (!in_array($user->role_id, [1, 2, 3])) {
+        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -180,7 +180,7 @@ class AnnouncementController extends Controller
             return response()->json(['message' => 'Announcement not found'], 404);
         }
 
-        if ($user->role_id == 3 && $announcement->created_by != $user->id) {
+        if ($user->isHr() && (int) $announcement->created_by !== (int) $user->id) {
             return response()->json([
                 'message' => 'HR cannot delete announcements created by Admin or SuperAdmin'
             ], 403);
@@ -232,13 +232,13 @@ class AnnouncementController extends Controller
 
         // Map strings to Role IDs
         if (in_array('SuperAdmin', $audience))
-            $targetRoles[] = 1;
+            $targetRoles[] = User::ROLE_SUPER_ADMIN;
         if (in_array('Admin', $audience))
-            $targetRoles[] = 2;
+            $targetRoles[] = User::ROLE_ADMIN;
         if (in_array('HR', $audience))
-            $targetRoles[] = 3;
+            $targetRoles[] = User::ROLE_HR;
         if (in_array('Employee', $audience))
-            $targetRoles[] = 4;
+            $targetRoles[] = User::ROLE_EMPLOYEE;
 
         if (!empty($targetRoles)) {
             $this->notificationService->sendToRoles(

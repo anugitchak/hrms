@@ -20,7 +20,7 @@ class EmployeeDocumentController extends Controller
             'uploader:id,name,role_id' // Eager load uploader
         ]);
 
-        if ($user->role_id == 4) {
+        if ($user->isEmployee()) {
             // Employee: View own only
             if (!$user->employee) {
                 return response()->json(['message' => 'Employee profile not found.'], 404);
@@ -54,12 +54,12 @@ class EmployeeDocumentController extends Controller
             'document_title' => 'required|string|max:255',
             'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048', // 2MB Max
             // Admin/HR must provide employee_id, Employee uses own
-            'employee_id' => ($user->role_id != 4) ? 'required|exists:employees,id' : 'nullable',
+            'employee_id' => (!$user->isEmployee()) ? 'required|exists:employees,id' : 'nullable',
         ]);
 
         $employeeId = null;
 
-        if ($user->role_id == 4) {
+        if ($user->isEmployee()) {
             $employeeId = $user->employee->id;
 
             // Optional: Check if employee is allowed to upload this type? 
@@ -105,7 +105,7 @@ class EmployeeDocumentController extends Controller
         // Requirement says: "Delete documents (if permission allows)".
         // Assuming Role 4 cannot delete.
 
-        if ($user->role_id == 4) {
+        if ($user->isEmployee()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -127,7 +127,7 @@ class EmployeeDocumentController extends Controller
         $document = EmployeeDocument::findOrFail($id);
 
         // Authorization Check
-        if ($user->role_id == 4) {
+        if ($user->isEmployee()) {
             // Employee can only download own
             if ($document->employee_id != $user->employee->id) {
                 return response()->json(['message' => 'Unauthorized'], 403);

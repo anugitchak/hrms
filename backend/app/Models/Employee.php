@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Employee extends Model
 {
@@ -145,26 +146,58 @@ class Employee extends Model
     // Helper: Get flat list of all subordinate IDs (Iterative BFS - Safe from Recursion Limits)
     public function getAllSubordinateIds()
     {
-        $allSubordinateIds = collect();
-        $queue = [$this->id];
-        $visited = [$this->id]; // Track visited to avoid cycles
+        $rootId = (int) $this->id;
 
-        while (!empty($queue)) {
-            $currentId = array_shift($queue);
-
-            // Fetch direct reports for the current employee
-            // Using ID only is lighter
-            $directReports = self::where('reports_to', $currentId)->pluck('id');
-
-            foreach ($directReports as $reportId) {
-                if (!in_array($reportId, $visited)) {
-                    $visited[] = $reportId;
-                    $queue[] = $reportId;
-                    $allSubordinateIds->push($reportId);
-                }
-            }
+        if ($rootId <= 0) {
+            return collect();
         }
 
-        return $allSubordinateIds->unique();
+        try {
+            $rows = DB::select(
+                'WITH RECURSIVE subordinate_tree AS (
+                    SELECT id, reports_to
+                    FROM employees
+                    WHERE reports_to = ?
+                    UNION ALL
+                    SELECT e.id, e.reports_to
+                    FROM employees e
+                    INNER JOIN subordinate_tree st ON e.reports_to = st.id
+                )
+                SELECT DISTINCT id FROM subordinate_tree',
+                [$rootId]
+            );
+
+            return collect($rows)
+                ->pluck('id')
+                ->map(static fn ($id) => (int) $id)
+                ->unique()
+                ->values();
+        } catch (\Throwable $e) {
+            // Fallback for databases without recursive CTE support.
+            $allSubordinateIds = collect();
+            $frontier = collect([$rootId]);
+            $visited = [$rootId => true];
+
+            while ($frontier->isNotEmpty()) {
+                $directReports = self::whereIn('reports_to', $frontier->all())->pluck('id');
+                $newReports = $directReports->filter(function ($reportId) use (&$visited) {
+                    if (isset($visited[$reportId])) {
+                        return false;
+                    }
+
+                    $visited[$reportId] = true;
+                    return true;
+                })->values();
+
+                if ($newReports->isEmpty()) {
+                    break;
+                }
+
+                $allSubordinateIds = $allSubordinateIds->merge($newReports);
+                $frontier = $newReports;
+            }
+
+            return $allSubordinateIds->unique()->values();
+        }
     }
 }

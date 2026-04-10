@@ -23,7 +23,7 @@ class TaskController extends Controller
         $user = Auth::user();
         $query = Task::with(['assignee.user', 'creator', 'department', 'designation']);
 
-        if ($user->role_id == 4) { // Employee
+        if ($user->isEmployee()) { // Employee
             if ($user->employee) {
                 $employeeId = $user->employee->id;
                 $departmentId = $user->employee->department_id;
@@ -52,7 +52,9 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        if (Auth::user()->role_id !== 1 && !Auth::user()->can_assign_tasks) {
+        $user = Auth::user();
+
+        if (!$user->isSuperAdmin() && !$user->can_assign_tasks) {
             return response()->json(['message' => 'Unauthorized to assign tasks'], 403);
         }
 
@@ -101,7 +103,9 @@ class TaskController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (Auth::user()->role_id !== 1 && !Auth::user()->can_assign_tasks) {
+        $user = Auth::user();
+
+        if (!$user->isSuperAdmin() && !$user->can_assign_tasks) {
             return response()->json(['message' => 'Unauthorized to manage tasks'], 403);
         }
 
@@ -141,7 +145,9 @@ class TaskController extends Controller
 
     public function destroy($id)
     {
-        if (Auth::user()->role_id !== 1 && !Auth::user()->can_assign_tasks) {
+        $user = Auth::user();
+
+        if (!$user->isSuperAdmin() && !$user->can_assign_tasks) {
             return response()->json(['message' => 'Unauthorized to delete tasks'], 403);
         }
 
@@ -281,7 +287,7 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $user = Auth::user();
 
-        if ($user->role_id !== 1 && !$user->can_assign_tasks) {
+        if (!$user->isSuperAdmin() && !$user->can_assign_tasks) {
             return response()->json(['message' => 'Unauthorized to approve tasks'], 403);
         }
 
@@ -313,7 +319,7 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $user = Auth::user();
 
-        if ($user->role_id !== 1 && !$user->can_assign_tasks) {
+        if (!$user->isSuperAdmin() && !$user->can_assign_tasks) {
             return response()->json(['message' => 'Unauthorized to review tasks'], 403);
         }
 
@@ -442,9 +448,15 @@ class TaskController extends Controller
     {
         $employees = Employee::with(['user', 'department'])
             ->whereHas('user', fn($q) => $q->where('is_active', true))
+            ->get();
+
+        $tasksByEmployee = Task::whereIn('assigned_to', $employees->pluck('id'))
             ->get()
-            ->map(function ($emp) {
-                $tasks = Task::where('assigned_to', $emp->id)->get();
+            ->groupBy('assigned_to');
+
+        $employeePerformance = $employees
+            ->map(function ($emp) use ($tasksByEmployee) {
+                $tasks = $tasksByEmployee->get($emp->id, collect());
                 $completed = $tasks->where('status', 'completed')->count();
                 $pending = $tasks->where('status', 'pending')->count();
                 $inProgress = $tasks->filter(fn($t) => in_array($t->status, ['in_progress', 'accepted', 'claimed']))->count();
@@ -476,14 +488,25 @@ class TaskController extends Controller
             ->sortByDesc('completion_rate')
             ->values();
 
-        // Monthly trend for last 6 months
+        // Monthly trend for last 6 months using grouped aggregate query.
+        $startMonth = now()->startOfMonth()->subMonths(5);
+        $endMonth = now()->endOfMonth();
+
+        $completedByMonth = Task::selectRaw('YEAR(completed_at) as y, MONTH(completed_at) as m, COUNT(*) as total')
+            ->where('status', 'completed')
+            ->whereNotNull('completed_at')
+            ->whereBetween('completed_at', [$startMonth, $endMonth])
+            ->groupBy('y', 'm')
+            ->get()
+            ->keyBy(function ($row) {
+                return sprintf('%04d-%02d', $row->y, $row->m);
+            });
+
         $monthlyTrend = [];
         for ($i = 5; $i >= 0; $i--) {
             $month = now()->subMonths($i);
-            $count = Task::where('status', 'completed')
-                ->whereYear('completed_at', $month->year)
-                ->whereMonth('completed_at', $month->month)
-                ->count();
+            $monthKey = $month->format('Y-m');
+            $count = (int) optional($completedByMonth->get($monthKey))->total;
             $monthlyTrend[] = [
                 'month' => $month->format('M Y'),
                 'completed' => $count,
@@ -494,7 +517,7 @@ class TaskController extends Controller
         $deptTrend = [];
 
         return response()->json([
-            'employees' => $employees,
+            'employees' => $employeePerformance,
             'monthly_trend' => $monthlyTrend,
         ], 200);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Config;
 
@@ -17,7 +18,7 @@ class SettingController extends Controller
         $user = auth()->user();
 
         // Only SuperAdmin (1) and Admin (2)
-        if (!in_array($user->role_id, [1, 2])) {
+        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -37,7 +38,7 @@ class SettingController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 1) {
+        if (!$user->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -70,7 +71,7 @@ class SettingController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role_id != 1) {
+        if (!$user->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -102,7 +103,7 @@ class SettingController extends Controller
     public function getEmailTemplate()
     {
         $user = auth()->user();
-        if ($user->role_id != 1) {
+        if (!$user->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -126,7 +127,7 @@ class SettingController extends Controller
     public function updateEmailTemplate(Request $request)
     {
         $user = auth()->user();
-        if ($user->role_id != 1) {
+        if (!$user->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -149,7 +150,7 @@ class SettingController extends Controller
     public function getMailSettings()
     {
         $user = auth()->user();
-        if ($user->role_id != 1) {
+        if (!$user->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -174,7 +175,7 @@ class SettingController extends Controller
     public function updateMailSettings(Request $request)
     {
         $user = auth()->user();
-        if ($user->role_id != 1) {
+        if (!$user->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -213,7 +214,7 @@ class SettingController extends Controller
     public function sendTestMail(Request $request)
     {
         $user = auth()->user();
-        if ($user->role_id != 1) {
+        if (!$user->isSuperAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

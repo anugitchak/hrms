@@ -8,6 +8,7 @@ use App\Models\Salary;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use App\Services\NotificationService;
 use App\Services\LeavePolicyService;
 use Illuminate\Support\Facades\Mail;
@@ -87,8 +88,14 @@ class EmployeeController extends Controller
     // ==============================
     public function index()
     {
+        $user = auth()->user();
+
         // Only SuperAdmin (1), Admin (2), HR (3)
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        if (!$user->hasAnyRole([
+            User::ROLE_SUPER_ADMIN,
+            User::ROLE_ADMIN,
+            User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -101,7 +108,7 @@ class EmployeeController extends Controller
         ]);
 
         // Check permission for salary visibility
-        if (auth()->user()->role_id == 1 || auth()->user()->can('can_view_salaries') || auth()->user()->can('can_manage_salaries')) {
+        if ($user->isSuperAdmin() || $user->can('can_view_salaries') || $user->can('can_manage_salaries')) {
             $query->with('currentSalary');
         }
 
@@ -116,8 +123,14 @@ class EmployeeController extends Controller
     // ==============================
     public function store(Request $request)
     {
+        $currentUser = auth()->user();
+
         // Only SuperAdmin (1), Admin (2), & HR (3)
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        if (!$currentUser->hasAnyRole([
+            User::ROLE_SUPER_ADMIN,
+            User::ROLE_ADMIN,
+            User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -125,7 +138,7 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'temp_password' => 'nullable|min:6', // Made nullable
+            'temp_password' => 'nullable|string|min:8|regex:/[A-Z]/|regex:/[0-9]/',
             'department_id' => 'required|exists:departments,id',
             'designation_name' => 'required|string|max:255',
             'joining_category' => 'required|in:New Joinee,Intern,Permanent',
@@ -164,147 +177,153 @@ class EmployeeController extends Controller
             $faceDataPath = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
         }
 
-        // Handle Designation (Hybrid: Select or Create)
-        $designationName = trim($request->designation_name);
-        $designation = \App\Models\Designation::firstOrCreate(
-            ['name' => $designationName],
-            ['is_active' => true]
-        );
+        DB::beginTransaction();
+        try {
+            // Handle Designation (Hybrid: Select or Create)
+            $designationName = trim($request->designation_name);
+            $designation = \App\Models\Designation::firstOrCreate(
+                ['name' => $designationName],
+                ['is_active' => true]
+            );
 
-        // Auto-generate password if not provided
-        $plainPassword = $request->temp_password;
-        if (empty($plainPassword)) {
-            // Format: firstname@123 (lowercase)
-            $firstName = explode(' ', trim($request->name))[0];
-            $plainPassword = strtolower($firstName) . '@123';
-        }
-
-        // Step 1: Create USER
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($plainPassword), // hashed
-            'temp_password' => $plainPassword,        // raw temp pass
-            'role_id' => 4, // Employee
-            'is_active' => true, // Default to Active
-            'face_data' => $faceDataPath,
-            'face_descriptor' => $request->face_descriptor,
-        ]);
-
-        // Step 2: Generate unique employee code
-        // Find the highest existing employee code number and increment
-        $lastEmployee = Employee::orderByRaw('CAST(SUBSTRING(employee_code, 4) AS UNSIGNED) DESC')->first();
-        if ($lastEmployee && preg_match('/EMP(\d+)/', $lastEmployee->employee_code, $matches)) {
-            $nextNumber = intval($matches[1]) + 1;
-        } else {
-            $nextNumber = 1;
-        }
-        $employeeCode = 'EMP' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-
-        // Ensure uniqueness (in case of race conditions)
-        while (Employee::where('employee_code', $employeeCode)->exists()) {
-            $nextNumber++;
-            $employeeCode = 'EMP' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-        }
-
-        // Calculate Salary Components
-        $salaryData = [
-            'basic' => 0,
-            'hra' => 0,
-            'da' => 0,
-            'allowances' => 0,
-            'deductions' => 0,
-            'gross_salary' => 0
-        ];
-
-        if (auth()->user()->role_id == 1 || auth()->user()->can('can_manage_salaries')) {
-            if ($request->gross_salary > 0) {
-                $salaryData = $this->calculateSalaryComponents(
-                    $request->gross_salary,
-                    $request->boolean('pf_opt_out'),
-                    $request->boolean('esic_opt_out'),
-                    $request->boolean('ptax_opt_out')
-                );
+            // Auto-generate password if not provided
+            $plainPassword = $request->temp_password;
+            if (empty($plainPassword)) {
+                $firstName = explode(' ', trim($request->name))[0] ?: 'User';
+                $plainPassword = ucfirst(strtolower($firstName)) . '@HR' . random_int(100, 999);
             }
-        }
 
-        // Step 3: Create EMPLOYEE
-        $employee = Employee::create([
-            'user_id' => $user->id,
-            'department_id' => $request->department_id,
-            'employee_code' => $employeeCode,
-            'designation_id' => $designation->id,
-            'reports_to' => $request->reports_to,
-            'salary' => $salaryData['gross_salary'],
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'date_of_joining' => $request->date_of_joining,
-            'dob' => $request->dob,
-            'aadhar_number' => $request->aadhar_number ?? null,
-            'pan_number' => $request->pan_number ?? null,
-            'profile_photo' => $profilePhotoPath,
-            'pf_opt_out' => $request->boolean('pf_opt_out'),
-            'esic_opt_out' => $request->boolean('esic_opt_out'),
-            'ptax_opt_out' => $request->boolean('ptax_opt_out'),
-            'joining_category' => $request->joining_category,
-            'payslip_access' => $request->boolean('payslip_access'), // Save Logic
-            'probation_months' => $request->probation_months,
-            'country_id' => $request->country_id,
-            'sub_company_id' => $request->sub_company_id,
-        ]);
-
-        // Handle Aadhar Upload
-        if ($request->hasFile('aadhar_file')) {
-            $file = $request->file('aadhar_file');
-            $base64 = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
-            \App\Models\EmployeeDocument::create([
-                'employee_id' => $employee->id,
-                'document_type' => 'Aadhar',
-                'document_title' => 'Aadhar Card',
-                'file_path' => $base64,
-                'file_size' => round($file->getSize() / 1024, 2),
-                'uploaded_by' => auth()->id(),
+            // Step 1: Create USER
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($plainPassword),
+                'temp_password' => $plainPassword,
+                'role_id' => 4,
+                'is_active' => true,
+                'face_data' => $faceDataPath,
+                'face_descriptor' => $request->face_descriptor,
             ]);
-        }
 
-        // Handle PAN Upload
-        if ($request->hasFile('pan_file')) {
-            $file = $request->file('pan_file');
-            $base64 = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
-            \App\Models\EmployeeDocument::create([
-                'employee_id' => $employee->id,
-                'document_type' => 'PAN',
-                'document_title' => 'PAN Card',
-                'file_path' => $base64,
-                'file_size' => round($file->getSize() / 1024, 2),
-                'uploaded_by' => auth()->id(),
+            // Step 2: Generate unique employee code
+            $lastEmployee = Employee::orderByRaw('CAST(SUBSTRING(employee_code, 4) AS UNSIGNED) DESC')->first();
+            if ($lastEmployee && preg_match('/EMP(\d+)/', $lastEmployee->employee_code, $matches)) {
+                $nextNumber = intval($matches[1]) + 1;
+            } else {
+                $nextNumber = 1;
+            }
+            $employeeCode = 'EMP' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+            while (Employee::where('employee_code', $employeeCode)->exists()) {
+                $nextNumber++;
+                $employeeCode = 'EMP' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            }
+
+            // Calculate Salary Components
+            $salaryData = [
+                'basic' => 0,
+                'hra' => 0,
+                'da' => 0,
+                'allowances' => 0,
+                'deductions' => 0,
+                'gross_salary' => 0
+            ];
+
+            if ($currentUser->isSuperAdmin() || $currentUser->can('can_manage_salaries')) {
+                if ($request->gross_salary > 0) {
+                    $salaryData = $this->calculateSalaryComponents(
+                        $request->gross_salary,
+                        $request->boolean('pf_opt_out'),
+                        $request->boolean('esic_opt_out'),
+                        $request->boolean('ptax_opt_out')
+                    );
+                }
+            }
+
+            // Step 3: Create EMPLOYEE
+            $employee = Employee::create([
+                'user_id' => $user->id,
+                'department_id' => $request->department_id,
+                'employee_code' => $employeeCode,
+                'designation_id' => $designation->id,
+                'reports_to' => $request->reports_to,
+                'salary' => $salaryData['gross_salary'],
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'date_of_joining' => $request->date_of_joining,
+                'dob' => $request->dob,
+                'aadhar_number' => $request->aadhar_number ?? null,
+                'pan_number' => $request->pan_number ?? null,
+                'profile_photo' => $profilePhotoPath,
+                'pf_opt_out' => $request->boolean('pf_opt_out'),
+                'esic_opt_out' => $request->boolean('esic_opt_out'),
+                'ptax_opt_out' => $request->boolean('ptax_opt_out'),
+                'joining_category' => $request->joining_category,
+                'payslip_access' => $request->boolean('payslip_access'),
+                'probation_months' => $request->probation_months,
+                'country_id' => $request->country_id,
+                'sub_company_id' => $request->sub_company_id,
             ]);
+
+            // Handle Aadhar Upload
+            if ($request->hasFile('aadhar_file')) {
+                $file = $request->file('aadhar_file');
+                $base64 = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
+                \App\Models\EmployeeDocument::create([
+                    'employee_id' => $employee->id,
+                    'document_type' => 'Aadhar',
+                    'document_title' => 'Aadhar Card',
+                    'file_path' => $base64,
+                    'file_size' => round($file->getSize() / 1024, 2),
+                    'uploaded_by' => auth()->id(),
+                ]);
+            }
+
+            // Handle PAN Upload
+            if ($request->hasFile('pan_file')) {
+                $file = $request->file('pan_file');
+                $base64 = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getPathname()));
+                \App\Models\EmployeeDocument::create([
+                    'employee_id' => $employee->id,
+                    'document_type' => 'PAN',
+                    'document_title' => 'PAN Card',
+                    'file_path' => $base64,
+                    'file_size' => round($file->getSize() / 1024, 2),
+                    'uploaded_by' => auth()->id(),
+                ]);
+            }
+
+            // Step 3.0: Assign Leave Policy
+            $this->leavePolicyService->assignPolicyToEmployee($employee);
+
+            // Step 3.1: Create Salary Record
+            Salary::create([
+                'employee_id' => $employee->id,
+                'basic' => $salaryData['basic'],
+                'hra' => $salaryData['hra'],
+                'da' => $salaryData['da'],
+                'allowances' => $salaryData['allowances'],
+                'deductions' => $salaryData['deductions'],
+                'gross_salary' => $salaryData['gross_salary'],
+            ]);
+
+            // Create Salary History
+            \App\Models\SalaryHistory::create([
+                'employee_id' => $employee->id,
+                'basic' => $salaryData['basic'],
+                'hra' => $salaryData['hra'],
+                'da' => $salaryData['da'],
+                'allowances' => $salaryData['allowances'],
+                'deductions' => $salaryData['deductions'],
+                'gross_salary' => $salaryData['gross_salary'],
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Employee creation transaction failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Employee creation failed due to a data integrity error'], 500);
         }
-
-        // Step 3.0: Assign Leave Policy
-        $this->leavePolicyService->assignPolicyToEmployee($employee);
-
-        // Step 3.1: Create Salary Record
-        Salary::create([
-            'employee_id' => $employee->id,
-            'basic' => $salaryData['basic'],
-            'hra' => $salaryData['hra'],
-            'da' => $salaryData['da'],
-            'allowances' => $salaryData['allowances'],
-            'deductions' => $salaryData['deductions'],
-            'gross_salary' => $salaryData['gross_salary'],
-        ]);
-
-        // Create Salary History
-        \App\Models\SalaryHistory::create([
-            'employee_id' => $employee->id,
-            'basic' => $salaryData['basic'],
-            'hra' => $salaryData['hra'],
-            'da' => $salaryData['da'],
-            'allowances' => $salaryData['allowances'],
-            'deductions' => $salaryData['deductions'],
-            'gross_salary' => $salaryData['gross_salary'],
-        ]);
 
         // Notify HR
         $designationName = $employee->designation ? $employee->designation->name : 'Unknown';
@@ -343,13 +362,19 @@ class EmployeeController extends Controller
     // ==============================
     public function show($id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole([
+            User::ROLE_SUPER_ADMIN,
+            User::ROLE_ADMIN,
+            User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $query = Employee::with(['department', 'designation', 'manager.user', 'user:id,name,email']);
 
-        if (auth()->user()->role_id == 1 || auth()->user()->can('can_view_salaries') || auth()->user()->can('can_manage_salaries')) {
+        if ($user->isSuperAdmin() || $user->can('can_view_salaries') || $user->can('can_manage_salaries')) {
             $query->with('currentSalary');
         }
 
@@ -363,8 +388,14 @@ class EmployeeController extends Controller
     // ==============================
     public function update(Request $request, $id)
     {
+        $user = auth()->user();
+
         // Only SuperAdmin, Admin & HR
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        if (!$user->hasAnyRole([
+            User::ROLE_SUPER_ADMIN,
+            User::ROLE_ADMIN,
+            User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -456,7 +487,7 @@ class EmployeeController extends Controller
         }
 
         // Calculate Salary if updated
-        if (($request->has('gross_salary') || $request->has('pf_opt_out')) && (auth()->user()->role_id == 1 || auth()->user()->can('can_manage_salaries'))) {
+        if (($request->has('gross_salary') || $request->has('pf_opt_out')) && ($user->isSuperAdmin() || $user->can('can_manage_salaries'))) {
             $salaryData = $this->calculateSalaryComponents(
                 $request->gross_salary ?? $employee->salary,
                 $request->has('pf_opt_out') ? $request->boolean('pf_opt_out') : $employee->pf_opt_out,
@@ -551,7 +582,13 @@ class EmployeeController extends Controller
     // Toggle Payslip Access (Lightweight)
     public function togglePayslipAccess(Request $request, $id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole([
+            User::ROLE_SUPER_ADMIN,
+            User::ROLE_ADMIN,
+            User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -575,19 +612,23 @@ class EmployeeController extends Controller
         // Current Middleware: role:1,2,3 for 'destroy' (if defined in api.php).
         // Let's check permissive:
         $user = auth()->user();
-        if (!in_array($user->role_id, [1, 2]) && !($user->role_id === 3 && $user->can('can_manage_employees'))) {
+        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN]) && !($user->isHr() && $user->can('can_manage_employees'))) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $employee = Employee::findOrFail($id);
 
-        // Delete User as well? Usually yes.
+        // SECURITY FIX: Do not hard-delete employee/user records.
+        // Keep historical payroll/attendance/leaves intact and deactivate account access instead.
         if ($employee->user) {
-            $employee->user->delete();
+            $employee->user->is_active = false;
+            $employee->user->save();
+            $employee->user->tokens()->delete();
         }
-        $employee->delete();
+        $employee->payslip_access = false;
+        $employee->save();
 
-        return response()->json(['message' => 'Employee deleted']);
+        return response()->json(['message' => 'Employee account deactivated. Historical records retained.']);
     }
 
     // ==============================
@@ -598,7 +639,7 @@ class EmployeeController extends Controller
         try {
             $user = auth()->user();
 
-            if ($user->role_id != 4) {
+            if (!$user->hasEmployeeProfile()) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
 
@@ -731,7 +772,13 @@ class EmployeeController extends Controller
 
     public function toggleOvertime(Request $request, $id)
     {
-        if (!in_array(auth()->user()->role_id, [1, 2, 3])) {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole([
+            User::ROLE_SUPER_ADMIN,
+            User::ROLE_ADMIN,
+            User::ROLE_HR,
+        ])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

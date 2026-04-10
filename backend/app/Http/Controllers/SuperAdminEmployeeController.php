@@ -68,9 +68,9 @@ class SuperAdminEmployeeController extends Controller
                 $profilePhotoPath = $request->file('profile_photo')->store('employees', 'public');
             }
 
-            // Generate password based on name (FirstName@123)
-            $firstName = explode(' ', trim($validated['name']))[0];
-            $plainPassword = ucfirst($firstName) . '@123';
+            // Generate strong temporary password
+            $firstName = explode(' ', trim($validated['name']))[0] ?: 'User';
+            $plainPassword = ucfirst(strtolower($firstName)) . '@HR' . random_int(100, 999);
 
             // Create User
             $user = User::create([
@@ -371,17 +371,20 @@ class SuperAdminEmployeeController extends Controller
 
         DB::beginTransaction();
         try {
-            // Delete profile photo if exists
-            if ($employee->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($employee->profile_photo)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->profile_photo);
+            // SECURITY FIX: Deactivate instead of hard-delete to preserve historical records.
+            if ($user) {
+                $user->is_active = false;
+                $user->save();
+                $user->tokens()->delete();
             }
-            $employee->delete();
-            $user->delete();
+            $employee->payslip_access = false;
+            $employee->save();
+
             DB::commit();
-            return response()->json(['message' => 'Employee deleted successfully']);
+            return response()->json(['message' => 'Employee account deactivated successfully']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Failed to delete employee', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Failed to deactivate employee', 'error' => $e->getMessage()], 500);
         }
     }
 

@@ -17,6 +17,52 @@ class AuthController extends Controller
 {
     protected $notifications;
 
+    /**
+     * Retry transient face-service failures (busy 503 / gateway / connection blips)
+     * before returning a hard failure to the client.
+     */
+    private static function callFaceServiceWithRetry(string $path, string $imagePath, array $payload = [])
+    {
+        $attempts = 4;
+        $delaysMs = [250, 500, 900];
+        $lastException = null;
+        $lastResponse = null;
+
+        $imageBytes = file_get_contents($imagePath);
+
+        for ($attempt = 1; $attempt <= $attempts; $attempt++) {
+            try {
+                $response = Http::timeout(45)
+                    ->attach('image', $imageBytes, 'face.jpg')
+                    ->post(self::faceServiceUrl() . $path, $payload);
+
+                $lastResponse = $response;
+
+                // Success or deterministic client errors should not be retried.
+                if ($response->successful()) {
+                    return $response;
+                }
+
+                if (!in_array($response->status(), [429, 500, 502, 503, 504], true)) {
+                    return $response;
+                }
+            } catch (ConnectionException $e) {
+                $lastException = $e;
+            }
+
+            if ($attempt < $attempts) {
+                $delay = $delaysMs[$attempt - 1] ?? end($delaysMs);
+                usleep($delay * 1000);
+            }
+        }
+
+        if ($lastException) {
+            throw $lastException;
+        }
+
+        return $lastResponse;
+    }
+
     // URL of the Python face recognition microservice
     // Read from config so it still works when Laravel config is cached.
     private static function faceServiceUrl(): string
@@ -37,7 +83,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:4',
+            'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/',
             'department_id' => 'nullable|exists:departments,id',
         ]);
 
@@ -45,7 +91,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role_id' => 4,
+            'role_id' => User::ROLE_EMPLOYEE,
             'department_id' => $validated['department_id'] ?? null,
             'is_active' => true,
         ]);
@@ -64,14 +110,14 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:4',
+            'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role_id' => 3,
+            'role_id' => User::ROLE_HR,
             'is_active' => true,
         ]);
 
@@ -87,13 +133,37 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|string',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $identifier = trim((string) $request->email);
+        $submittedPassword = (string) $request->password;
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        // Support login with either email address or employee code.
+        $user = User::whereRaw('LOWER(email) = ?', [strtolower($identifier)])->first();
+
+        if (!$user) {
+            $employee = Employee::whereRaw('UPPER(employee_code) = ?', [strtoupper($identifier)])->first();
+            if ($employee) {
+                $user = User::find($employee->user_id);
+            }
+        }
+
+        $passwordMatches = false;
+        if ($user) {
+            $passwordMatches = Hash::check($submittedPassword, $user->password);
+
+            // Tolerate accidental whitespace when password is pasted/copied.
+            if (!$passwordMatches) {
+                $trimmedPassword = trim($submittedPassword);
+                if ($trimmedPassword !== $submittedPassword) {
+                    $passwordMatches = Hash::check($trimmedPassword, $user->password);
+                }
+            }
+        }
+
+        if (!$user || !$passwordMatches) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
@@ -103,7 +173,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        if ($user->role_id == 4 && $user->temp_password !== null) {
+        if ($user->isEmployee() && $user->temp_password !== null) {
             return response()->json([
                 'message' => 'Password change required',
                 'force_password_change' => true,
@@ -137,14 +207,18 @@ class AuthController extends Controller
         $userData = $user->toArray();
         $userData['permissions'] = $permissions;
 
-        if ($user->role_id != 1) {
-            $employee = Employee::with(['country', 'subCompany'])->where('user_id', $user->id)->first();
-            if ($employee) {
-                $userData['country'] = $employee->country;
-                $userData['sub_company'] = $employee->subCompany;
-                $userData['country_id'] = $employee->country_id;
-                $userData['sub_company_id'] = $employee->sub_company_id;
-            }
+        $employee = Employee::with(['country', 'subCompany'])->where('user_id', $user->id)->first();
+        if ($employee) {
+            $userData['employee_id'] = $employee->id;
+            $userData['employee_code'] = $employee->employee_code;
+            $userData['employee'] = [
+                'id' => $employee->id,
+                'employee_code' => $employee->employee_code,
+            ];
+            $userData['country'] = $employee->country;
+            $userData['sub_company'] = $employee->subCompany;
+            $userData['country_id'] = $employee->country_id;
+            $userData['sub_company_id'] = $employee->sub_company_id;
         }
 
         return response()->json([
@@ -162,7 +236,7 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'old_password' => 'required',
-            'new_password' => 'required|string|min:6|confirmed',
+            'new_password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[0-9]/|confirmed',
         ]);
 
         $user = $request->user();
@@ -212,11 +286,10 @@ class AuthController extends Controller
 
         // Send image to Python service for descriptor extraction
         try {
-            $response = Http::timeout(45)->retry(1, 250)->attach(
-                'image',
-                file_get_contents($request->file('face_image')->getPathname()),
-                'face.jpg'
-            )->post(self::faceServiceUrl() . '/enroll');
+            $response = self::callFaceServiceWithRetry(
+                '/enroll',
+                $request->file('face_image')->getPathname()
+            );
 
             if (!$response->successful()) {
                 $error = $response->json();
@@ -332,13 +405,13 @@ class AuthController extends Controller
 
         // Call Python face recognition service
         try {
-            $response = Http::timeout(45)->retry(1, 250)->attach(
-                'image',
-                file_get_contents($request->file('face_image')->getPathname()),
-                'face.jpg'
-            )->post(self::faceServiceUrl() . '/recognize', [
-                        'stored_descriptors' => json_encode($usersData)
-                    ]);
+            $response = self::callFaceServiceWithRetry(
+                '/recognize',
+                $request->file('face_image')->getPathname(),
+                [
+                    'stored_descriptors' => json_encode($usersData)
+                ]
+            );
 
             if (!$response->successful()) {
                 $error = $response->json();
@@ -413,7 +486,7 @@ class AuthController extends Controller
         $userData['permissions'] = $permissions;
 
         // Enrich with employee country/sub_company (mirrors regular login)
-        if ($matchedUser->role_id != 1) {
+        if (!$matchedUser->isSuperAdmin()) {
             $employee = Employee::with(['country', 'subCompany'])->where('user_id', $matchedUser->id)->first();
             if ($employee) {
                 $userData['country'] = $employee->country;

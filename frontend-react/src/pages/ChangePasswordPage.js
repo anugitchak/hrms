@@ -15,6 +15,10 @@ const ChangePasswordPage = () => {
     const [success, setSuccess] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    const isStrongPassword = (value) => {
+        return /[A-Z]/.test(value) && /[0-9]/.test(value) && value.length >= 8;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -30,8 +34,8 @@ const ChangePasswordPage = () => {
             return;
         }
 
-        if (formValues.new_password.length < 6) {
-            setError("Password must be at least 6 characters.");
+        if (!isStrongPassword(formValues.new_password)) {
+            setError("Password must be at least 8 characters and include one uppercase letter and one number.");
             return;
         }
 
@@ -48,7 +52,7 @@ const ChangePasswordPage = () => {
             // Optional: Clear temp password flag in local storage if we set one
             // But simpler to just redirect to dashboard
             setTimeout(() => {
-                navigate("/dashboard");
+                navigate("/", { replace: true });
             }, 2000);
 
         } catch (err) {

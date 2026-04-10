@@ -112,22 +112,31 @@ class SuperAdminDashboardController extends Controller
     }
     public function employeeGrowth()
     {
-        // Get employee growth for the last 12 months
+        // Get cumulative employee growth for the last 12 months using aggregated queries.
+        $startMonth = Carbon::today()->startOfMonth()->subMonths(11);
+        $endMonth = Carbon::today()->endOfMonth();
+
+        $baseCount = Employee::where('created_at', '<', $startMonth)->count();
+
+        $monthlyAdds = Employee::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month_key, COUNT(*) as total')
+            ->whereBetween('created_at', [$startMonth, $endMonth])
+            ->groupBy('month_key')
+            ->pluck('total', 'month_key');
+
         $growth = collect();
+        $runningCount = $baseCount;
+
         for ($i = 11; $i >= 0; $i--) {
-            $date = Carbon::today()->subMonths($i);
-            $monthName = $date->format('M');
-            $year = $date->format('Y');
-            
-            // Count employees created up to the end of that month
-            $count = Employee::where('created_at', '<=', $date->endOfMonth())->count();
-            
+            $date = Carbon::today()->subMonths($i)->startOfMonth();
+            $monthKey = $date->format('Y-m');
+            $runningCount += (int) ($monthlyAdds->get($monthKey, 0));
+
             $growth->push([
-                'month' => $monthName,
-                'count' => $count
+                'month' => $date->format('M'),
+                'count' => $runningCount
             ]);
         }
-        
+
         return response()->json($growth);
     }
 
@@ -147,29 +156,34 @@ class SuperAdminDashboardController extends Controller
 
     public function attendanceTrends()
     {
-        // Last 6 months attendance trends
+        // Last 6 months attendance trends using a single grouped query.
+        $startMonth = Carbon::today()->startOfMonth()->subMonths(5);
+        $endMonth = Carbon::today()->endOfMonth();
+
+        $monthlyCounts = Attendance::selectRaw('YEAR(date) as y, MONTH(date) as m, status, COUNT(*) as total')
+            ->whereBetween('date', [$startMonth->toDateString(), $endMonth->toDateString()])
+            ->whereIn('status', ['Present', 'Absent'])
+            ->groupBy('y', 'm', 'status')
+            ->get();
+
+        $statusMap = [];
+        foreach ($monthlyCounts as $row) {
+            $key = sprintf('%04d-%02d', $row->y, $row->m);
+            $statusMap[$key][$row->status] = (int) $row->total;
+        }
+
         $trends = collect();
         for ($i = 5; $i >= 0; $i--) {
             $date = Carbon::today()->subMonths($i);
-            $monthName = $date->format('M');
-            
-            $present = Attendance::whereMonth('date', $date->month)
-                ->whereYear('date', $date->year)
-                ->where('status', 'Present')
-                ->count();
-                
-            $absent = Attendance::whereMonth('date', $date->month)
-                ->whereYear('date', $date->year)
-                ->where('status', 'Absent')
-                ->count();
-                
+            $monthKey = $date->format('Y-m');
+
             $trends->push([
-                'month' => $monthName,
-                'present' => $present,
-                'absent' => $absent
+                'month' => $date->format('M'),
+                'present' => $statusMap[$monthKey]['Present'] ?? 0,
+                'absent' => $statusMap[$monthKey]['Absent'] ?? 0,
             ]);
         }
-        
+
         return response()->json($trends);
     }
 
