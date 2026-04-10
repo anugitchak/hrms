@@ -18,6 +18,7 @@ import sys
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 os.environ['MKL_NUM_THREADS'] = '1'
 os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['OPENCV_THREAD_COUNT'] = '1'
 
 import urllib.request
 import logging
@@ -29,6 +30,10 @@ from collections import defaultdict, deque
 
 import cv2
 import numpy as np
+
+# Force OpenCV to use single thread — prevents "Can't spawn new thread" crashes
+# on cPanel shared hosting where thread limits are strict.
+cv2.setNumThreads(1)
 from PIL import Image, ImageOps
 from flask import Flask, request, jsonify
 from flask_cors import CORS
