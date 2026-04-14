@@ -16,11 +16,14 @@ class WelcomeEmployeeMail extends Mailable
 
     public $employee;
     public $password;
+    public $companyName;
 
     public function __construct($employee, $password)
     {
         $this->employee = $employee;
         $this->password = $password;
+        $this->companyName = Setting::where('key', 'company_name')->value('value')
+            ?: (Setting::where('key', 'mail_from_name')->value('value') ?: config('app.name'));
     }
 
     public function envelope(): Envelope
@@ -28,7 +31,7 @@ class WelcomeEmployeeMail extends Mailable
         $customSubject = Setting::where('key', 'welcome_email_subject')->value('value');
         $subject = $customSubject
             ? $this->replacePlaceholders($customSubject)
-            : 'Welcome to the Team! - ' . config('app.name');
+            : 'Welcome to the Team! - ' . $this->companyName;
 
         return new Envelope(subject: $subject);
     }
@@ -40,12 +43,16 @@ class WelcomeEmployeeMail extends Mailable
         if ($customBody) {
             return new Content(
                 view: 'emails.welcome_employee_custom',
-                with: ['emailBody' => $this->replacePlaceholders($customBody)],
+                with: [
+                    'emailBody' => $this->replacePlaceholders($customBody),
+                    'companyName' => $this->companyName,
+                ],
             );
         }
 
         return new Content(
             view: 'emails.welcome_employee',
+            with: ['companyName' => $this->companyName],
         );
     }
 
@@ -72,7 +79,7 @@ class WelcomeEmployeeMail extends Mailable
                 $emp->department->name ?? 'N/A',
                 ($emp->designation instanceof \App\Models\Designation ? $emp->designation->name : null) ?? 'N/A',
                 $emp->date_of_joining ? $emp->date_of_joining->format('d M, Y') : 'N/A',
-                config('app.name'),
+                $this->companyName,
                 config('app.frontend_url'),
             ],
             $text

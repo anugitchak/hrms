@@ -83,7 +83,7 @@
 
         <p class="welcome-msg">Dear <strong>{{ $employee->user->name }}</strong>,</p>
         
-        <p>Congratulations! We are thrilled to have you join our team. Your employee profile has been successfully created in the <strong>{{ config('app.name') }}</strong> portal.</p>
+        <p>Congratulations! We are thrilled to have you join our team. Your employee profile has been successfully created in the <strong>{{ $companyName ?? config('app.name') }}</strong> portal.</p>
 
         <p>Here are your official account details for logging in:</p>
 
@@ -122,7 +122,7 @@
 
         <p>Best regards,<br>
         <strong>The HR Team</strong><br>
-        {{ config('app.name') }}</p>
+        {{ $companyName ?? config('app.name') }}</p>
 
         <div class="footer">
             <p>This is an automated message, please do not reply to this email.</p>

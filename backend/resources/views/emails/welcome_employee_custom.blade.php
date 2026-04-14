@@ -56,13 +56,13 @@
 <body>
     <div class="wrapper">
         <div class="header-bar">
-            <h1>{{ config('app.name') }}</h1>
+            <h1>{{ $companyName ?? config('app.name') }}</h1>
         </div>
         <div class="body-content">
             {!! $emailBody !!}
         </div>
         <div class="footer">
-            &copy; {{ date('Y') }} {{ config('app.name') }}. This is an automated message — please do not reply.
+            &copy; {{ date('Y') }} {{ $companyName ?? config('app.name') }}. This is an automated message — please do not reply.
         </div>
     </div>
 </body>
