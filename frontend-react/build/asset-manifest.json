@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.5c196236.css",
+    "main.css": "/static/css/main.647cc256.css",
     "main.js": "/static/js/main.44568232.js",
     "static/js/846.715d8e1a.chunk.js": "/static/js/846.715d8e1a.chunk.js",
     "static/js/951.5accffd7.chunk.js": "/static/js/951.5accffd7.chunk.js",
@@ -30,7 +30,7 @@
     "static/media/Paperlogy-9Black.ttf": "/static/media/Paperlogy-9Black.eb595e29e93b5ba1d238.ttf",
     "static/media/Paperlogy-8ExtraBold.ttf": "/static/media/Paperlogy-8ExtraBold.bd63423a9418df2c1f6b.ttf",
     "index.html": "/index.html",
-    "main.5c196236.css.map": "/static/css/main.5c196236.css.map",
+    "main.647cc256.css.map": "/static/css/main.647cc256.css.map",
     "main.44568232.js.map": "/static/js/main.44568232.js.map",
     "846.715d8e1a.chunk.js.map": "/static/js/846.715d8e1a.chunk.js.map",
     "951.5accffd7.chunk.js.map": "/static/js/951.5accffd7.chunk.js.map",
@@ -52,7 +52,7 @@
     "99.78a56b03.chunk.js.map": "/static/js/99.78a56b03.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5c196236.css",
+    "static/css/main.647cc256.css",
     "static/js/main.44568232.js"
   ]
 }
