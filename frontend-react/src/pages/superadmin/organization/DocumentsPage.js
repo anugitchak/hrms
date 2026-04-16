@@ -25,6 +25,7 @@ const DocumentsPage = () => {
 
     // Constants
     const isEmployee = user?.role_id === 4;
+    const canManageDocuments = isEmployee || user?.role_id === 1 || Boolean(user?.can_manage_documents);
     const docTypes = ["Resume", "Offer Letter", "Aadhar", "PAN", "Experience Letter", "Payslip", "Voter ID", "Passport", "Other"];
 
     useEffect(() => {
@@ -176,13 +177,15 @@ const DocumentsPage = () => {
                         </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => setIsUploadModalOpen(true)}
-                        className="flex items-center gap-2 text-xs font-black text-white bg-[#00b9cd] hover:bg-[#00b9cd]/80 px-6 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
-                    >
-                        <FileUp size={16} strokeWidth={3} />
-                        <span className="uppercase tracking-widest text-nowrap">Upload Document</span>
-                    </button>
+                    {canManageDocuments && (
+                        <button
+                            onClick={() => setIsUploadModalOpen(true)}
+                            className="flex items-center gap-2 text-xs font-black text-white bg-[#00b9cd] hover:bg-[#00b9cd]/80 px-6 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
+                        >
+                            <FileUp size={16} strokeWidth={3} />
+                            <span className="uppercase tracking-widest text-nowrap">Upload Document</span>
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -254,9 +257,11 @@ const DocumentsPage = () => {
                         </div>
                         <h3 className="text-2xl font-black text-slate-400 uppercase tracking-widest mb-2">Archive Empty</h3>
                         <p className="text-slate-400 dark:text-slate-500 font-bold max-w-xs">Start building your secure digital repository by uploading your first document.</p>
-                        <button onClick={() => setIsUploadModalOpen(true)} className="mt-8 text-xs font-black text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-8 py-3 rounded-10 border-2 border-blue-100 dark:border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">
-                            Initialize Upload
-                        </button>
+                        {canManageDocuments && (
+                            <button onClick={() => setIsUploadModalOpen(true)} className="mt-8 text-xs font-black text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-8 py-3 rounded-10 border-2 border-blue-100 dark:border-blue-500/20 hover:bg-blue-600 hover:text-white transition-all">
+                                Initialize Upload
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
@@ -330,7 +335,7 @@ const DocumentsPage = () => {
                                                 >
                                                     <Download size={18} strokeWidth={2.5} />
                                                 </button>
-                                                {!isEmployee && (
+                                                {!isEmployee && canManageDocuments && (
                                                     <button onClick={() => handleDelete(doc.id)}
                                                         className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-10 transition-all active:scale-95"
                                                         title="Revoke Permission"

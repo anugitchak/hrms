@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { useGlobalUI } from "../../../context/GlobalUIContext";
+import { useAuth } from "../../../context/AuthContext";
 import {
     fetchAnnouncements,
     createAnnouncement,
@@ -17,6 +18,8 @@ import AnnouncementViewer from "../../../components/announcements/AnnouncementVi
 const AnnouncementsPage = () => {
     // State
     const { addToast, confirm } = useGlobalUI();
+    const { user } = useAuth();
+    const canManageAnnouncements = Boolean(user?.role_id === 1 || user?.can_manage_announcements);
     const [announcements, setAnnouncements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
@@ -174,6 +177,7 @@ const AnnouncementsPage = () => {
                 </div>
                 <button
                     onClick={handleCreate}
+                    disabled={!canManageAnnouncements}
                     className="flex items-center gap-2 text-xs font-black text-white bg-[#00b9cd] hover:bg-[#00b9cd]/80 px-6 py-3 rounded-10 shadow-md dark:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.4),0_4px_6px_-2px_rgba(0,185,205,0.1)] border border-transparent hover:shadow-lg dark:hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.5),0_10px_10px_-5px_rgba(0,185,205,0.15)] hover:border-[#00b9cd]/30 dark:hover:border-[#00b9cd]/50 transition-all duration-500 ease-out hover:-translate-y-1 active:translate-y-0 active:shadow-md"
                 >
                     <Plus size={20} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300" />
@@ -208,6 +212,7 @@ const AnnouncementsPage = () => {
                 onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                canManageAnnouncements={canManageAnnouncements}
             />
 
             {/* Modals */}

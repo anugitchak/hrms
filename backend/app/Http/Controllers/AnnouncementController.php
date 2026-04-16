@@ -75,9 +75,8 @@ class AnnouncementController extends Controller
     {
         $user = auth()->user();
 
-        // Only SuperAdmin (1), Admin (2), HR (3)
-        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (!$user->isSuperAdmin() && !$user->can_manage_announcements) {
+            return response()->json(['message' => 'Unauthorized to create announcements'], 403);
         }
 
         $request->validate([
@@ -132,20 +131,14 @@ class AnnouncementController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (!$user->isSuperAdmin() && !$user->can_manage_announcements) {
+            return response()->json(['message' => 'Unauthorized to update announcements'], 403);
         }
 
         $announcement = Announcement::find($id);
 
         if (!$announcement) {
             return response()->json(['message' => 'Announcement not found'], 404);
-        }
-
-        if ($user->isHr() && (int) $announcement->created_by !== (int) $user->id) {
-            return response()->json([
-                'message' => 'HR cannot modify announcements created by Admin or SuperAdmin'
-            ], 403);
         }
 
         $announcement->update($request->only([
@@ -170,20 +163,14 @@ class AnnouncementController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_HR])) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (!$user->isSuperAdmin() && !$user->can_manage_announcements) {
+            return response()->json(['message' => 'Unauthorized to delete announcements'], 403);
         }
 
         $announcement = Announcement::find($id);
 
         if (!$announcement) {
             return response()->json(['message' => 'Announcement not found'], 404);
-        }
-
-        if ($user->isHr() && (int) $announcement->created_by !== (int) $user->id) {
-            return response()->json([
-                'message' => 'HR cannot delete announcements created by Admin or SuperAdmin'
-            ], 403);
         }
 
         $announcement->delete();
@@ -196,6 +183,11 @@ class AnnouncementController extends Controller
     // ==========================================
     public function uploadFile(Request $request)
     {
+        $user = auth()->user();
+        if (!$user || (!$user->isSuperAdmin() && !$user->can_manage_announcements)) {
+            return response()->json(['message' => 'Unauthorized to upload attachments'], 403);
+        }
+
         $request->validate([
             'file' => 'required|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:5120', // 5MB
         ]);

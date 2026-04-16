@@ -48,6 +48,7 @@ class User extends Authenticatable
         'can_manage_announcements',
         'can_manage_meetings',
         'can_manage_documents',
+        'can_manage_email_templates',
     ];
 
     /**
@@ -92,6 +93,7 @@ class User extends Authenticatable
         'can_manage_announcements'    => 'boolean',
         'can_manage_meetings'         => 'boolean',
         'can_manage_documents'        => 'boolean',
+        'can_manage_email_templates'  => 'boolean',
     ];
 
     // Relationships (optional)
@@ -173,5 +175,38 @@ class User extends Authenticatable
     public function hasAnyRole(array $roleIds): bool
     {
         return in_array($this->role_id, $roleIds, true);
+    }
+
+    /**
+     * Resolve DB-backed permission flags (can_*) consistently across the app.
+     */
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        if (!str_starts_with($permission, 'can_')) {
+            return false;
+        }
+
+        // Fall back to false when an unknown permission key is requested.
+        if (!array_key_exists($permission, $this->getCasts()) && !array_key_exists($permission, $this->getAttributes())) {
+            return false;
+        }
+
+        return (bool) $this->getAttribute($permission);
+    }
+
+    /**
+     * Bridge Laravel ability checks to DB permission columns for can_* abilities.
+     */
+    public function can($abilities, $arguments = [])
+    {
+        if (is_string($abilities) && str_starts_with($abilities, 'can_')) {
+            return $this->hasPermission($abilities);
+        }
+
+        return parent::can($abilities, $arguments);
     }
 }

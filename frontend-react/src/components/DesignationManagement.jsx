@@ -37,7 +37,7 @@ const DesignationManagement = () => {
 
     // Permission check
     // user.role_id: 1=SuperAdmin, 2=Admin, 3=HR
-    const canManage = user?.role_id === 1 || user?.role_id === 2 || user?.role_id === 3 || user?.permissions?.includes("can_manage_designations") || user?.can_manage_designations;
+    const canManage = user?.role_id === 1 || user?.role_id === 2 || user?.role_id === 3 || user?.permissions?.includes("can_manage_departments") || user?.can_manage_departments;
 
     const fetchDesignations = async () => {
         setLoading(true);

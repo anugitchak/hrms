@@ -38,8 +38,8 @@ const EmployeesPage = () => {
 
     // User Roles & Permissions
     const isSuperAdmin = user?.role_id === 1;
-    const canManage = isSuperAdmin || user?.role_id === 2 || user?.role_id === 3 || user?.permissions?.includes("can_manage_employees");
-    const canDelete = isSuperAdmin || user?.permissions?.includes("can_delete_employees"); // Permission-based override
+    const canManage = isSuperAdmin || user?.role_id === 2 || user?.role_id === 3 || user?.permissions?.includes("can_manage_employees") || user?.can_manage_employees;
+    const canDelete = isSuperAdmin || user?.permissions?.includes("can_manage_employees") || user?.can_manage_employees;
     const canManageSalary = isSuperAdmin || user?.role_id === 2 || user?.permissions?.includes("can_manage_salaries");
     const canViewSalary = isSuperAdmin || user?.role_id === 2 || user?.role_id === 3 || user?.permissions?.includes("can_view_salaries") || canManageSalary;
 

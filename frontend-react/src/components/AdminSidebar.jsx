@@ -10,7 +10,7 @@ const AdminSidebar = () => {
         // SuperAdmin (Role 1) has all permissions
         if (user?.role_id === 1) return true;
         // Admin (Role 2) has basic access, check specific flags
-        return user?.role_id === 2 || user?.permissions?.includes(permission);
+        return user?.role_id === 2 || Boolean(user?.[permission]) || user?.permissions?.includes(permission);
     };
 
     // Base Menu Items (Matching HR Sidebar)
@@ -49,6 +49,10 @@ const AdminSidebar = () => {
 
     if (user?.role_id === 1 || user?.can_assign_tasks) {
         menuItems.push({ key: "tasks", label: "Tasks / Productivity", to: "/admin/tasks" });
+    }
+
+    if (user?.role_id === 1 || user?.can_manage_email_templates) {
+        menuItems.push({ key: "email-template", label: "Welcome Email", to: "/admin/email-template" });
     }
 
     // Documents (was in old Admin list, keeping for parity if HR has it, but HR list didn't show it explicitly above. 

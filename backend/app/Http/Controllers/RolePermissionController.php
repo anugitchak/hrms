@@ -35,13 +35,13 @@ class RolePermissionController extends Controller
                 'can_manage_departments',
                 'can_manage_payslips',
                 'can_assign_tasks',
-                'can_manage_projects',
                 'can_manage_payroll_settings',
                 'can_manage_payslip_designer',
                 'can_force_checkout',
                 'can_manage_announcements',
                 'can_manage_meetings',
                 'can_manage_documents',
+                'can_manage_email_templates',
             ])
             ->get();
 
@@ -93,6 +93,10 @@ class RolePermissionController extends Controller
                 'can_manage_payslip_designer' => false,
                 'can_force_checkout' => false,
                 'can_assign_tasks' => false,
+                'can_manage_announcements' => false,
+                'can_manage_meetings' => false,
+                'can_manage_documents' => false,
+                'can_manage_email_templates' => false,
             ];
         }
 
@@ -115,6 +119,7 @@ class RolePermissionController extends Controller
             'can_manage_announcements'    => $users->every(fn($u) => $u->can_manage_announcements),
             'can_manage_meetings'         => $users->every(fn($u) => $u->can_manage_meetings),
             'can_manage_documents'        => $users->every(fn($u) => $u->can_manage_documents),
+            'can_manage_email_templates'  => $users->every(fn($u) => $u->can_manage_email_templates),
         ];
     }
 
@@ -146,6 +151,7 @@ class RolePermissionController extends Controller
             'can_manage_announcements'    => 'boolean',
             'can_manage_meetings'         => 'boolean',
             'can_manage_documents'        => 'boolean',
+            'can_manage_email_templates'  => 'boolean',
         ]);
 
         // Update all users of this role
@@ -266,6 +272,12 @@ class RolePermissionController extends Controller
                 'name' => 'Manage Documents',
                 'description' => 'Upload and delete employee documents',
                 'category' => 'Documents'
+            ],
+            [
+                'key' => 'can_manage_email_templates',
+                'name' => 'Manage Email Templates',
+                'description' => 'Edit the welcome email sent to new employees',
+                'category' => 'System'
             ],
         ]);
     }

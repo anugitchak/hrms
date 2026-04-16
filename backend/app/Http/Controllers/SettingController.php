@@ -103,7 +103,7 @@ class SettingController extends Controller
     public function getEmailTemplate()
     {
         $user = auth()->user();
-        if (!$user->isSuperAdmin()) {
+        if (!$user->isSuperAdmin() && !$user->can_manage_email_templates) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -127,7 +127,7 @@ class SettingController extends Controller
     public function updateEmailTemplate(Request $request)
     {
         $user = auth()->user();
-        if (!$user->isSuperAdmin()) {
+        if (!$user->isSuperAdmin() && !$user->can_manage_email_templates) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -62,7 +62,7 @@ const routeRoleMap = {
   "/superadmin/reports": [1],
 };
 
-const ProtectedRoute = ({ children, roles }) => {
+const ProtectedRoute = ({ children, roles, permission }) => {
   const location = useLocation();
   const { user, token, isBootstrapping } = useAuth();
   const hasEmployeeProfile = Boolean(user?.employee?.id || user?.employee_id);
@@ -95,6 +95,13 @@ const ProtectedRoute = ({ children, roles }) => {
   if (matchedRoute) {
     const allowedRoles = routeRoleMap[matchedRoute];
     if (!allowedRoles.includes(user.role_id) && !canAccessEmployeeRouteByProfile(currentPath, allowedRoles)) {
+      return <Navigate to={getRedirectPath(user.role_id)} replace />;
+    }
+  }
+
+  if (permission && user.role_id !== 1) {
+    const allowedByPermission = Boolean(user?.[permission]) || user?.permissions?.includes(permission);
+    if (!allowedByPermission) {
       return <Navigate to={getRedirectPath(user.role_id)} replace />;
     }
   }

@@ -94,7 +94,9 @@ class MeetingController extends Controller
         $user = Auth::user();
         $meeting = Meeting::findOrFail($id);
 
-        if (!$user->isSuperAdmin() && (int) $meeting->created_by !== (int) $user->id) {
+        $canManageMeetings = $user->isSuperAdmin() || $user->can_assign_tasks || $user->can_manage_meetings;
+
+        if (!$canManageMeetings && (int) $meeting->created_by !== (int) $user->id) {
             return response()->json(['message' => 'Unauthorized to update this meeting'], 403);
         }
 
@@ -125,7 +127,9 @@ class MeetingController extends Controller
         $user = Auth::user();
         $meeting = Meeting::findOrFail($id);
 
-        if (!$user->isSuperAdmin() && (int) $meeting->created_by !== (int) $user->id) {
+        $canManageMeetings = $user->isSuperAdmin() || $user->can_assign_tasks || $user->can_manage_meetings;
+
+        if (!$canManageMeetings && (int) $meeting->created_by !== (int) $user->id) {
             return response()->json(['message' => 'Unauthorized to delete this meeting'], 403);
         }
 

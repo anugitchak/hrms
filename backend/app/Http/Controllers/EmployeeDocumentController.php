@@ -49,6 +49,10 @@ class EmployeeDocumentController extends Controller
     {
         $user = auth()->user();
 
+        if (!$user->isEmployee() && !$user->isSuperAdmin() && !$user->can_manage_documents) {
+            return response()->json(['message' => 'Unauthorized to upload documents'], 403);
+        }
+
         $request->validate([
             'document_type' => 'required|string|max:255',
             'document_title' => 'required|string|max:255',
@@ -101,12 +105,12 @@ class EmployeeDocumentController extends Controller
     {
         $user = auth()->user();
 
-        // Only Admin (1, 2) and HR (3 with permission) can delete?
-        // Requirement says: "Delete documents (if permission allows)".
-        // Assuming Role 4 cannot delete.
-
         if ($user->isEmployee()) {
             return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if (!$user->isSuperAdmin() && !$user->can_manage_documents) {
+            return response()->json(['message' => 'Unauthorized to delete documents'], 403);
         }
 
         $document = EmployeeDocument::findOrFail($id);

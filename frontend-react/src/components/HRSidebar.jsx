@@ -3,11 +3,13 @@ import { useAuth } from "../context/AuthContext";
 import ToggleSidebar from "./ui/ToggleSidebar";
 
 const HRSidebar = () => {
-    const { user, logout } = useAuth(); // Destructure user for permissions
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
 
     const hasPermission = (permission) => {
-        return user?.permissions?.includes(permission);
+        if (!user) return false;
+        if (user.role_id === 1) return true;
+        return Boolean(user?.[permission]) || user?.permissions?.includes(permission);
     };
 
     // Base Menu Items (Everyone has access)
@@ -42,12 +44,12 @@ const HRSidebar = () => {
         menuItems.push({ key: "payslip-designer", label: "Payslip Designer", to: "/hr/payslip-designer" });
     }
 
-    if (hasPermission("view_reports")) {
-        menuItems.push({ key: "reports", label: "Reports", to: "/hr/reports" });
-    }
-
     if (hasPermission("can_assign_tasks")) {
         menuItems.push({ key: "tasks", label: "Tasks / Productivity", to: "/hr/tasks" });
+    }
+
+    if (hasPermission("can_manage_email_templates")) {
+        menuItems.push({ key: "email-template", label: "Welcome Email", to: "/hr/email-template" });
     }
 
     const handleLogout = () => {

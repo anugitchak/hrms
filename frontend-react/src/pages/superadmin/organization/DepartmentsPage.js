@@ -9,7 +9,7 @@ const DepartmentsPage = () => {
     const { user } = useAuth();
     const { addToast } = useGlobalUI();
     const canManage = user?.role_id === 1 || user?.role_id === 2 || user?.role_id === 3 || user?.permissions?.includes("can_manage_departments");
-    const canDelete = user?.role_id === 1 || user?.permissions?.includes("can_delete_departments"); // Permission-based override
+    const canDelete = user?.role_id === 1 || user?.permissions?.includes("can_manage_departments") || user?.can_manage_departments;
 
     // State
     const [departments, setDepartments] = useState([]);

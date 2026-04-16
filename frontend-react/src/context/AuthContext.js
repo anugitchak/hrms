@@ -67,6 +67,34 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, [refreshUser]);
 
+  useEffect(() => {
+    if (!token) return;
+
+    const syncUser = () => {
+      refreshUser(token);
+    };
+
+    const onFocus = () => {
+      syncUser();
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        syncUser();
+      }
+    };
+
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    const intervalId = window.setInterval(syncUser, 5 * 60 * 1000);
+
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.clearInterval(intervalId);
+    };
+  }, [token, refreshUser]);
+
   /**
    * hasPermission — check if the current user has a specific permission.
    * SuperAdmin (role_id === 1) always returns true.

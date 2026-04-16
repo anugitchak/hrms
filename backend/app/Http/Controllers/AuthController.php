@@ -195,7 +195,13 @@ class AuthController extends Controller
             'can_manage_departments',
             'can_manage_payslips',
             'can_manage_payroll_settings',
-            'can_force_checkout'
+            'can_manage_payslip_designer',
+            'can_force_checkout',
+            'can_assign_tasks',
+            'can_manage_announcements',
+            'can_manage_meetings',
+            'can_manage_documents',
+            'can_manage_email_templates',
         ];
 
         foreach ($permissionFields as $field) {
@@ -476,7 +482,13 @@ class AuthController extends Controller
             'can_manage_departments',
             'can_manage_payslips',
             'can_manage_payroll_settings',
-            'can_force_checkout'
+            'can_manage_payslip_designer',
+            'can_force_checkout',
+            'can_assign_tasks',
+            'can_manage_announcements',
+            'can_manage_meetings',
+            'can_manage_documents',
+            'can_manage_email_templates',
         ] as $field) {
             if ($matchedUser->$field)
                 $permissions[] = $field;

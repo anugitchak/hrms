@@ -1,7 +1,7 @@
 import React from "react";
 import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight, Megaphone, Calendar, Hash, X } from "lucide-react";
 
-const AnnouncementTable = ({ announcements = [], loading, pagination, onPageChange, onView, onEdit, onDelete }) => {
+const AnnouncementTable = ({ announcements = [], loading, pagination, onPageChange, onView, onEdit, onDelete, canManageAnnouncements = false }) => {
     const getCategoryStyles = (category) => {
         const colors = {
             General: "bg-blue-100 text-blue-800 border-blue-300",
@@ -84,14 +84,16 @@ const AnnouncementTable = ({ announcements = [], loading, pagination, onPageChan
                                     </div>
                                     Access
                                 </button>
-                                <div className="flex gap-2">
-                                    <button onClick={() => onEdit(item)} className="p-3 bg-brand-50 dark:bg-brand-500/10 rounded-10 text-brand-600 hover:bg-brand-100 border border-brand-100 dark:border-brand-500/20 transition-all shadow-sm active:scale-90">
-                                        <Edit2 size={16} strokeWidth={2.5} />
-                                    </button>
-                                    <button onClick={() => onDelete(item.id)} className="p-3 bg-red-50 dark:bg-red-900/10 rounded-10 text-red-600 hover:bg-red-100 border border-red-100 dark:border-red-900/20 transition-all shadow-sm active:scale-90">
-                                        <Trash2 size={16} strokeWidth={2.5} />
-                                    </button>
-                                </div>
+                                {canManageAnnouncements && (
+                                    <div className="flex gap-2">
+                                        <button onClick={() => onEdit(item)} className="p-3 bg-brand-50 dark:bg-brand-500/10 rounded-10 text-brand-600 hover:bg-brand-100 border border-brand-100 dark:border-brand-500/20 transition-all shadow-sm active:scale-90">
+                                            <Edit2 size={16} strokeWidth={2.5} />
+                                        </button>
+                                        <button onClick={() => onDelete(item.id)} className="p-3 bg-red-50 dark:bg-red-900/10 rounded-10 text-red-600 hover:bg-red-100 border border-red-100 dark:border-red-900/20 transition-all shadow-sm active:scale-90">
+                                            <Trash2 size={16} strokeWidth={2.5} />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     );

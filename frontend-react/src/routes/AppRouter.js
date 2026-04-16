@@ -45,7 +45,6 @@ import HRAnnouncements from "../pages/hr/AnnouncementsPage";
 import HRPayrollSettings from "../pages/hr/PayrollSettingsPage";
 import HRSalaries from "../pages/hr/SalariesPage";
 import HRPayslips from "../pages/hr/PayslipsPage";
-import HRReports from "../pages/hr/ReportsPage";
 import HRDocuments from "../pages/hr/DocumentsPage";
 import HRPerformanceReviews from "../pages/hr/PerformanceReviewsPage";
 
@@ -84,6 +83,7 @@ import SuperAdminPerformanceReviews from "../pages/superadmin/employees/Performa
 import SuperAdminAnnouncements from "../pages/superadmin/communication/AnnouncementsPage";
 
 import SuperAdminUserManagement from "../pages/superadmin/users/UserManagementPage";
+import BulkImportPage from "../pages/superadmin/employees/BulkImportPage";
 
 // --- LAZY LOADED EMPLOYEE PAGES ---
 const EmployeeDashboard = lazy(() => import("../pages/employees/DashboardPage"));
@@ -631,16 +631,6 @@ const AppRouter = () => (
           }
         />
         <Route
-          path="/hr/reports"
-          element={
-            <ProtectedRoute roles={[3]}>
-              <HRLayout>
-                <HRReports />
-              </HRLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/hr/payslip-designer"
           element={
             <ProtectedRoute roles={[3]}>
@@ -1005,6 +995,39 @@ const AppRouter = () => (
             <ProtectedRoute roles={[1]}>
               <SuperAdminLayout>
                 <SuperAdminMailSettings />
+              </SuperAdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/email-template"
+          element={
+            <ProtectedRoute roles={[2]} permission="can_manage_email_templates">
+              <AdminLayout>
+                <SuperAdminEmailTemplate />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hr/email-template"
+          element={
+            <ProtectedRoute roles={[3]} permission="can_manage_email_templates">
+              <HRLayout>
+                <SuperAdminEmailTemplate />
+              </HRLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/superadmin/bulk-import"
+          element={
+            <ProtectedRoute roles={[1]}>
+              <SuperAdminLayout>
+                <BulkImportPage />
               </SuperAdminLayout>
             </ProtectedRoute>
           }

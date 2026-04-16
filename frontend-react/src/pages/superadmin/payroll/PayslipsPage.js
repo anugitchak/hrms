@@ -56,7 +56,9 @@ const PayslipsPage = () => {
         user?.permissions?.includes("can_view_salaries") ||
         user?.permissions?.includes("can_manage_salaries") ||
         user?.permissions?.includes("can_manage_payslips") ||
-        user?.permissions?.includes("can_view_payslips");
+        user?.can_view_salaries ||
+        user?.can_manage_salaries ||
+        user?.can_manage_payslips;
     const canManagePayslips =
         user?.role_id === 1 ||
         user?.role_id === 2 ||

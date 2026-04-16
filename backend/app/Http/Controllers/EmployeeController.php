@@ -608,27 +608,35 @@ class EmployeeController extends Controller
     // ==============================
     public function destroy($id)
     {
-        // Allow HR (3) if they have 'can_manage_employees' validation is usually in middleware, but explicit check here is good
-        // Current Middleware: role:1,2,3 for 'destroy' (if defined in api.php).
-        // Let's check permissive:
         $user = auth()->user();
         if (!$user->hasAnyRole([User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN]) && !($user->isHr() && $user->can('can_manage_employees'))) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $employee = Employee::findOrFail($id);
+        $employeeUser = $employee->user;
 
-        // SECURITY FIX: Do not hard-delete employee/user records.
-        // Keep historical payroll/attendance/leaves intact and deactivate account access instead.
-        if ($employee->user) {
-            $employee->user->is_active = false;
-            $employee->user->save();
-            $employee->user->tokens()->delete();
+        DB::beginTransaction();
+        try {
+            // Revoke all auth tokens first
+            if ($employeeUser) {
+                $employeeUser->tokens()->delete();
+            }
+
+            // Hard-delete the employee record (cascades to salaries, attendance, leaves etc. via FK)
+            $employee->delete();
+
+            // Hard-delete the user account
+            if ($employeeUser) {
+                $employeeUser->delete();
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Employee deleted successfully']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to delete employee', 'error' => $e->getMessage()], 500);
         }
-        $employee->payslip_access = false;
-        $employee->save();
-
-        return response()->json(['message' => 'Employee account deactivated. Historical records retained.']);
     }
 
     // ==============================

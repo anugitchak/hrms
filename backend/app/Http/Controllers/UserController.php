@@ -41,7 +41,11 @@ class UserController extends Controller
             'can_manage_payroll_settings',
             'can_manage_payslip_designer',
             'can_force_checkout',
-            'can_assign_tasks'
+            'can_assign_tasks',
+            'can_manage_announcements',
+            'can_manage_meetings',
+            'can_manage_documents',
+            'can_manage_email_templates',
         ];
 
         foreach ($permissionFields as $field) {
@@ -70,8 +74,12 @@ class UserController extends Controller
             'can_manage_payslips' => (bool) $user->can_manage_payslips,
             'can_manage_payroll_settings' => (bool) $user->can_manage_payroll_settings,
             'can_manage_payslip_designer' => (bool) $user->can_manage_payslip_designer,
-            'can_force_checkout' => (bool) $user->can_force_checkout,
-            'can_assign_tasks' => (bool) $user->can_assign_tasks,
+            'can_force_checkout'          => (bool) $user->can_force_checkout,
+            'can_assign_tasks'            => (bool) $user->can_assign_tasks,
+            'can_manage_announcements'    => (bool) $user->can_manage_announcements,
+            'can_manage_meetings'         => (bool) $user->can_manage_meetings,
+            'can_manage_documents'        => (bool) $user->can_manage_documents,
+            'can_manage_email_templates'  => (bool) $user->can_manage_email_templates,
             'face_descriptor' => $user->face_descriptor, // Include for face enrollment check
             'employee' => $user->employee ? [
                 'id' => $user->employee->id,
