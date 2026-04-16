@@ -371,15 +371,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/settings', [SettingController::class, 'index']);
     });
 
-    // Only SuperAdmin can update
+    // Only SuperAdmin can update core settings, logo, mail
     Route::middleware(['role:1'])->group(function () {
         Route::put('/settings', [SettingController::class, 'update']);
         Route::post('/settings/logo', [SettingController::class, 'uploadLogo']);
-        Route::get('/settings/email-template', [SettingController::class, 'getEmailTemplate']);
-        Route::put('/settings/email-template', [SettingController::class, 'updateEmailTemplate']);
         Route::get('/settings/mail', [SettingController::class, 'getMailSettings']);
         Route::put('/settings/mail', [SettingController::class, 'updateMailSettings']);
         Route::post('/settings/mail/test', [SettingController::class, 'sendTestMail']);
+    });
+
+    // Email template — SuperAdmin always, HR/Admin if they have permission
+    Route::middleware(['role:1,2,3', 'permission:can_manage_email_templates'])->group(function () {
+        Route::get('/settings/email-template', [SettingController::class, 'getEmailTemplate']);
+        Route::put('/settings/email-template', [SettingController::class, 'updateEmailTemplate']);
     });
 
 });
@@ -455,6 +459,9 @@ Route::middleware(['auth:sanctum', 'role:1'])->group(function () {
     Route::put('/role-permissions/{roleId}', [App\Http\Controllers\RolePermissionController::class, 'updateRolePermissions']);
     Route::get('/permissions/available', [App\Http\Controllers\RolePermissionController::class, 'getAvailablePermissions']);
     Route::get('/users/by-role/{roleId}', [App\Http\Controllers\RolePermissionController::class, 'getUsersByRole']);
+
+    // Bulk Employee Import (SuperAdmin only)
+    Route::post('/employees/bulk-import', [App\Http\Controllers\BulkEmployeeImportController::class, 'import']);
 
     // Country and Sub-Company Management (SuperAdmin only)
     Route::apiResource('countries', CountryController::class);

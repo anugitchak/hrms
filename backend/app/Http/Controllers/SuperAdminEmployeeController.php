@@ -367,24 +367,28 @@ class SuperAdminEmployeeController extends Controller
     public function destroy($id)
     {
         $employee = Employee::findOrFail($id);
-        $user = $employee->user;
+        $employeeUser = $employee->user;
 
         DB::beginTransaction();
         try {
-            // SECURITY FIX: Deactivate instead of hard-delete to preserve historical records.
-            if ($user) {
-                $user->is_active = false;
-                $user->save();
-                $user->tokens()->delete();
+            // Revoke all auth tokens first
+            if ($employeeUser) {
+                $employeeUser->tokens()->delete();
             }
-            $employee->payslip_access = false;
-            $employee->save();
+
+            // Hard-delete the employee record (cascades to salaries, attendance, leaves etc. via FK)
+            $employee->delete();
+
+            // Hard-delete the user account
+            if ($employeeUser) {
+                $employeeUser->delete();
+            }
 
             DB::commit();
-            return response()->json(['message' => 'Employee account deactivated successfully']);
+            return response()->json(['message' => 'Employee deleted successfully']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Failed to deactivate employee', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Failed to delete employee', 'error' => $e->getMessage()], 500);
         }
     }
 

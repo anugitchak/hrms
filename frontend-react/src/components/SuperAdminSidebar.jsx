@@ -9,6 +9,7 @@ const SuperAdminSidebar = () => {
     const menuItems = [
         { key: "dashboard", label: "Dashboard", to: "/superadmin/dashboard" },
         { key: "employees", label: "Employees", to: "/superadmin/employees" },
+        { key: "bulk-import", label: "Bulk Import", to: "/superadmin/bulk-import" },
         { key: "departments", label: "Departments", to: "/superadmin/departments" },
         { key: "designations", label: "Designations", to: "/superadmin/designations" },
         { key: "countries", label: "Countries", to: "/superadmin/countries" },
@@ -28,6 +29,7 @@ const SuperAdminSidebar = () => {
         { key: "announcements", label: "Announcements", to: "/superadmin/announcements" },
         { key: "meetings", label: "Meetings", to: "/superadmin/meetings" },
         { key: "settings", label: "System Settings", to: "/superadmin/settings" },
+        { key: "email-template", label: "Welcome Email", to: "/superadmin/email-template" },
         { key: "mail-settings", label: "Mail Settings", to: "/superadmin/mail-settings" },
         { key: "users", label: "User Management", to: "/superadmin/users" },
         { key: "reports", label: "Workforce Intelligence", to: "/superadmin/reports" },

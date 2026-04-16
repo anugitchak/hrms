@@ -3,10 +3,12 @@ import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, Building2, BadgeCheck, Clock, Calendar,
-  Banknote, FileText, File, UserPlus, Star, Megaphone, Settings,
+  Banknote, UserPlus, Star, Megaphone, Settings,
   Sliders, Bell, Activity, UserCog, BarChart, User, LogOut,
   Menu, ChevronLeft, ChevronRight, Briefcase, CalendarDays,
-  ShieldCheck, CheckSquare, PenTool, Settings2, Presentation, MapIcon
+  ShieldCheck, CheckSquare, PenTool, Presentation,
+  Upload, Mail, Globe, Wallet, LayoutTemplate, BookOpen,
+  CreditCard, FolderOpen
 } from "lucide-react";
 import Tooltip from "./Tooltip";
 
@@ -24,39 +26,47 @@ const ToggleSidebar = ({ title, subtitle, menuItems, onLogout }) => {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  // Icon mapping
   const getIcon = (key) => {
     const icons = {
-      dashboard: LayoutDashboard,
-      employees: Users,
-      departments: Building2,
-      designations: BadgeCheck,
-      "sub-companies": Briefcase,
-      countries: MapIcon,
-      attendance: Clock,
-      leaves: Calendar,
-      holidays: CalendarDays,
-      "leave-policies": ShieldCheck,
-      tasks: CheckSquare,
-      salaries: Banknote,
-      salary: Banknote,
-      payslips: FileText,
-      "payslip-designer": PenTool,
-      "payroll-settings": Settings2,
-      documents: File,
-      recruitment: UserPlus,
-      "performance-reviews": Star,
-      announcements: Megaphone,
-      meetings: Presentation,
-      settings: Settings,
-      "system-controls": Sliders,
-      notifications: Bell,
-      "activity-log": Activity,
-      users: UserCog,
-      reports: BarChart,
-      profile: User,
+      // Core
+      dashboard:              LayoutDashboard,
+      employees:              Users,
+      "bulk-import":          Upload,
+      departments:            Building2,
+      designations:           BadgeCheck,
+      "sub-companies":        Briefcase,
+      countries:              Globe,
+      // Attendance & Time
+      attendance:             Clock,
+      leaves:                 Calendar,
+      holidays:               CalendarDays,
+      "leave-policies":       ShieldCheck,
+      // Tasks & Productivity
+      tasks:                  CheckSquare,
+      // Finance
+      salaries:               Banknote,
+      salary:                 Banknote,
+      payslips:               CreditCard,
+      "payslip-designer":     PenTool,
+      "payroll-settings":     Wallet,
+      // Documents & Comms
+      documents:              FolderOpen,
+      recruitment:            UserPlus,
+      "performance-reviews":  Star,
+      announcements:          Megaphone,
+      meetings:               Presentation,
+      // System
+      settings:               Settings,
+      "system-controls":      Sliders,
+      "email-template":       Mail,
+      "mail-settings":        LayoutTemplate,
+      notifications:          Bell,
+      "activity-log":         Activity,
+      users:                  UserCog,
+      reports:                BarChart,
+      profile:                User,
     };
-    return icons[key] || LayoutDashboard;
+    return icons[key] || BookOpen;
   };
 
   const sidebarVariants = {
