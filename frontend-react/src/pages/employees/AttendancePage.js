@@ -108,6 +108,7 @@ const AttendancePage = () => {
     const [attendance, setAttendance] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
+    const [overtimeLoading, setOvertimeLoading] = useState(false);
     const [currentLocation, setCurrentLocation] = useState(null);
     const [currentLocationName, setCurrentLocationName] = useState("");
     const [showLocationModal, setShowLocationModal] = useState(false);
@@ -226,10 +227,67 @@ const AttendancePage = () => {
         }
     };
 
+    const handleOvertimeAction = async (type) => {
+        try {
+            setOvertimeLoading(true);
+
+            if (type === "start") {
+                await api.post("/my-attendance/overtime/start");
+            } else {
+                await api.post("/my-attendance/overtime/end");
+            }
+
+            addToast(type === "start" ? "OVERTIME STARTED" : "OVERTIME ENDED", "success");
+            await fetchAttendance();
+        } catch (err) {
+            addToast(err?.response?.data?.message || "OVERTIME TRANSMISSION ERROR", "error");
+        } finally {
+            setOvertimeLoading(false);
+        }
+    };
+
+    const renderOvertimeCell = (record) => {
+        const hasStart = !!record?.overtime_start;
+        const hasEnd = !!record?.overtime_end;
+        const hasHours = record?.overtime_hours !== null && record?.overtime_hours !== undefined && record?.overtime_hours !== "";
+        const hoursText = hasHours ? `${Number(record.overtime_hours).toFixed(2)}h` : "--";
+
+        if (!hasStart) {
+            return (
+                <div className="inline-flex px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-10 border border-slate-200 dark:border-white/10">
+                    <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">No OT</span>
+                </div>
+            );
+        }
+
+        if (!hasEnd) {
+            return (
+                <div className="inline-flex flex-col items-center gap-1 px-3 py-2 bg-amber-50 dark:bg-amber-500/10 rounded-10 border border-amber-100 dark:border-amber-500/20">
+                    <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em]">OT Live</span>
+                    <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200 tracking-tight">
+                        {formatTime(record.overtime_start)} {"->"} Live
+                    </span>
+                </div>
+            );
+        }
+
+        return (
+            <div className="inline-flex flex-col items-center gap-1 px-3 py-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-10 border border-emerald-100 dark:border-emerald-500/20">
+                <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em]">OT Done</span>
+                <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200 tracking-tight">
+                    {formatTime(record.overtime_start)} {"->"} {formatTime(record.overtime_end)}
+                </span>
+                <span className="text-[9px] font-black text-[#00b9cd] uppercase tracking-[0.2em]">{hoursText}</span>
+            </div>
+        );
+    };
+
     const today = localTodayStr;
     const todayRecord = attendance.find(r => r.date === today);
     const isCheckedInToday = !!todayRecord?.check_in;
     const isCheckedOutToday = !!todayRecord?.check_out;
+    const isOvertimeStartedToday = !!todayRecord?.overtime_start;
+    const isOvertimeEndedToday = !!todayRecord?.overtime_end;
 
     const weeklyStats = calculateWeeklyStats(attendance);
     const monthlyStats = calculateMonthlyStats(attendance, selectedMonth);
@@ -258,7 +316,7 @@ const AttendancePage = () => {
                         <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] italic">Operational Presence History</p>
                     </div>
                 </div>
-                <div className="flex gap-6">
+                <div className="flex flex-wrap gap-4">
                     <Button
                         onClick={() => handleActionRequest("check-in")}
                         disabled={isCheckedInToday || actionLoading}
@@ -274,6 +332,22 @@ const AttendancePage = () => {
                         icon={isCheckedOutToday ? CheckCircle : LogOut}
                     >
                         {isCheckedOutToday ? "Downlink Secure" : "Initiate Downlink"}
+                    </Button>
+                    <Button
+                        onClick={() => handleOvertimeAction("start")}
+                        disabled={!isCheckedOutToday || isOvertimeStartedToday || overtimeLoading || actionLoading}
+                        variant={(!isCheckedOutToday || isOvertimeStartedToday) ? "outline" : "primary"}
+                        icon={Zap}
+                    >
+                        {isOvertimeStartedToday ? "OT Active" : "Initiate OT"}
+                    </Button>
+                    <Button
+                        onClick={() => handleOvertimeAction("end")}
+                        disabled={!isOvertimeStartedToday || isOvertimeEndedToday || overtimeLoading || actionLoading}
+                        variant={(!isOvertimeStartedToday || isOvertimeEndedToday) ? "outline" : "destructive"}
+                        icon={Clock}
+                    >
+                        {isOvertimeEndedToday ? "OT Closed" : "Close OT"}
                     </Button>
                 </div>
             </div>
@@ -316,6 +390,7 @@ const AttendancePage = () => {
                                 <th className="px-8 pb-4">Uplink Stat</th>
                                 <th className="px-8 pb-4">Downlink Stat</th>
                                 <th className="px-8 pb-4 text-center">Uptime</th>
+                                <th className="px-8 pb-4 text-center">Overtime</th>
                                 <th className="px-8 pb-4 text-center">Verdict</th>
                                 <th className="px-8 pb-4 text-right">Geospatial</th>
                             </tr>
@@ -361,6 +436,9 @@ const AttendancePage = () => {
                                             </div>
                                         </td>
                                         <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 border-y-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all text-center shadow-sm">
+                                            {renderOvertimeCell(record)}
+                                        </td>
+                                        <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 border-y-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all text-center shadow-sm">
                                             <Badge variant={record.status}>{record.status}</Badge>
                                         </td>
                                         <td className="px-8 py-8 bg-slate-50/50 dark:bg-white/5 rounded-10-[2rem] border-y-2 border-r-2 border-transparent group-hover:border-[#00b9cd]/20 transition-all text-right shadow-sm">
@@ -375,7 +453,7 @@ const AttendancePage = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="py-24 text-center">
+                                    <td colSpan="7" className="py-24 text-center">
                                         <div className="flex flex-col items-center justify-center opacity-20">
                                             <RefreshCw size={64} className="mb-6 animate-spin-slow text-[#00b9cd]" />
                                             <p className="text-sm font-black uppercase tracking-[0.5em] text-slate-400 italic">No Registry Data Scanned</p>

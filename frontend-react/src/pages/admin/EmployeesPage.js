@@ -67,6 +67,7 @@ const AdminEmployeesPage = () => {
     });
     const [formErrors, setFormErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [overtimeProcessingId, setOvertimeProcessingId] = useState(null);
 
     // Password Modal State
     const [createdPassword, setCreatedPassword] = useState(null);
@@ -530,6 +531,44 @@ const AdminEmployeesPage = () => {
         }
     };
 
+    const handleToggleOvertime = async (emp) => {
+        if (!emp?.id) {
+            return;
+        }
+
+        const nextStatus = !Boolean(emp.overtime_enabled);
+        setOvertimeProcessingId(emp.id);
+
+        try {
+            const response = await api.post(`/employees/${emp.id}/toggle-overtime`, {
+                overtime_enabled: nextStatus,
+            });
+
+            const updatedEmployee = response.data?.employee || {};
+            const normalizedStatus = typeof updatedEmployee.overtime_enabled === "boolean"
+                ? updatedEmployee.overtime_enabled
+                : nextStatus;
+
+            setEmployees((prev) => prev.map((item) => {
+                if (item.id !== emp.id) {
+                    return item;
+                }
+                return {
+                    ...item,
+                    ...updatedEmployee,
+                    overtime_enabled: normalizedStatus,
+                };
+            }));
+
+            addToast(`Overtime ${normalizedStatus ? "enabled" : "disabled"} for ${emp.user?.name || "employee"}.`, "success");
+        } catch (err) {
+            console.error("Failed to toggle overtime", err);
+            addToast(err?.response?.data?.message || "Failed to update overtime access.", "error");
+        } finally {
+            setOvertimeProcessingId(null);
+        }
+    };
+
     const getProfilePhotoUrl = (path) => {
         if (!path) return null;
         return path.startsWith('http') ? path : `${STORAGE_URL}/${path}`;
@@ -665,6 +704,13 @@ const AdminEmployeesPage = () => {
                                                     <button onClick={() => openViewModal(emp)} className="text-blue-600 hover:text-blue-900">View</button>
                                                     {canManage && (
                                                         <>
+                                                            <button
+                                                                onClick={() => handleToggleOvertime(emp)}
+                                                                disabled={overtimeProcessingId === emp.id}
+                                                                className={`${emp.overtime_enabled ? "text-emerald-600 hover:text-emerald-800" : "text-amber-600 hover:text-amber-800"} ${overtimeProcessingId === emp.id ? "opacity-60 cursor-not-allowed" : ""}`}
+                                                            >
+                                                                {overtimeProcessingId === emp.id ? "Sync..." : (emp.overtime_enabled ? "OT On" : "OT Off")}
+                                                            </button>
                                                             <button onClick={() => openEditModal(emp)} className="text-amber-600 hover:text-amber-900">Edit</button>
                                                             <button onClick={() => openDeleteModal(emp)} className="text-red-600 hover:text-red-900">Delete</button>
                                                         </>

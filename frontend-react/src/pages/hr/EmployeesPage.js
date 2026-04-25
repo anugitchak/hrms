@@ -104,6 +104,7 @@ const EmployeesPage = () => {
     });
     const [formErrors, setFormErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [overtimeProcessingId, setOvertimeProcessingId] = useState(null);
 
     const [payrollConfig, setPayrollConfig] = useState({ basic_percentage: 50 }); // Default 50%
 
@@ -695,6 +696,55 @@ const EmployeesPage = () => {
         }
     };
 
+    const handleToggleOvertime = async (emp) => {
+        if (!emp?.id) {
+            return;
+        }
+
+        const nextStatus = !Boolean(emp.overtime_enabled);
+        setOvertimeProcessingId(emp.id);
+
+        try {
+            const response = await api.post(`${apiEndpoint}/${emp.id}/toggle-overtime`, {
+                overtime_enabled: nextStatus,
+            });
+
+            const updatedEmployee = response.data?.employee || {};
+            const normalizedStatus = typeof updatedEmployee.overtime_enabled === "boolean"
+                ? updatedEmployee.overtime_enabled
+                : nextStatus;
+
+            setEmployees((prev) => prev.map((item) => {
+                if (item.id !== emp.id) {
+                    return item;
+                }
+                return {
+                    ...item,
+                    ...updatedEmployee,
+                    overtime_enabled: normalizedStatus,
+                };
+            }));
+
+            setSelectedEmployee((prev) => {
+                if (!prev || prev.id !== emp.id) {
+                    return prev;
+                }
+                return {
+                    ...prev,
+                    ...updatedEmployee,
+                    overtime_enabled: normalizedStatus,
+                };
+            });
+
+            addToast(`Overtime ${normalizedStatus ? "enabled" : "disabled"} for ${emp.user?.name || "employee"}.`, "success");
+        } catch (err) {
+            console.error("Failed to toggle overtime", err);
+            addToast(err?.response?.data?.message || "Failed to update overtime access.", "error");
+        } finally {
+            setOvertimeProcessingId(null);
+        }
+    };
+
 
     return (
         <>
@@ -874,6 +924,17 @@ const EmployeesPage = () => {
                                                 Profile
                                                 <ChevronRight size={14} />
                                             </Link>
+                                            {canManage && (
+                                                <button
+                                                    onClick={() => handleToggleOvertime(emp)}
+                                                    disabled={overtimeProcessingId === emp.id}
+                                                    className={`flex items-center justify-center px-3 py-3 text-[10px] font-black uppercase tracking-widest rounded-10 border-2 shadow-md transition-all ${emp.overtime_enabled
+                                                        ? 'text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900/30 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30'
+                                                        : 'text-amber-700 dark:text-amber-300 border-amber-100 dark:border-amber-900/30 bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30'} ${overtimeProcessingId === emp.id ? 'opacity-60 cursor-not-allowed' : 'active:scale-95'}`}
+                                                >
+                                                    {overtimeProcessingId === emp.id ? 'Sync...' : (emp.overtime_enabled ? 'OT On' : 'OT Off')}
+                                                </button>
+                                            )}
                                             <button onClick={() => openEditModal(emp)}
                                                 className="flex items-center justify-center p-3 text-slate-600 dark:text-slate-300 border-2 border-slate-200 dark:border-white/10 rounded-10 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20 shadow-md transition-all active:scale-95">
                                                 <Edit2 size={16} />
