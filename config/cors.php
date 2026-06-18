@@ -10,6 +10,8 @@ $allowedOrigins = array_values(array_filter(array_unique([
     'http://api.mmhrms.in',
     'http://localhost:3000',
     'http://127.0.0.1:8000',
+    'http://localhost:8001',
+    'http://127.0.0.1:8001',
 ])));
 
 $allowedOriginsPatterns = array_filter([
