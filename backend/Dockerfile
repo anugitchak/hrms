@@ -1,3 +1,14 @@
+# Stage 1: Build the React frontend
+FROM node:18-alpine AS frontend-builder
+WORKDIR /app
+COPY frontend-react/package*.json ./frontend-react/
+RUN npm ci --prefix frontend-react
+COPY frontend-react/ ./frontend-react/
+ENV REACT_APP_API_URL=/api
+ENV REACT_APP_STORAGE_URL=/storage
+RUN npm run build --prefix frontend-react
+
+# Stage 2: Final PHP image
 FROM php:8.2-fpm
 
 # Install system dependencies
@@ -35,10 +46,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
+# Copy Laravel application files
 COPY backend/ .
 
-# Install dependencies
+# Copy built frontend assets from frontend-builder stage directly into Laravel's public directory
+COPY --from=frontend-builder /app/frontend-react/build/ ./public/
+
+# Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
 # Copy nginx configuration

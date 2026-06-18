@@ -4,7 +4,8 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "build:frontend": "cd ../frontend-react && npm run build",
+        "copy:frontend": "node scripts/copy-frontend.cjs",
+        "build:frontend": "npm run build --prefix ../frontend-react && npm run copy:frontend",
         "serve": "npm run build:frontend && php artisan serve",
         "serve:quick": "php artisan serve"
     },

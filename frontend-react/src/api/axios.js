@@ -5,24 +5,24 @@ const PRODUCTION_FRONTEND_HOSTS = new Set(["mmhrms.in", "www.mmhrms.in"]);
 const trimTrailingSlash = (value) => value.replace(/\/+$/, "");
 
 const getDefaultApiUrl = () => {
-  if (
-    typeof window !== "undefined" &&
-    PRODUCTION_FRONTEND_HOSTS.has(window.location.hostname)
-  ) {
-    return "https://api.mmhrms.in/api";
+  if (typeof window !== "undefined") {
+    const devPorts = ["3000", "3001", "5173", "5174"];
+    if (devPorts.includes(window.location.port)) {
+      return "http://127.0.0.1:8000/api";
+    }
+    return window.location.origin + "/api";
   }
-
   return "http://127.0.0.1:8000/api";
 };
 
 const getDefaultStorageUrl = () => {
-  if (
-    typeof window !== "undefined" &&
-    PRODUCTION_FRONTEND_HOSTS.has(window.location.hostname)
-  ) {
-    return "https://api.mmhrms.in/storage";
+  if (typeof window !== "undefined") {
+    const devPorts = ["3000", "3001", "5173", "5174"];
+    if (devPorts.includes(window.location.port)) {
+      return "http://127.0.0.1:8000/storage";
+    }
+    return window.location.origin + "/storage";
   }
-
   return "http://127.0.0.1:8000/storage";
 };
 
