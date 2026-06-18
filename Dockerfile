@@ -1,12 +1,15 @@
 # Stage 1: Build the React frontend
 FROM node:18-alpine AS frontend-builder
 WORKDIR /app
-COPY frontend-react/package*.json ./frontend-react/
-RUN npm ci --prefix frontend-react
-COPY frontend-react/ ./frontend-react/
+COPY package*.json ./
+RUN npm ci
+COPY src/ ./src/
+COPY public/ ./public/
+COPY postcss.config.js ./
+COPY tailwind.config.js ./
 ENV REACT_APP_API_URL=/api
 ENV REACT_APP_STORAGE_URL=/storage
-RUN npm run build --prefix frontend-react
+RUN npm run build
 
 # Stage 2: Final PHP image
 FROM php:8.2-fpm
@@ -47,19 +50,27 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copy Laravel application files
-COPY backend/ .
+COPY app/ ./app/
+COPY bootstrap/ ./bootstrap/
+COPY config/ ./config/
+COPY database/ ./database/
+COPY public_html/ ./public_html/
+COPY resources/ ./resources/
+COPY routes/ ./routes/
+COPY storage/ ./storage/
+COPY artisan composer.* ./
 
 # Copy built frontend assets from frontend-builder stage directly into Laravel's public directory
-COPY --from=frontend-builder /app/frontend-react/build/ ./public/
+COPY --from=frontend-builder /app/build/ ./public_html/
 
 # Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
 # Copy nginx configuration
-COPY backend/nginx.conf /etc/nginx/sites-available/default
+COPY nginx.conf /etc/nginx/sites-available/default
 
 # Copy supervisor configuration
-COPY backend/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -73,7 +84,7 @@ RUN php artisan storage:link || true
 EXPOSE 10000
 
 # Copy deploy script
-COPY backend/deploy.sh /usr/local/bin/deploy.sh
+COPY deploy.sh /usr/local/bin/deploy.sh
 RUN sed -i 's/\r$//' /usr/local/bin/deploy.sh
 RUN chmod +x /usr/local/bin/deploy.sh
 

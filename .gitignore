@@ -1,9 +1,47 @@
-/backend/.env
-/backend/node_modules
-/frontend-react/node_modules
-/frontend-react/.env
+# Node.js dependencies
+/node_modules/
+/npm-debug.log*
+/yarn-error.log*
 
-/mobile-app/node_modules
-*.zip
+# React Build Output
+/build/
 
+# PHP/Laravel dependencies and caches
+/vendor/
+/.phpunit.cache/
+/.phpunit.result.cache
+/.fleet/
+/.idea/
+/.vscode/
+/storage/*.key
+
+# Environment config files (never commit secrets)
+.env
+.env.backup
+.env.production
+.env.production.example
+
+# Laravel Public HTML Build Artifacts (React build targets)
+/public_html/build/
+/public_html/hot/
+/public_html/storage/
+/public_html/static/
+/public_html/index.html
+/public_html/asset-manifest.json
+
+# User-uploaded files (never commit these)
+/storage/app/public/task_proofs/
+/storage/app/public/announcements/
+/storage/app/public/temp_faces/
+/storage/app/public/documents/
+/storage/app/public/payslips/
+
+# Local Dev configuration
+Homestead.json
+Homestead.yaml
+auth.json
+
+# Other ignored project paths
+/mobile-app/node_modules/
 mobile-app/
+*.zip

@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const srcDir = path.resolve(__dirname, '../../frontend-react/build');
-const destDir = path.resolve(__dirname, '../public');
+const srcDir = path.resolve(__dirname, '../build');
+const destDir = path.resolve(__dirname, '../public_html');
 
 function deleteFolderRecursive(directoryPath) {
   if (fs.existsSync(directoryPath)) {

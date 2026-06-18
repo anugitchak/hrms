@@ -3,7 +3,7 @@ services:
   - type: web
     name: hrms-backend
     runtime: docker
-    dockerfilePath: backend/Dockerfile
+    dockerfilePath: Dockerfile
     dockerContext: .
     region: singapore
     envVars:
