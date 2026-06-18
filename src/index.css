@@ -82,8 +82,20 @@
     /* Keep native select dropdown option text readable across dark/light themes. */
     select option,
     select optgroup {
-        color: #0f172a;
-        background-color: #ffffff;
+        background-color: #ffffff !important;
+    }
+    select option:not([class*="text-"]),
+    select optgroup:not([class*="text-"]) {
+        color: #0f172a !important;
+    }
+
+    .dark select option,
+    .dark select optgroup {
+        background-color: #0f172a !important;
+    }
+    .dark select option:not([class*="text-"]),
+    .dark select optgroup:not([class*="text-"]) {
+        color: #ffffff !important;
     }
 }
 
